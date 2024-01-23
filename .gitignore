@@ -2,5 +2,6 @@
 .note.txt
 .TODO.txt
 
-# Config files
+# Config and access files
 .env
+admin-ec2-key.pem
