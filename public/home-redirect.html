@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title>PhO&#178;</title>
+  </head>
+  <body>
+    
+    <script>
+      let xhr = new XMLHttpRequest();
+      xhr.open('POST', './auth/token', true);
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify({}));
+
+      xhr.onreadystatechange = function () {
+        if(this.readyState != 4) return;
+
+        if(this.status == 200) {
+          let data = JSON.parse(this.responseText);
+
+          if(data.message == 'Valid token.'){
+            location.href = './';
+          } else {
+            location.href = '/';
+          }
+        } else {
+          location.href = '/';
+        }
+      };
+    </script>
+  </body>
+</html>

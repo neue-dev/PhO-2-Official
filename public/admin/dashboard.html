@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PhO&#178;</title>
+
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Manrope|Staatliches|Lexend" rel="stylesheet">
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!-- Overrides -->
+    <style type="text/css">
+      .full-vh-height {
+        min-height: 100vh;
+      }
+
+      body {
+        overflow-y: hidden;
+      }
+
+      html {
+        font-family: Manrope;
+      }
+
+      .nav-title {
+        display: inline-block;
+        height: 100%;
+        margin-left: 25px;
+        margin-top: -20px;
+      }
+
+      .nav-title-text {
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+      }
+
+      .main-content {
+        height: calc(100vh - 60px);
+        padding: 36px;
+      }
+
+      .admin-table-header-card {
+        margin-top: -30px;
+      }
+
+      .admin-table-card {
+        margin-left: 10px;
+        padding: 0;
+        max-height: calc(100vh - 480px);
+      }
+
+      .table-card {
+        padding: 0;
+        max-height: calc(100vh - 480px);
+        overflow-y: auto;
+      }
+
+      .user-table>tr>td {
+        width: 100px;
+      }
+
+      .problem-table>tr>td {
+        width: 100px;
+      }
+
+      .title-text {
+        font-family: Staatliches;
+      }
+
+      .ui-text {
+        font-family: Lexend;
+      }
+
+      #toast-container {
+        top: auto !important;
+        right: auto !important;
+        bottom: 5%;
+        left: 70%;  
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="red lighten-1">
+      <div class="nav-wrapper">
+        <div class="nav-title title-text">
+          <h3 class="nav-title-text">
+            <span class="hide-on-med-and-down">Philippine Online Physics Olympiad</span>
+            <span class="hide-on-large-only">PhO&#178;</span>
+          </h3>
+        </div>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><a href="./problems" class="ui-text" >Problems</a></li>
+          <li><a href="./dashboard" class="ui-text">Dashboard</a></li>
+          <li><a href="./leaderboard" class="ui-text">Leaderboard</a></li>
+          <li><a href="#" class="ui-text logout-button">Logout</a></li>
+        </ul>
+
+        <ul id="slide-out" class="sidenav">
+          <br>
+          <li><a class="subheader ui-text">MENU</a></li>
+          <li><a href="./problems" class="ui-text">Problems</a></li>
+          <li><a href="./dashboard" class="ui-text">Dashboard</a></li>
+          <li><a href="./leaderboard" class="ui-text">Leaderboard</a></li>
+          <li><div class="divider" ></div></li>
+          <li><a class="waves-effect ui-text logout-button" href="#">Logout</a></li>
+        </ul>
+        <a href="#" data-target="slide-out" class="sidenav-trigger nav-mobile-alt-trigger">
+          <h4 class="material-icons" style="margin-top: 15px;">&#x2630;</h4>
+        </a>
+      </div>
+    </nav>
+
+    <div class="main-content row">
+      <div class="col s0 m4 l3 card hide-on-small-only">
+        <div class="container">
+          <h2 class="title-text">
+            Welcome to PhO&#178;!
+          </h2>
+
+          <p>
+            The navigation bar above will help you visit the different pages of the site. 
+            This dashboard displays all the things you need to manage the contest flow.
+          </p>
+
+          <div class="container">
+            <img class="responsive-img" src="./pho-2-logo.png">
+          </div>
+          <br>
+        </div>
+      </div>
+      <div class="col s0 m1 l1"></div>
+      <div class="col s12 m6 l8 card">
+        <div class="row card red lighten-1 admin-table-header-card">
+          <div class="s6">
+            <h3 class="title-text white-text" style="padding: 20px;">
+              Dashboard
+            </h3>
+          </div>
+          <div class="" style="margin-top: -50px; padding: 20px;">
+            <a class="waves-effect btn white grey-text text-darken-3 modal-trigger white ui-text" style="margin-right: 10px;" href="#new-user">New user</a>
+            <a class="waves-effect btn white grey-text text-darken-3 modal-trigger white ui-text" style="margin-right: 10px;" href="#new-problem">New problem</a>
+            <a class="waves-effect btn white grey-text text-darken-3 modal-trigger white ui-text" style="margin-right: 10px;" href="#submission-log">Submission log</a>
+            <a class="waves-effect btn white grey-text text-darken-3 modal-trigger white ui-text" href="#update-scores">Update scores</a>
+          </div>
+        </div>
+
+        <img class="hide-on-small-only" src="../resources/icons/search-icon.png" width="25px" style="margin-left: 15px; margin-bottom: -5px; display: inline-block">
+        <div class="input-field inline filter-field ui-text" 
+          style="display: inline-block; padding: 0 10px 0 10px; border-radius: 2.5px; width: 90%;">
+          <input id="filter-text" type="text">
+          <label style="margin-left: 10px;" for="filter-text">Filter Entries</label>
+        </div>
+
+        <div class="admin-table-card z-depth-2">
+          <div class="row white ">
+            <div class="col s12">
+              <ul class="tabs dashboard-tabs">
+                <li class="tab col s6"><a class="active ui-text" href="#users">Users</a></li>
+                <li class="tab col s6"><a class="ui-text" href="#problems">Problems</a></li>
+              </ul>
+            </div>
+            <div id="users" class="table-card col s12">
+              <table class="bordered user-table"></table>
+            </div>
+            <div id="problems" class="table-card col s12">
+              <table class="bordered problem-table"></table>
+            </div>
+          </div>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="new-user" class="modal register-user-modal">
+      <div class="modal-content">
+        <h4 class="title-text">New user</h4>
+        <p style="margin-bottom: 30px">Type in a username and password to register a new user.</p>
+
+        <div class="input-field new-username-input">
+          <input placeholder="Enter Username" id="username" type="text" class="validate ui-text">
+          <label for="username">username</label>
+        </div>
+  
+        <div class="input-field new-password-input">
+          <input placeholder="Enter Password" id="password" type="text" class="validate ui-text">
+          <label for="password">password</label>
+        </div>
+
+        <div class="input-field new-category-input">
+          <select id="category">
+            <option value="" selected>Select Category</option>
+            <option value="junior">Junior</option>
+            <option value="senior">Senior</option>
+          </select>
+          <label>Select User Category</label>
+        </div>
+      </div>
+
+      <br><br><br>
+
+      <div class="modal-footer">
+        <a href="#!" class="waves-effect waves-green btn-flat register-user-button ui-text">Register</a>
+        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
+      </div>
+    </div>
+
+    <div id="edit-user" class="modal edit-user-modal">
+      <div class="modal-content">
+        <h4 class="title-text">Edit User</h4>
+        <p style="margin-bottom: 30px">Leave the new password field blank if you do not want to change this.</p>
+  
+        <div class="input-field new-password-input">
+          <input placeholder="Enter New Password" id="edit-user-password" type="text" class="validate ui-text">
+          <label for="edit-user-password">New password</label>
+        </div>
+
+        <div class="input-field">
+          <select id="edit-user-status">
+            <option value="" selected>Select Status</option>
+            <option value="participating">Participating</option>
+            <option value="spectating">Spectating</option>
+            <option value="disqualified">Disqualified</option>
+          </select>
+          <label>Select User Status</label>
+        </div>
+
+        <div class="input-field">
+          <select id="edit-user-category">
+            <option value="" selected>Select Category</option>
+            <option value="junior">Junior</option>
+            <option value="senior">Senior</option>
+          </select>
+          <label>Select User Category</label>
+        </div>
+
+        <br><br><br>
+      </div>
+
+      <div id="edit-username" hidden></div>
+
+      <div class="modal-footer">
+        <a href="#!" class="waves-effect waves-green btn-flat edit-user-button ui-text">Update</a>
+        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
+      </div>
+    </div>
+
+    <div id="delete-user" class="modal delete-user-modal">
+      <div class="modal-content">
+        <h4 class="title-text">Delete User</h4>
+        <p style="margin-bottom: 30px">
+          <span class="red-text"><b>WARNING:</b></span> You are about to delete a user. This action cannot be undone.
+        </p>
+      </div>
+
+      <div id="delete-username" hidden></div>
+
+      <div class="modal-footer">
+        <a href="#!" class="waves-effect waves-green btn-flat delete-user-button ui-text">Confirm</a>
+        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
+      </div>
+    </div>
+
+    <div id="new-problem" class="modal register-problem-modal">
+      <div class="modal-content">
+        <h4 class="title-text">New problem</h4>
+        <p style="margin-bottom: 30px">Type in the problem details to register the problem in the database. To omit the tolerance, simply put 0. 
+          Otherwise, input a decimal value (for instance, 0.01 for 1% tolerance). The following are the valid answer formats: 314, 3.14, 3.14e2.</p>
+
+        <div class="input-field new-name-input">
+          <input placeholder="Enter Name" id="name" type="text" class="validate ui-text">
+          <label for="name">name</label>
+        </div>
+  
+        <div class="input-field new-code-input">
+          <input placeholder="Enter Code" id="code" type="text" class="validate ui-text">
+          <label for="code">code</label>
+        </div>
+  
+        <div class="input-field new-answer-input">
+          <input placeholder="Enter Answer" id="answer" type="text" class="validate ui-text">
+          <label for="answer">answer</label>
+        </div>
+  
+        <div class="input-field new-tolerance-input">
+          <input placeholder="Enter Tolerance" id="tolerance" type="text" class="validate ui-text">
+          <label for="tolerance">tolerance</label>
+        </div>  
+
+        <div class="input-field new-points-input">
+          <input placeholder="Enter Points" id="points" type="text" class="validate ui-text">
+          <label for="points">points</label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <a href="#!" class="waves-effect waves-green btn-flat ui-text register-problem-button">Register</a>
+        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
+      </div>
+    </div>
+
+    <div id="edit-problem" class="modal edit-problem-modal">
+      <div class="modal-content">
+        <h4 class="title-text">Edit Problem</h4>
+        <p style="margin-bottom: 30px">Leave any fields blank if you do not want to change them.</p>
+  
+        <div class="input-field new-code-input">
+          <input placeholder="Enter New Code" id="edit-problem-code" type="text" class="validate ui-text">
+          <label for="edit-problem-code">New code</label>
+        </div>
+
+        <div class="input-field new-answer-input">
+          <input placeholder="Enter New Answer" id="edit-problem-answer" type="text" class="validate ui-text">
+          <label for="edit-problem-answer">New answer</label>
+        </div>
+
+        <div class="input-field new-tolerance-input">
+          <input placeholder="Enter New Tolerance" id="edit-problem-tolerance" type="text" class="validate ui-text">
+          <label for="edit-problem-tolerance">New tolerance</label>
+        </div>
+
+        <div class="input-field new-points-input">
+          <input placeholder="Enter Points" id="edit-problem-points" type="text" class="validate ui-text">
+          <label for="edit-problem-points">New points</label>
+        </div>
+
+        <div class="input-field">
+          <select id="edit-problem-status">
+            <option value="">Select Status</option>
+            <option value="active">Active</option>
+            <option value="disabled">Disabled</option>
+          </select>
+          <label>Select Problem Status</label>
+        </div>
+
+        <br><br>
+      </div>
+
+      <div id="edit-problemname" hidden></div>
+
+      <div class="modal-footer">
+        <a href="#!" class="waves-effect waves-green btn-flat edit-problem-button ui-text">Update</a>
+        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
+      </div>
+    </div>
+
+    <div id="recheck-problem" class="modal recheck-problem-modal">
+      <div class="modal-content">
+        <h4 class="title-text">Recheck Problem</h4>
+        <p style="margin-bottom: 30px">
+          You are about to recheck a problem. Are you sure you want to do this? Also, how many corrections do we have gdi -_-
+        </p>
+      </div>
+
+      <div id="recheck-problemname" hidden></div>
+
+      <div class="modal-footer">
+        <a href="#!" class="waves-effect waves-green btn-flat recheck-problem-button ui-text">Confirm</a>
+        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
+      </div>
+    </div>
+
+    <div id="delete-problem" class="modal delete-problem-modal">
+      <div class="modal-content">
+        <h4 class="title-text">Delete Problem</h4>
+        <p style="margin-bottom: 30px">
+          <span class="red-text"><b>WARNING:</b></span> You are about to delete a problem. This action cannot be undone.
+        </p>
+      </div>
+
+      <div id="delete-problemname" hidden></div>
+
+      <div class="modal-footer">
+        <a href="#!" class="waves-effect waves-green btn-flat delete-problem-button ui-text">Confirm</a>
+        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
+      </div>
+    </div>
+
+    <div id="submission-log" class="modal submission-log-modal">
+      <div class="modal-content">
+        <h4 class="title-text">Download submission log</h4>
+        <p style="margin-bottom: 30px">Are you sure you want to download a copy of the submission log?</p>
+      </div>
+
+      <div class="modal-footer">
+        <a href="#!" class="waves-effect waves-green btn-flat submission-log-button ui-text">Download</a>
+        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
+      </div>
+    </div>
+
+    <div id="update-scores" class="modal update-scores-modal">
+      <div class="modal-content">
+        <h4 class="title-text">Update scores</h4>
+        <p style="margin-bottom: 30px">The server will compute the actual scores of the participants; they will not yet be displayed.</p>
+      </div>
+
+      <div class="modal-footer">
+        <a href="#!" class="waves-effect waves-green btn-flat update-scores-button ui-text">Update</a>
+        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
+      </div>
+    </div>
+  </body>
+
+  <script src="./utils/js/regex"></script>
+  <script src="./utils/js/header"></script>
+  <script src="./utils/js/answer"></script>
+  <script src="./utils/js/xhr"></script>
+  <script src="./dashboard/js"></script>
+</html>

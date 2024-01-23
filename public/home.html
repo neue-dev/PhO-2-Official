@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PhO&#178;</title>
+
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Manrope|Staatliches|Lexend" rel="stylesheet">
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!-- Overrides -->
+    <style type="text/css">
+      .col.login-card {
+        min-height: 100vh;
+      }
+      
+      .col.content-card {
+        min-height: 100vh;
+        padding:0;
+      }
+
+      .full-vh-height {
+        min-height: 100vh;
+      }
+
+      body {
+        overflow-y: hidden;
+      }
+
+      html {
+        font-family: Manrope;
+      }
+
+      .title-text {
+        font-family: Staatliches;
+      }
+
+      .ui-text {
+        font-family: Lexend;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="row">
+
+      <div class="col s12 m4 valign-wrapper blue-grey lighten-2 login-card">
+        <div class="container">
+          <div class="card white">
+            <div class="card-content blue-grey-text text-darken-2">
+              <span class="card-title title-text"><h3>Login to PhO&#178;</h3></span>
+              <p>Welcome to the official PhO&#178; website! Already have an account? Log in here!</p><br>
+              
+              <div class="input-field username-input">
+                <input placeholder="Enter Username" id="username" type="text" class="validate ui-text">
+                <label for="username">username</label>
+              </div>
+
+              <div class="input-field password-input">
+                <input placeholder="Enter Password" id="password" type="password" class="validate ui-text">
+                <label for="username">password</label>
+              </div>
+
+              <div class="container">
+                <img class="responsive-img" src="./pho-2-logo.png">
+              </div>
+            </div>
+            <div class="card-action blue-grey">
+              <a class="waves-effect btn white grey-text text-darken-3 ui-text login-button" href="#!">login</a>
+            </div>
+
+            <div id="login" class="modal login-modal">
+              <div class="modal-content">
+                <h4 class="title-text">Invalid Login Attempt</h4>
+                <p>Please make sure your username and password are correct.</p>
+              </div>
+              <div class="modal-footer">
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat ui-text">Okay</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col s0 m8 content-card">
+        <div class="carousel carousel-slider center full-vh-height main-carousel">
+          <div class="carousel-fixed-item center">
+            <a class="btn waves-effect white grey-text text-darken-3 main-carousel-button ui-text">Toggle</a>
+          </div>
+          <a class="carousel-item blue-grey lighten-1" href="#about">
+            <div class="white-text left-align">
+              <div class="container">
+                <h1 class="title-text">About PhO&#178;</h1>
+                The Philippine Online Physics Olympiad is an competition hosted over the internet open to interested high school students in the Philippines.
+                This year's PhO&#178; marks the second iteration of the program. <br><br>
+                
+                PhO&#178; is a collaborative project handled by the Physics Youth Honor Society of the Philippine Science High School - Main Campus.
+              </div><br><br>
+
+              <div class="card row" style="margin-left: 200px; margin-right: 200px; padding: 25px;">
+                <img class="responsive-img col s12" width="250" src="./resources/images/pyhs-banner.png">
+              </div>
+            </div>
+          </a>
+          <a class="carousel-item blue-grey" href="#contacts">
+            <div class="white-text left-align">
+              <div class="container">
+                <h1 class="title-text">Contact Us</h1>
+
+                You may contact us through the following email address: onlinephysoly@pshs.edu.ph. For updates and further contact details,
+                refer to either the PYHS page or YMSAT page on facebook.
+                
+                <br><br><br>
+
+                <div class="row">
+                  <div class="col s6">
+                    <iframe src="./fb-embed-pyhs.html" style="display: block" width="100%" height="600px" frameBorder="0"></iframe>
+                  </div>
+                  <div class="col s6">
+                    <iframe src="./fb-embed-ymsat.html" style="display: block" width="100%" height="600px" frameBorder="0"></iframe>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const mainCarousel = document.querySelectorAll('.main-carousel')[0];
+      const mainCarouselButton = document.querySelectorAll('.main-carousel-button')[0];
+
+      mainCarouselButton.addEventListener('click', e => {
+        M.Carousel.getInstance(mainCarousel).next();
+      });
+
+      document.addEventListener('DOMContentLoaded', function() {
+        let elems = document.querySelectorAll('.carousel');
+        let instances = M.Carousel.init(elems, {
+          duration: 69,
+          fullWidth: !false,
+          indicators: true,
+        });
+      });
+    </script>
+
+    <script>
+      const loginButton = document.querySelectorAll('.login-button')[0];
+      const loginModal = document.querySelectorAll('.login-modal')[0];
+      const username = document.querySelector('#username');
+      const password = document.querySelector('#password');
+
+      document.addEventListener('DOMContentLoaded', function() {
+        let elems = document.querySelectorAll('.modal');
+        let instances = M.Modal.init(elems, {});
+      });
+
+      loginButton.addEventListener('click', e => {
+        if(!username.value || !password.value) {
+          return M.Modal.getInstance(loginModal).open();
+        }
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', './auth/login', true);
+        xhr.setRequestHeader('Accept', 'application/json');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({
+          username: username.value,
+          password: password.value,
+        }));
+
+        xhr.onreadystatechange = function () {
+          if(this.readyState != 4) return;
+
+          if(this.status == 200) {
+            let data = JSON.parse(this.responseText);
+
+            if(data.message == 'Login success.'){
+              location.href = './dashboard';
+            } else {
+              return M.Modal.getInstance(loginModal).open();
+            }
+          }
+        };
+      });
+    </script>
+  </body>
+</html>

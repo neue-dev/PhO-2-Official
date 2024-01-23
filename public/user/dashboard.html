@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PhO&#178; - Dashboard</title>
+
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Manrope|Staatliches|Lexend" rel="stylesheet">
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!-- Overrides -->
+    <style type="text/css">
+      .full-vh-height {
+        min-height: 100vh;
+      }
+
+      body {
+        overflow-y: hidden;
+      }
+
+      html {
+        font-family: Manrope;
+      }
+
+      .nav-title {
+        display: inline-block;
+        height: 100%;
+        margin-left: 25px;
+        margin-top: -20px;
+      }
+
+      .nav-title-text {
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+      }
+
+      .main-content {
+        height: calc(100vh - 60px);
+        padding: 36px;
+      }
+
+      .user-table-header-card {
+        margin-top: -30px;
+      }
+
+      .user-table-card {
+        margin-left: 10px;
+        padding: 0;
+        max-height: calc(100vh - 400px);
+      }
+
+      .table-card {
+        padding: 0;
+        max-height: calc(100vh - 480px);
+        overflow-y: auto;
+      }
+
+      .problem-table>tr>td {
+        width: 100px;
+      }
+
+      .submission-table>tr>td {
+        width: 100px;
+      }
+
+      .title-text {
+        font-family: Staatliches;
+      }
+
+      .ui-text {
+        font-family: Lexend;
+      }
+
+      #toast-container {
+        top: auto !important;
+        right: auto !important;
+        bottom: 5%;
+        left: 70%;  
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="blue-grey">
+      <div class="nav-wrapper">
+        <div class="nav-title title-text">
+          <h3 class="nav-title-text">
+            <span class="hide-on-med-and-down">Philippine Online Physics Olympiad</span>
+            <span class="hide-on-large-only">PhO&#178;</span>
+          </h3>
+        </div>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><a href="./problems" class="ui-text" >Problems</a></li>
+          <li><a href="./dashboard" class="ui-text">Dashboard</a></li>
+          <li><a href="./leaderboard" class="ui-text">Leaderboard</a></li>
+          <li><a href="#" class="ui-text logout-button">Logout</a></li>
+        </ul>
+
+        <ul id="slide-out" class="sidenav">
+          <br>
+          <li><a class="subheader ui-text">MENU</a></li>
+          <li><a href="./problems" class="ui-text">Problems</a></li>
+          <li><a href="./dashboard" class="ui-text">Dashboard</a></li>
+          <li><a href="./leaderboard" class="ui-text">Leaderboard</a></li>
+          <li><div class="divider" ></div></li>
+          <li><a class="waves-effect ui-text logout-button" href="#">Logout</a></li>
+        </ul>
+        <a href="#" data-target="slide-out" class="sidenav-trigger nav-mobile-alt-trigger">
+          <h4 class="material-icons" style="margin-top: 15px;">&#x2630;</h4>
+        </a>
+      </div>
+    </nav>
+
+    <div class="main-content row">
+      <div class="col s0 m4 l3 card hide-on-small-only">
+        <div class="container">
+          <h2 class="title-text">
+            Welcome to PhO&#178;!
+          </h2>
+
+          <p>
+            This dashboard displays your's team's progress, and is also where you can submit answers to problems during the duration of the contest.
+          </p>
+
+          <div class="container">
+            <img class="responsive-img" src="./pho-2-logo.png">
+          </div>
+
+          <div class="center-align">
+            <div class="timer"></div>
+          </div>
+          <br>
+        </div>
+      </div>
+      <div class="col s0 m1 l1"></div>
+      <div class="col s12 m6 l8 card">
+        <!-- <div class="row card blue-grey user-table-header-card">
+          <div class="s6">
+            <h3 class="title-text white-text" style="padding: 20px;">
+              Dashboard
+            </h3>
+          </div>
+          <div class="s6" style="margin-top: -50px; padding: 20px;">
+            <a class="waves-effect btn white grey-text text-darken-3 modal-trigger ui-text" href="#submit-answer-modal">Submit Answer</a>
+          </div>
+        </div>
+
+        <img class="hide-on-small-only" src="../resources/icons/search-icon.png" width="25px" style="margin-left: 15px; margin-bottom: -5px; display: inline-block">
+        <div class="input-field inline filter-field ui-text" 
+          style="display: inline-block; padding: 0 10px 0 10px; border-radius: 2.5px; width: 90%;">
+          <input id="filter-text" type="text">
+          <label style="margin-left: 10px;" for="filter-text">Filter Entries</label>
+        </div>
+
+        <div class="user-table-card z-depth-2">
+          <div class="row white ">
+            <div class="col s12">
+              <ul class="tabs dashboard-tabs">
+                <li class="tab col s6"><a class="active ui-text" href="#problems">Problems</a></li>
+                <li class="tab col s6"><a class="ui-text" href="#submissions">Submissions</a></li>
+              </ul>
+            </div>
+            <div id="problems" class="table-card col s12">
+              <table class="bordered problem-table"></table>
+            </div>
+            <div id="submissions" class="table-card col s12">
+              <table class="bordered submission-table"></table>
+            </div>
+          </div>
+          </table>
+        </div> -->
+
+        <iframe src="https://forms.gle/HbNiQy9sAqdP5HY48" width="100%" height="640px" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+      </div>
+    </div>
+
+    <div id="submit-answer-modal" class="modal">
+      <div class="modal-content">
+        <div class="submit-answer-content">
+          <h4 class="title-text">Submit Answer</h4>
+          <p style="margin-bottom: 30px">Select a problem to submit an answer to. Make sure that the format of the answer is valid. Any of the following formats work: </p>
+
+          <div class="input-field col s12">
+            <input placeholder="Enter Problem Name or Code" type="text" id="submit-problem" class="autocomplete">
+            <label style="margin-left: -12px" for="submit-problem">problem</label>
+          </div>
+
+          <div class="input-field submit-answer-input">
+            <input placeholder="Enter Answer" id="submit-answer" type="text" class="validate ui-text">
+            <label for="submit-answer">answer</label>
+          </div>
+        </div>
+        <div class="submit-answer-cooldown" hidden>
+          Please wait for the 5-minute cooldown to end before submitting another answer.<br><br>
+          
+          <h1 class="row center-align">
+            <b><span class="cooldown red-text"></span></b>
+          </h1>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="waves-effect submit-button waves-green btn-flat ui-text">Submit</a>
+        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
+      </div>
+    </div>
+    
+    <script src="./utils/js/xhr"></script>
+    <script src="./utils/js/regex"></script>
+    <script src="./utils/js/answer"></script>
+    <script src="./utils/js/header"></script>
+    <script src="./dashboard/js"></script>
+  </body>
+</html>
