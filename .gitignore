@@ -2,6 +2,6 @@
 .note.txt
 .TODO.txt
 
-# Config and access files
+# Config files and modules
 .env
-admin-ec2-key.pem
+node_modules/
