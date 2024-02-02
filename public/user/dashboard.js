@@ -227,8 +227,10 @@ const loadUserData = () => {
     DATA.userData.username = data.username;
     DATA.userData.lastSubmit = data.lastSubmit || 0;
     DATA.userData.cooldown = data.cooldown;
-    DATA.userData.contestStart = data.contestStart;
-    DATA.userData.contestEnd = data.contestEnd;
+    DATA.userData.contestElimsStart = data.contestElimsStart;
+    DATA.userData.contestElimsEnd = data.contestElimsEnd;
+    DATA.userData.contestFinalsStart = data.contestFinalsStart;
+    DATA.userData.contestFinalsEnd = data.contestFinalsEnd;
   });
 
   updateInterval();
@@ -257,10 +259,12 @@ const updateInterval = () => {
 
   // Timer
   let now = parseInt(Date.now());
-  let start = localStorage.getItem('start') || 0;
-  let end = localStorage.getItem('end') || 0;
-  localStorage.setItem('start', DATA.userData.contestStart || localStorage.getItem('start'));
-  localStorage.setItem('end', DATA.userData.contestEnd || localStorage.getItem('end'));
+  let start = localStorage.getItem('elimsStart') || 0;
+  let end = localStorage.getItem('elimsEnd') || 0;
+  localStorage.setItem('elimsStart', DATA.userData.contestElimsStart || localStorage.getItem('elimsStart'));
+  localStorage.setItem('elimsEnd', DATA.userData.contestElimsEnd || localStorage.getItem('elimsEnd'));
+  localStorage.setItem('finalsStart', DATA.userData.contestFinalsStart || localStorage.getItem('finalsStart'));
+  localStorage.setItem('finalsEnd', DATA.userData.contestFinalsEnd || localStorage.getItem('finalsEnd'));
 
   if(!start && !end) return;
 

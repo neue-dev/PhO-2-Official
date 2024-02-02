@@ -51,8 +51,10 @@ router.post('/data', (req, res) => {
       username: data.username,
       lastSubmit: data.lastSubmit,
       cooldown: process.env.SUBMISSION_COOLDOWN,
-      contestStart: process.env.CONTEST_START,
-      contestEnd: process.env.CONTEST_END,
+      contestElimsStart: process.env.CONTEST_ELIMS_START,
+      contestElimsEnd: process.env.CONTEST_ELIMS_END,
+      contestFinalsStart: process.env.CONTEST_FINALS_START,
+      contestFinalsEnd: process.env.CONTEST_FINALS_END,
     });
   });
 });

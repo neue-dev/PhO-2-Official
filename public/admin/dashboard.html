@@ -63,6 +63,10 @@
         overflow-y: auto;
       }
 
+      .config-table>tr>td {
+        width: 100px;
+      }
+
       .user-table>tr>td {
         width: 100px;
       }
@@ -98,7 +102,8 @@
           </h3>
         </div>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li><a href="./problems" class="ui-text" >Problems</a></li>
+          <li><a href="./problems" class="ui-text">Problems</a></li>
+          <li><a href="./finals" class="ui-text">Finals</a></li>
           <li><a href="./dashboard" class="ui-text">Dashboard</a></li>
           <li><a href="./leaderboard" class="ui-text">Leaderboard</a></li>
           <li><a href="#" class="ui-text logout-button">Logout</a></li>
@@ -108,6 +113,7 @@
           <br>
           <li><a class="subheader ui-text">MENU</a></li>
           <li><a href="./problems" class="ui-text">Problems</a></li>
+          <li><a href="./finals" class="ui-text">Finals</a></li>
           <li><a href="./dashboard" class="ui-text">Dashboard</a></li>
           <li><a href="./leaderboard" class="ui-text">Leaderboard</a></li>
           <li><div class="divider" ></div></li>
@@ -164,9 +170,13 @@
           <div class="row white ">
             <div class="col s12">
               <ul class="tabs dashboard-tabs">
-                <li class="tab col s6"><a class="active ui-text" href="#users">Users</a></li>
-                <li class="tab col s6"><a class="ui-text" href="#problems">Problems</a></li>
+                <li class="tab col s4"><a class="active ui-text" href="#config">Config</a></li>
+                <li class="tab col s4"><a class="ui-text" href="#users">Users</a></li>
+                <li class="tab col s4"><a class="ui-text" href="#problems">Problems</a></li>
               </ul>
+            </div>
+            <div id="config" class="table-card col s12">
+              <table class="bordered config-table"></table>
             </div>
             <div id="users" class="table-card col s12">
               <table class="bordered user-table"></table>
@@ -177,6 +187,27 @@
           </div>
           </table>
         </div>
+      </div>
+    </div>
+
+    <div id="edit-config" class="modal edit-config-modal">
+      <div class="modal-content">
+        <h4 class="title-text">Edit Config</h4>
+        <p style="margin-bottom: 30px">Enter a new value for the following parameter.</p>
+
+        <div class="input-field new-value-input">
+          <input placeholder="Enter New Value" id="edit-config-value" type="text" class="validate ui-text">
+          <label for="edit-config-value">New value</label>
+        </div>
+
+        <br><br><br>
+      </div>
+
+      <div id="edit-config-key" hidden></div>
+
+      <div class="modal-footer">
+        <a href="#!" class="waves-effect waves-green btn-flat edit-config-button ui-text">Update</a>
+        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
       </div>
     </div>
 

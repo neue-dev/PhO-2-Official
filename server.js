@@ -11,9 +11,18 @@ const { auth } = require('./middleware/auth');
 const identify = require('./middleware/identify');
 
 //
-//* Set up the database
+//* Some other important constants
 //
 const database_url = process.env.DATABASE_URL
+const server_port = process.env.SERVER_PORT
+const elims_start = process.env.CONTEST_ELIMS_START
+const elims_end = process.env.CONTEST_ELIMS_END
+const finals_start = process.env.CONTEST_FINALS_START
+const finals_end = process.env.CONTEST_FINALS_START
+
+//
+//* Set up the database
+//
 mongoose.connect(database_url);
 mongoose.set('strictQuery', false);
 const database = mongoose.connection;
@@ -30,8 +39,8 @@ database.once('connected', () => {
 //* Set up the server
 //
 const app = express();
-const server = app.listen(3000, () => { 
-  console.log('Server opened on port 3000.')
+const server = app.listen(server_port, () => { 
+  console.log(`Server opened on port ${server_port}.`)
 });
 
 app.use(express.json());
@@ -58,7 +67,34 @@ app.get('/problems', (req, res) => {
       .then(userData => {
         if(!userData)
           return res.sendFile('./public/home-redirect.html', { root: __dirname });
-        return res.sendFile('./public/problems.html', { root: __dirname });
+
+        // If it's during the elims
+        if(Date.now() > elims_start && Date.now() < elims_end)
+          return res.sendFile('./public/problems.html', { root: __dirname });
+
+        return res.sendFile('./public/home-redirect.html', { root: __dirname });
+      });
+  } else {
+    // Isnt logged in
+    return res.sendFile('./public/home-redirect.html', { root: __dirname });
+  }
+});
+
+app.get('/finals', (req, res) => {
+  const user = auth(req, res);
+  if(user){
+
+    // Look for user
+    identify(user._id)
+      .then(userData => {
+        if(!userData)
+          return res.sendFile('./public/home-redirect.html', { root: __dirname });
+
+        // If it's during the finals
+        if(Date.now() > finals_start && Date.now() < finals_end)
+          return res.sendFile('./public/finals.html', { root: __dirname });
+
+        return res.sendFile('./public/home-redirect.html', { root: __dirname });
       });
   } else {
     // Isnt logged in

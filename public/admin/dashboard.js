@@ -1,4 +1,5 @@
 const DATA = { users: [], problems: [] };
+const config_table = document.querySelectorAll('.config-table')[0];
 const user_table = document.querySelectorAll('.user-table')[0];
 const problem_table = document.querySelectorAll('.problem-table')[0];
 
@@ -9,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
   M.FormSelect.init(document.querySelectorAll('select'), {});
   M.Tabs.init(document.querySelectorAll('.dashboard-tabs'), {});
   
+  loadConfig();
   loadUsers();
   loadProblems();
 });
@@ -27,8 +29,19 @@ const filterText = document.querySelector('#filter-text');
 // });
 
 filterText.addEventListener('input', e => {
+  let config_entries = config_table.children;
   let user_entries = user_table.children;
   let problem_entries = problem_table.children;
+
+  for(let i = 0; i < config_entries.length; i++) {
+    let config_entry = config_entries[i];
+
+    if (!config_entry.children[0].children[0].textContent.toLowerCase().includes(filterText.value.toLowerCase())){
+      config_entry.style.display = 'none';
+    } else {
+      config_entry.style.display = '';
+    }
+  }
 
   for(let i = 0; i < user_entries.length; i++) {
     let user_entry = user_entries[i];
@@ -91,6 +104,36 @@ downloadButton.addEventListener('click', e => {
 updateScoresButton.addEventListener('click', e => {
   createXHR('./admin/updatescores', 'POST', {}, () => {
     M.Modal.getInstance(updateScoresModal).close();
+  });
+});
+
+const editConfigModal = document.querySelectorAll('.edit-config-modal')[0];
+const editConfigButton = document.querySelectorAll('.edit-config-button')[0];
+const editKey = document.querySelector('#edit-config-key');
+const editValue = document.querySelector('#edit-config-value');
+
+editConfigButton.addEventListener('click', e => {
+  if(!editKey.textContent) {
+    return M.toast({html: 'No selected config parameter.'});
+  }
+
+  // Edit user request
+  createXHR('./admin/editconfig', 'POST',
+  {
+    key: editKey.textContent,
+    value: (function() {
+      switch(editValue.type) {
+        case 'datetime-local':
+          return (new Date(editValue.value)).getTime();
+        default:
+          return editValue.value || ''; 
+      }
+    })(),
+  },
+  () => {
+    editValue.value = '';
+    loadConfig();
+    M.Modal.getInstance(editConfigModal).close();
   });
 });
 
@@ -309,6 +352,59 @@ recheckProblemButton.addEventListener('click', e => {
 });
 
 // Table loading functions
+const loadConfig = () => {
+  createXHR('./admin/configlist', 'POST', {}, data => {
+    DATA.config = [];
+    data.config.forEach(configParameter => DATA.config.push(configParameter));
+    displayConfig(config_table);
+  });
+}
+
+const displayConfig = config_table => {
+  config_table.innerHTML = '';
+
+  DATA.config.forEach(configParameter => {
+    let config_element = document.createElement('tr');
+    let config_key = document.createElement('td');
+    let config_value = document.createElement('td');
+    let config_actions = document.createElement('td');
+
+    config_key.innerHTML = `<b>${configParameter.key}</b>`;
+    config_value.innerHTML = `${(function(){
+      switch(configParameter.type) {
+        case 'date':
+          editValue.type = 'datetime-local';
+          return (new Date(parseInt(configParameter.value))).toString().split(' ').slice(1, 5).join(' ');
+        case 'url':
+          editValue.type = 'url';
+          return `<a href="${configParameter.value}" target="_blank">${configParameter.key} 
+            <br><span style="opacity: 0.5; font-size: 0.8em;">[<i>${configParameter.value}</i>]</span></a>`;
+        default:
+          editValue.type = 'text';
+          return configParameter.value;
+      }
+    })()}`;
+
+    let editConfig = document.querySelector('#edit-config');
+    config_actions.innerHTML = '<a class="waves-effect btn modal-trigger white grey-text text-darken-3 ui-text" href="#edit-config">edit</a>';
+    config_actions.addEventListener('click', e => (editConfig.children[0].children[0].innerHTML = 
+      `Edit Parameter - <span class="red-text text-lighten-1">${configParameter.key}</span>`) && 
+      (editKey.textContent = configParameter.key) &&
+      (editValue.type = (function() {
+        switch(configParameter.type) {
+          case 'date': return 'datetime-local';
+          case 'url': return 'url';
+          default: return 'text';
+        }
+      })()));
+
+    config_element.appendChild(config_key);
+    config_element.appendChild(config_value);
+    config_element.appendChild(config_actions);
+    config_table.appendChild(config_element);
+  });
+}
+
 const loadUsers = () => {
   createXHR('./admin/userlist', 'POST', {}, data => {
     DATA.users = [];

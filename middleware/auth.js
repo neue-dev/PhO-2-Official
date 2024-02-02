@@ -2,11 +2,14 @@ require('dotenv').config();
 
 const jwt = require('jsonwebtoken');
 
+const access_token_secret = process.env.ACCESS_TOKEN_SECRET;
+const refresh_token_secret = process.env.REFRESH_TOKEN_SECRET;
+
 //* Token creation
 const generate = function(user){
   return jwt.sign(
     { _id: user._id, }, 
-    process.env.ACCESS_TOKEN_SECRET,
+    access_token_secret,
     // { expiresIn: '15m' }
   );
 }
@@ -15,7 +18,7 @@ const generate = function(user){
 const refresh = function(user){
   return jwt.sign(
     { _id: user._id, }, 
-    process.env.REFRESH_TOKEN_SECRET,
+    refresh_token_secret,
   );
 }
 
@@ -34,7 +37,7 @@ const auth = (req, res) => {
 
   // Verify token
   try {
-    const user = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+    const user = jwt.verify(accessToken, access_token_secret);
     req.user = user;
     
     return user;

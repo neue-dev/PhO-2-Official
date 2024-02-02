@@ -8,13 +8,21 @@ const router = express.Router();
 const { auth } = require('../middleware/auth');
 const checkAnswer = require('../middleware/check');
 
-//* Models and Constants
+//* Models
 const User = require('../models/user');
+const Config = require('../models/config');
 const Problem = require('../models/problem');
 const Submission = require('../models/submission');
 const Score = require('../models/score');
 const submission = require('../models/submission');
+
+//* Constants
 const saltRounds = 10;
+const elims_start = process.env.CONTEST_ELIMS_START;
+const elims_end = process.env.CONTEST_ELIMS_END;
+const finals_start = process.env.CONTEST_FINALS_START;
+const finals_end = process.env.CONTEST_FINALS_END;
+
 
 //* Admin Authentication
 const admin = function(req, res, callback){
@@ -155,7 +163,6 @@ router.post('/edituser', (req, res) => {
   })
 });
 
-
 router.post('/deleteuser', (req, res) => {
   admin(req, res, async () => {
     const { username } = req.body;
@@ -196,6 +203,50 @@ router.post('/userlist', (req, res) => {
       users: data.users,
     });
   });
+});
+
+router.post('/configlist', (req, res) => {
+  admin(req, res, async () => {
+    
+    // Retrieve data from database and send to user
+    const config = await Config.find();
+    const data = { config: [] };
+
+    config.forEach(configParameter => { 
+      data.config.push(configParameter) 
+    });
+
+    res.json({
+      config: data.config,
+    });
+  });
+});
+
+router.post('/editconfig', (req, res) => {
+  admin(req, res, async () => {
+    const { key, value } = req.body;
+    const configParameter = await Config.findOne({ key: key });
+
+    // Check if config parameter exists
+    if(configParameter) {
+      try {
+        await Config.updateOne(
+          { key: key },
+          { value: value });
+        return res.status(200).json({
+          message: 'Config parameter edited successfully.',
+        });
+      } catch(err) {
+        return res.json({
+          error: 'Something went wrong. Try again.'
+        }).status(500);
+      }
+    } else {
+      return res.json({
+        error: 'Config parameter to be edited does not exist.'
+      }).status(401);
+    }
+  })
 });
 
 router.post('/registerproblem', (req, res) => {
@@ -473,10 +524,10 @@ router.post('/updatescores', (req, res) => {
       userids.forEach(user => {
         if(!newScores[user]) newScores[user] = 0;
         if(crossCheckTable[problem][user].verdict){
-          if(crossCheckTable[problem][user].timestamp > process.env.CONTEST_START && crossCheckTable[problem][user].timestamp < process.env.CONTEST_END){
+          if(crossCheckTable[problem][user].timestamp > process.env.CONTEST_ELIMS_START && crossCheckTable[problem][user].timestamp < process.env.CONTEST_ELIMS_END){
             newScores[user] += baseScores[problem] * 
               Math.pow(2, -crossCheckTable[problem][user].wrong / 2) * 
-              Math.pow(2, -(crossCheckTable[problem][user].timestamp - process.env.CONTEST_START) / (process.env.CONTEST_END - process.env.CONTEST_START)) * 
+              Math.pow(2, -(crossCheckTable[problem][user].timestamp - process.env.CONTEST_ELIMS_START) / (process.env.CONTEST_ELIMS_END - process.env.CONTEST_ELIMS_START)) * 
               Math.pow(2, 2 * problemNumbers[problem] / 30);
 
             console.log(crossCheckTable[problem][user].timestamp);
