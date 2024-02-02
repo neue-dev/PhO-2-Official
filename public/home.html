@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>(PhO)&#178;</title>
+    <link rel="icon" type="image/x-icon" href="./pho-2-ico">
 
     <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Manrope|Staatliches|Lexend" rel="stylesheet">
@@ -28,6 +29,10 @@
 
       .full-vh-height {
         min-height: 100vh;
+      }
+
+      .logo-container {
+        width: 100%;
       }
 
       body {
@@ -55,9 +60,13 @@
         <div class="container">
           <div class="card white">
             <div class="card-content blue-grey-text text-darken-2">
-              <span class="card-title title-text"><h3>Login to (PhO)&#178;</h3></span>
+              <div class="container logo-container">
+                <img class="responsive-img" src="./pho-2-logo">
+              </div>
+
+              <span class="card-title title-text"><h3>Login</h3></span>
               <p>Welcome to the official (PhO)&#178; website! Already have an account? Log in here!</p><br>
-              
+
               <div class="input-field username-input">
                 <input placeholder="Enter Username" id="username" type="text" class="validate ui-text">
                 <label for="username">username</label>
@@ -68,9 +77,9 @@
                 <label for="username">password</label>
               </div>
 
-              <div class="container">
-                <img class="responsive-img" src="./pho-2-logo.png">
-              </div>
+              <!-- <div class="container">
+                <img class="responsive-img" src="./pho-2-logo">
+              </div> -->
             </div>
             <div class="card-action blue-grey">
               <a class="waves-effect btn white grey-text text-darken-3 ui-text login-button" href="#!">login</a>
@@ -192,7 +201,5 @@
         };
       });
     </script>
-
-    <script src="./utils/js/config"></script>
   </body>
 </html>

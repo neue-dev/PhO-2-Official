@@ -225,6 +225,7 @@ app.get('/navbar', (req, res) => {
   }
 })
 
+// Some redirects for the javascript files
 app.get('/utils/js/xhr', (req, res) => {
   res.sendFile('./public/utils/xhr.js', { root: __dirname });
 })
@@ -243,4 +244,17 @@ app.get('/utils/js/header', (req, res) => {
 
 app.get('/utils/js/config', (req, res) => {
   res.sendFile('./public/utils/config.js', { root: __dirname });
+})
+
+// The official logos
+app.get('/pho-2-logo', (req, res) => {
+  res.sendFile('./public/resources/images/pho-2-official-logo.png', { root: __dirname });
+})
+
+app.get('/pho-2-icon', (req, res) => {
+  res.sendFile('./public/resources/images/pho-2-official-icon.png', { root: __dirname });
+})
+
+app.get('/pho-2-ico', (req, res) => {
+  res.sendFile('./public/resources/images/pho-2-official-icon.ico', { root: __dirname });
 })
