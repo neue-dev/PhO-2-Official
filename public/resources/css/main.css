@@ -1,0 +1,6 @@
+/* The main css file for general stylings */
+
+@font-face {
+  font-family: titleFont;
+  src: url(/resources/fonts/glacial-indifference.bold.otf);
+}

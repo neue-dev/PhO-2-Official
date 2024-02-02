@@ -48,6 +48,10 @@
       .main-content {
         height: calc(100vh - 60px);
       }
+      
+      .logo-container {
+        width: 40vh;
+      }
 
       .title-text {
         font-family: titleFont;
@@ -92,9 +96,17 @@
       </div>
     </nav>
 
-    <script src="./utils/js/xhr"></script>
-    <script src="./utils/js/header"></script>
-    <script src="./utils/js/config"></script>
+    <div>
+      <br><br><br><br><br><br>
+
+      <div class="container logo-container">
+        <img class="responsive-img" src="./pho-2-icon">
+      </div>
+      <h5 class="center-align">
+        The final problems are currently not available.
+      </h5>
+    </div>
+
     <script src="./navbar"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
@@ -107,7 +119,5 @@
         createXHR('./auth/logout', 'POST', {}, () => { location.href = '/' });
       }));
     </script>
-
-    <iframe class="main-content problems" width="100%" height="100vh" src="{{CONTEST_FINALS_URL}}">
   </body>
 </html>

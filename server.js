@@ -89,7 +89,7 @@ app.get('/problems', (req, res) => {
           return;
         }
 
-        return res.sendFile('./public/home-redirect.html', { root: __dirname });
+        return res.sendFile('./public/err-pages/problems-unavailable.html', { root: __dirname });
       });
   } else {
     // Isnt logged in
@@ -118,7 +118,7 @@ app.get('/finals', (req, res) => {
           return;
         }
 
-        return res.sendFile('./public/home-redirect.html', { root: __dirname });
+        return res.sendFile('./public/err-pages/finals-unavailable.html', { root: __dirname });
       });
   } else {
     // Isnt logged in
@@ -257,4 +257,9 @@ app.get('/pho-2-icon', (req, res) => {
 
 app.get('/pho-2-ico', (req, res) => {
   res.sendFile('./public/resources/images/pho-2-official-icon.ico', { root: __dirname });
+})
+
+// Other resources
+app.get('/utils/css/main', (req, res) => {
+  res.sendFile('./public/resources/css/main.css', { root: __dirname });
 })
