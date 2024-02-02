@@ -373,13 +373,14 @@ const displayConfig = config_table => {
     config_value.innerHTML = `${(function(){
       switch(configParameter.type) {
         case 'date':
-          editValue.type = 'datetime-local';
           return `${(new Date(parseInt(configParameter.value))).toString().split(' ').slice(1, 5).join(' ')}
             <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>${configParameter.value}</i>]</span>`;
         case 'url':
-          editValue.type = 'url';
           return `<a href="${configParameter.value}" target="_blank">${configParameter.key} 
             <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>${configParameter.value}</i>]</span></a>`;
+        case 'duration':
+          return `${Math.floor(configParameter.value / 1000 / 60)}m ${Math.floor(configParameter.value) / 1000 % 60}s
+            <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>${configParameter.value}</i>]</span>`;
         default:
           editValue.type = 'text';
           return configParameter.value;

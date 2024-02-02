@@ -226,11 +226,6 @@ const loadUserData = () => {
   createXHR('./user/data', 'POST', {}, data => {
     DATA.userData.username = data.username;
     DATA.userData.lastSubmit = data.lastSubmit || 0;
-    DATA.userData.cooldown = data.cooldown;
-    DATA.userData.contestElimsStart = data.contestElimsStart;
-    DATA.userData.contestElimsEnd = data.contestElimsEnd;
-    DATA.userData.contestFinalsStart = data.contestFinalsStart;
-    DATA.userData.contestFinalsEnd = data.contestFinalsEnd;
   });
 
   updateInterval();
@@ -239,10 +234,23 @@ const loadUserData = () => {
   }
 }
 
+const displayTime = interval => {
+  return `
+    <pre style="display: inline-block"><b>${Math.floor(interval / 60 / 60 / 24 / 1000)} &Tab;</b></pre> 
+      <span style="font-size: 0.75em;">days</span><br>
+    <pre style="display: inline-block"><b>${(Math.floor(interval / 60 / 60 / 1000) % 24 < 10 ? '0' : '') + Math.floor(interval / 60 / 60 / 1000) % 24} &Tab;</b></pre> 
+      <span style="font-size: 0.75em">hrs</span><br>
+    <pre style="display: inline-block"><b>${(Math.floor(interval / 60 / 1000) % 60 < 10 ? '0': '') + Math.floor(interval / 60 / 1000) % 60} &Tab;</b></pre> 
+      <span style="font-size: 0.75em">mins</span><br>
+    <pre style="display: inline-block"><b>${(Math.floor(interval / 1000) % 60 < 10 ? '0' : '') + Math.floor(interval / 1000) % 60} &Tab;</b></pre> 
+      <span style="font-size: 0.75em">secs</span><br>`;
+}
+
 const updateInterval = () => {
+
   // Cooldown
   localStorage.setItem('then', DATA.userData.lastSubmit);
-  let interval = DATA.userData.cooldown - (parseInt(Date.now()) - localStorage.getItem('then'));
+  let interval = parseInt(localStorage.getItem('SUBMISSION_COOLDOWN')) - (parseInt(Date.now()) - localStorage.getItem('then'));
 
   submitAnswerContent.hidden = true;
   submitAnswerCooldown.hidden = false;
@@ -259,31 +267,41 @@ const updateInterval = () => {
 
   // Timer
   let now = parseInt(Date.now());
-  let start = localStorage.getItem('elimsStart') || 0;
-  let end = localStorage.getItem('elimsEnd') || 0;
-  localStorage.setItem('elimsStart', DATA.userData.contestElimsStart || localStorage.getItem('elimsStart'));
-  localStorage.setItem('elimsEnd', DATA.userData.contestElimsEnd || localStorage.getItem('elimsEnd'));
-  localStorage.setItem('finalsStart', DATA.userData.contestFinalsStart || localStorage.getItem('finalsStart'));
-  localStorage.setItem('finalsEnd', DATA.userData.contestFinalsEnd || localStorage.getItem('finalsEnd'));
+  let contest_elims_start = parseInt(localStorage.getItem('CONTEST_ELIMS_START'));
+  let contest_elims_end = parseInt(localStorage.getItem('CONTEST_ELIMS_END'));
+  let contest_finals_start = parseInt(localStorage.getItem('CONTEST_FINALS_START'));
+  let contest_finals_end = parseInt(localStorage.getItem('CONTEST_FINALS_END'));
 
-  if(!start && !end) return;
-
-  if(now < start)
-    return (interval => {timer.innerHTML = `<h2><b>
-      ${Math.floor(interval / 60 / 60 / 1000)}:
-      ${(Math.floor(interval / 60 / 1000) % 60 < 10 ? '0': '') + Math.floor(interval / 60 / 1000) % 60}:
-      ${(Math.floor(interval / 1000) % 60 < 10 ? '0' : '') + Math.floor(interval / 1000) % 60}</b></h1><br> UNTIL CONTEST START`})(start - now);
-
-  if(start < now && now < end)
-    return (interval => {timer.innerHTML = `<h2><b>
-      ${Math.floor(interval / 60 / 60 / 1000)}:
-      ${(Math.floor(interval / 60 / 1000) % 60 < 10 ? '0': '') + Math.floor(interval / 60 / 1000) % 60}:
-      ${(Math.floor(interval / 1000) % 60 < 10 ? '0' : '') + Math.floor(interval / 1000) % 60}</b></h1><br> UNTIL CONTEST END`})(end - now);
-
-  return (interval => {timer.innerHTML = `<h2><b>
-    ${Math.floor(interval / 60 / 60 / 1000)}:
-    ${(Math.floor(interval / 60 / 1000) % 60 < 10 ? '0': '') + Math.floor(interval / 60 / 1000) % 60}:
-    ${(Math.floor(interval / 1000) % 60 < 10 ? '0' : '') + Math.floor(interval / 1000) % 60}</b></h1><br> SINCE CONTEST END`})(now - end);
+  // The contest hasn't begun
+  if(now < contest_elims_start) {
+    timer.innerHTML = `
+      <h4>${displayTime(contest_elims_start - now)}</h4>
+      <p class="timer-label">BEFORE ELIMINATIONS BEGIN</p>`;
+  
+  // The eliminations are underway
+  } else if(contest_elims_start <= now && now < contest_elims_end) {
+    timer.innerHTML = `
+      <h4>${displayTime(contest_elims_end - now)}</h4>
+      <p class="timer-label">BEFORE ELIMINATIONS END</p>`;
+  
+  // The elims are done, waiting for finals
+  } else if(contest_elims_end <= now && now < contest_finals_start) {
+    timer.innerHTML = `
+      <h4>${displayTime(contest_finals_start - now)}</h4>
+      <p class="timer-label">BEFORE FINALS BEGIN</p>`;
+  
+  // The finals are underway
+  } else if(contest_finals_start <= now && now < contest_finals_end) {
+    timer.innerHTML = `
+      <h4>${displayTime(contest_finals_end - now)}</h4>
+      <p class="timer-label">BEFORE FINALS END</p>`;
+  
+  // The contest is done
+  } else {
+    timer.innerHTML = `
+      <h4>${displayTime(now - contest_finals_end)}</h4>
+      <p class="timer-label">SINCE THE CONTEST ENDED</p>`;
+  }
 }
 
 const logoutButton = document.querySelectorAll('.logout-button');

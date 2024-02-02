@@ -91,18 +91,12 @@
 
     <script src="./utils/js/xhr"></script>
     <script src="./utils/js/header"></script>
+    <script src="./utils/js/config"></script>
     <script src="./navbar"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         let elems = document.querySelectorAll('.sidenav');
         let instances = M.Sidenav.init(elems, {});
-
-        // Configure the contest config
-        createXHR('./user/configlist', 'POST', {}, data => { 
-          data.config.forEach(configParameter => {
-            localStorage.setItem(configParameter.key, configParameter.value);
-          });
-        });
       });
 
       const logoutButton = document.querySelectorAll('.logout-button');

@@ -51,11 +51,6 @@ router.post('/data', (req, res) => {
     res.json({
       username: data.username,
       lastSubmit: data.lastSubmit,
-      cooldown: process.env.SUBMISSION_COOLDOWN,
-      contestElimsStart: process.env.CONTEST_ELIMS_START,
-      contestElimsEnd: process.env.CONTEST_ELIMS_END,
-      contestFinalsStart: process.env.CONTEST_FINALS_START,
-      contestFinalsEnd: process.env.CONTEST_FINALS_END,
     });
   });
 });
@@ -148,23 +143,29 @@ router.post('/submit', (req, res) => {
     const problem = await Problem.findOne({ "code.number": code.number, "code.alpha": code.alpha });
     const answerKey = problem.answer;
     const tolerance = problem.tolerance;
-
+    
     if(!user)
       return res.json({
         message: "User does not exist.",
         error: "You cannot submit as a non-user.",
       }).status(401);
-
+    
     if((new Date()).getTime() - user.lastSubmit < parseInt(process.env.SUBMISSION_COOLDOWN))
       return res.json({
         message: "Cooldown insufficient.",
         error: "You can only submit in 5-minute intervals.",
       }).status(401);
 
-    if((new Date()).getTime() > process.env.CONTEST_END)
+    if((new Date()).getTime() < process.env.CONTEST_ELIMS_START)
       return res.json({
-        message: "Contest has already ended.",
-        error: "You can no longer submit after the contest has ended.",
+        message: "Eliminations have not started.",
+        error: "You must wait for the contest to start.",
+      }).status(401);
+
+    if((new Date()).getTime() > process.env.CONTEST_ELIMS_END)
+      return res.json({
+        message: "Eliminations have already ended.",
+        error: "You can no longer submit after the eliminations have ended.",
       }).status(401);
 
     if(!problem)

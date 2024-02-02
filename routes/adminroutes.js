@@ -18,11 +18,6 @@ const submission = require('../models/submission');
 
 //* Constants
 const saltRounds = 10;
-const elims_start = process.env.CONTEST_ELIMS_START;
-const elims_end = process.env.CONTEST_ELIMS_END;
-const finals_start = process.env.CONTEST_FINALS_START;
-const finals_end = process.env.CONTEST_FINALS_END;
-
 
 //* Admin Authentication
 const admin = function(req, res, callback){

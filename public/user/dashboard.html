@@ -29,6 +29,14 @@
         font-family: Manrope;
       }
 
+      pre {
+        width: 50px;
+        margin: 0;
+        text-align: right;
+        white-space: pre-line;
+        padding: 0;
+      }
+
       .nav-title {
         display: inline-block;
         height: 100%;
@@ -73,6 +81,11 @@
 
       .title-text {
         font-family: Staatliches;
+      }
+
+      .timer-label {
+        opacity: 0.4;
+        font-weight: bold;
       }
 
       .ui-text {
@@ -132,12 +145,12 @@
             This dashboard displays your's team's progress, and is also where you can submit answers to problems during the duration of the contest.
           </p>
 
-          <div class="container">
-            <img class="responsive-img" src="./pho-2-logo.png">
+          <div>
+            <div class="timer"></div>
           </div>
 
-          <div class="center-align">
-            <div class="timer"></div>
+          <div class="container">
+            <img class="responsive-img" src="./pho-2-logo.png">
           </div>
           <br>
         </div>
@@ -201,7 +214,7 @@
           </div>
         </div>
         <div class="submit-answer-cooldown" hidden>
-          Please wait for the 5-minute cooldown to end before submitting another answer.<br><br>
+          Please wait for the cooldown to end before submitting another answer.<br><br>
           
           <h1 class="row center-align">
             <b><span class="cooldown red-text"></span></b>
@@ -218,6 +231,7 @@
     <script src="./utils/js/regex"></script>
     <script src="./utils/js/answer"></script>
     <script src="./utils/js/header"></script>
+    <script src="./utils/js/config"></script>
     <script src="./dashboard/js"></script>
   </body>
 </html>

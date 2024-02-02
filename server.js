@@ -240,3 +240,7 @@ app.get('/utils/js/regex', (req, res) => {
 app.get('/utils/js/header', (req, res) => {
   res.sendFile('./public/utils/header.js', { root: __dirname });
 })
+
+app.get('/utils/js/config', (req, res) => {
+  res.sendFile('./public/utils/config.js', { root: __dirname });
+})
