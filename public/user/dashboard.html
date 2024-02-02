@@ -41,22 +41,19 @@
         padding: 0;
       }
 
-      .nav-title {
-        display: inline-block;
-        height: 100%;
-        margin-left: 25px;
-        margin-top: -20px;
-      }
-
-      .nav-title-text {
-        display: inline-block;
-        padding: 0;
-        margin: 0;
-      }
-
       .main-content {
-        height: calc(100vh - 60px);
-        padding: 36px;
+        padding-right: 36px;
+        height: 100vh;
+      }
+
+      .main-content-info {
+        margin: 0;
+        margin-right: 100px;
+        height: 100vh;
+      }
+
+      .user-table {
+        margin-top: 80px;
       }
 
       .user-table-header-card {
@@ -64,14 +61,14 @@
       }
 
       .user-table-card {
-        margin-left: 10px;
+        margin: 0;
         padding: 0;
-        max-height: calc(100vh - 400px);
+        height: calc(100vh - 390px);
       }
 
       .table-card {
         padding: 0;
-        max-height: calc(100vh - 480px);
+        height: calc(100vh - 440px);
         overflow-y: auto;
       }
 
@@ -110,7 +107,7 @@
   </head>
 
   <body>
-    <nav class="blue-grey">
+    <nav class="grey darken-4">
       <div class="nav-wrapper">
         <div class="nav-title title-text">
           <h3 class="nav-title-text">
@@ -142,11 +139,12 @@
       </div>
     </nav>
 
-    <div class="main-content row">
-      <div class="col s0 m4 l3 card hide-on-small-only">
+    <div class="main-content row grey lighten-4">
+      <div class="main-content-info col s0 m4 l3 card hide-on-small-only">
         <div class="container">
+          <br>
           <h2 class="title-text">
-            Welcome!
+            Dashboard
           </h2>
 
           <p>
@@ -163,19 +161,8 @@
           <br>
         </div>
       </div>
-      <div class="col s0 m1 l1"></div>
-      <div class="col s12 m6 l8 card">
-        <div class="row card blue-grey user-table-header-card">
-          <div class="s6">
-            <h3 class="title-text white-text" style="padding: 20px;">
-              Dashboard
-            </h3>
-          </div>
-          <div class="s6" style="margin-top: -50px; padding: 20px;">
-            <a class="waves-effect btn white grey-text text-darken-3 modal-trigger ui-text" href="#submit-answer-modal">Submit Answer</a>
-          </div>
-        </div>
-
+      
+      <div class="user-table col s12 m6 l8">
         <img class="hide-on-small-only" src="../resources/icons/search-icon.png" width="25px" style="margin-left: 15px; margin-bottom: -5px; display: inline-block">
         <div class="input-field inline filter-field ui-text" 
           style="display: inline-block; padding: 0 10px 0 10px; border-radius: 2.5px; width: 90%;">
@@ -183,10 +170,10 @@
           <label style="margin-left: 10px;" for="filter-text">Filter Entries</label>
         </div>
 
-        <div class="user-table-card z-depth-2">
-          <div class="row white ">
+        <div class="user-table-card z-depth-2 grey lighten-4">
+          <div class="row grey lighten-4 no-margin">
             <div class="col s12">
-              <ul class="tabs dashboard-tabs">
+              <ul class="tabs dashboard-tabs grey lighten-4">
                 <li class="tab col s6"><a class="active ui-text" href="#problems">Problems</a></li>
                 <li class="tab col s6"><a class="ui-text" href="#submissions">Submissions</a></li>
               </ul>
@@ -199,6 +186,11 @@
             </div>
           </div>
           </table>
+        </div>
+        
+        <br><br>
+        <div class="s6" style="margin-top: -32px; padding: 20px;">
+          <a class="waves-effect btn white grey-text text-darken-3 modal-trigger ui-text" href="#submit-answer-modal">Submit Answer</a>
         </div>
       </div>
     </div>

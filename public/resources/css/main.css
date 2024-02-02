@@ -1,6 +1,71 @@
 /* The main css file for general stylings */
 
+/* Assets */
 @font-face {
   font-family: titleFont;
   src: url(/resources/fonts/glacial-indifference.bold.otf);
+}
+
+/* Navbar things */
+.nav-title {
+  display: inline-block;
+  height: 100%;
+  margin-left: 30px;
+  margin-top: -30px;
+}
+
+.nav-title-text {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+
+  font-size: 28px;
+  opacity: 0.88;
+  letter-spacing: 1.5px;
+}
+
+/* General stylings */
+.no-margin {
+  margin: 0;
+}
+
+@media (max-width : 1440px) {
+  h2 {
+    font-size: 40px;
+  }
+}
+
+@media (max-width : 1280px) {
+  h2 {
+    font-size: 32px;
+  }
+}
+
+/* Overrides to Materialize */
+.tabs .tab a {
+  color: #212121;
+}
+
+.tabs .tab a.active {
+  color: #f5f5f5;
+  background-color: #616161;
+}
+
+.tabs .tab a:hover {
+  color:#424242;
+  background-color: #e0e0e0;
+}
+
+.tabs .tab a:focus.active {
+  color:#f5f5f5;
+  background-color: #616161;
+}
+
+.tabs .tab a:focus {
+  color:#f5f5f5;
+  background-color: #616161;
+}
+
+.tabs .indicator {
+  background-color:#616161;
 }
