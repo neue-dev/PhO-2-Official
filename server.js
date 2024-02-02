@@ -1,7 +1,9 @@
 require('dotenv').config();
 
+const fs = require('fs');
 const express = require('express');
 const mongoose = require('mongoose');
+const mustache = require('mustache');
 const authroutes = require('./routes/authroutes');
 const adminroutes = require('./routes/adminroutes');
 const userroutes = require('./routes/userroutes');
@@ -77,8 +79,15 @@ app.get('/problems', (req, res) => {
           return res.sendFile('./public/home-redirect.html', { root: __dirname });
 
         // If it's during the elims
-        if(Date.now() > process.env.CONTEST_ELIMS_START && Date.now() < process.env.CONTEST_ELIMS_END)
-          return res.sendFile('./public/problems.html', { root: __dirname });
+        if(Date.now() > process.env.CONTEST_ELIMS_START && Date.now() < process.env.CONTEST_ELIMS_END) {
+
+          // Parse the HTML file and replace the mustache tags.
+          fs.readFile('./public/problems.html', 'utf-8', (err, data) => {
+            res.write(mustache.render(data, { CONTEST_PROBLEMS_URL: process.env.CONTEST_PROBLEMS_URL }));
+          });
+
+          return;
+        }
 
         return res.sendFile('./public/home-redirect.html', { root: __dirname });
       });
@@ -99,8 +108,15 @@ app.get('/finals', (req, res) => {
           return res.sendFile('./public/home-redirect.html', { root: __dirname });
 
         // If it's during the finals
-        if(Date.now() > process.env.CONTEST_FINALS_START && Date.now() < process.env.CONTEST_FINALS_END)
-          return res.sendFile('./public/finals.html', { root: __dirname });
+        if(Date.now() > process.env.CONTEST_FINALS_START && Date.now() < process.env.CONTEST_FINALS_END) {
+          
+          // Parse the HTML file and replace the mustache tags.
+          fs.readFile('./public/finals.html', 'utf-8', (err, data) => {
+            res.write(mustache.render(data, { CONTEST_FINALS_URL: process.env.CONTEST_FINALS_URL }));
+          });
+
+          return;
+        }
 
         return res.sendFile('./public/home-redirect.html', { root: __dirname });
       });

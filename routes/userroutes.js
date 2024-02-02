@@ -9,6 +9,7 @@ const { auth } = require('../middleware/auth');
 const checkAnswer = require('../middleware/check');
 
 //* Models and Constants
+const Config = require('../models/config');
 const User = require('../models/user');
 const Problem = require('../models/problem');
 const Submission = require('../models/submission');
@@ -80,6 +81,25 @@ router.post('/scorelist', (req, res) => {
 
       if(user.status == 'participating') 
         data.users.push(userData)
+    });
+
+    res.json(data);
+  });
+});
+
+router.post('/configlist', (req, res) => {
+  isuser(req, res, async () => {
+  
+    // Retrieve data from database and send to user
+    const config = await Config.find();
+    const data = { config: [] };
+
+    config.forEach(configParameter => {
+      if(configParameter.security == 'public')
+        data.config.push({
+          key: configParameter.key,
+          value: configParameter.value
+        })
     });
 
     res.json(data);

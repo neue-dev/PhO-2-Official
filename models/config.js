@@ -14,6 +14,10 @@ const configSchema = new mongoose.Schema({
   value: {
     required: true,
     type: String
+  },
+  security: {
+    type: String,
+    default: 'private'
   }
 }, { collection: 'config' });
 
