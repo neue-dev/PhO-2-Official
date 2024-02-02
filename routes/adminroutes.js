@@ -233,6 +233,11 @@ router.post('/editconfig', (req, res) => {
         await Config.updateOne(
           { key: key },
           { value: value });
+
+        // Update the environment variables too
+        // Is this a good idea? Might it break something along the way? I hope fucking not!
+        process.env[key] = value;
+
         return res.status(200).json({
           message: 'Config parameter edited successfully.',
         });

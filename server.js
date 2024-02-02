@@ -15,10 +15,11 @@ const identify = require('./middleware/identify');
 //
 const database_url = process.env.DATABASE_URL
 const server_port = process.env.SERVER_PORT
-const elims_start = process.env.CONTEST_ELIMS_START
-const elims_end = process.env.CONTEST_ELIMS_END
-const finals_start = process.env.CONTEST_FINALS_START
-const finals_end = process.env.CONTEST_FINALS_START
+
+//
+//* The config model
+//
+const Config = require('./models/config');
 
 //
 //* Set up the database
@@ -31,8 +32,15 @@ database.on('error', (error) => {
   console.log(error)
 });
 
-database.once('connected', () => {
+database.once('connected', async () => {
   console.log('Database connected.');
+
+  // Set up the environment variables
+  const db = database;
+
+  const config = await Config.find();
+  config.forEach(configParameter => 
+    process.env[configParameter.key] = configParameter.value)
 });
 
 //
@@ -69,7 +77,7 @@ app.get('/problems', (req, res) => {
           return res.sendFile('./public/home-redirect.html', { root: __dirname });
 
         // If it's during the elims
-        if(Date.now() > elims_start && Date.now() < elims_end)
+        if(Date.now() > process.env.CONTEST_ELIMS_START && Date.now() < process.env.CONTEST_ELIMS_END)
           return res.sendFile('./public/problems.html', { root: __dirname });
 
         return res.sendFile('./public/home-redirect.html', { root: __dirname });
@@ -91,7 +99,7 @@ app.get('/finals', (req, res) => {
           return res.sendFile('./public/home-redirect.html', { root: __dirname });
 
         // If it's during the finals
-        if(Date.now() > finals_start && Date.now() < finals_end)
+        if(Date.now() > process.env.CONTEST_FINALS_START && Date.now() < process.env.CONTEST_FINALS_END)
           return res.sendFile('./public/finals.html', { root: __dirname });
 
         return res.sendFile('./public/home-redirect.html', { root: __dirname });
