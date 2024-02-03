@@ -344,6 +344,10 @@ app.get('/utils/js/logout', (req, res) => {
   res.sendFile('./public/utils/logout.js', { root: __dirname });
 })
 
+app.get('/trademark', (req, res) => {
+  res.sendFile('./public/utils/trademark.js', { root: __dirname });
+})
+
 // The official logos
 app.get('/pho-2-logo', (req, res) => {
   res.sendFile('./public/resources/images/pho-2-official-logo.png', { root: __dirname });

@@ -146,6 +146,37 @@ td:has(.table-btn) {
   width: 500px;
 }
 
+.trademark {
+  position: fixed;
+  bottom: -174px; 
+  right: -40px;
+  width: 256px;
+  height: 256px;
+  border-radius: 50%;
+  padding: 50px;
+
+  font-size: 15px;
+  opacity: 0.4;
+  color: black;
+  transition: 0.3s;
+}
+
+.trademark:hover {
+  background-color: #212121;
+  color: #e0e0e0;
+  opacity: 1;
+  transform: scale(1.2) rotate(-5deg);
+}
+
+.trademark a {
+  font-weight: bold;
+  color: #2962ff;
+}
+
+.trademark:hover a {
+  color: #cfd8dc;
+}
+
 @media (max-width : 1440px) {
   table tr {
     overflow-x: auto;
