@@ -1,4 +1,3 @@
-const DATA = { users: [], problems: [] };
 const config_table = document.querySelectorAll('.config-table')[0];
 const user_table = document.querySelectorAll('.user-table')[0];
 const problem_table = document.querySelectorAll('.problem-table')[0];
@@ -17,16 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Filter functionality
 const filterText = document.querySelector('#filter-text');
-
-// filterText.addEventListener('focusout', e => {
-//   filterText.value = ''
-
-//   let user_entries = user_table.children;
-//   let problem_entries = problem_table.children;
-
-//   for(let i = 0; i < user_entries.length; i++) user_entries[i].style.display = '';
-//   for(let i = 0; i < problem_entries.length; i++) problem_entries[i].style.display = '';
-// });
 
 filterText.addEventListener('input', e => {
   let config_entries = config_table.children;
