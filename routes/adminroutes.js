@@ -13,6 +13,7 @@ const User = require('../models/user');
 const Config = require('../models/config');
 const Problem = require('../models/problem');
 const Submission = require('../models/submission');
+const Message = require('../models/message');
 const Score = require('../models/score');
 
 //* Constants
@@ -34,7 +35,7 @@ const admin = function(req, res, callback){
 
         // Provide data if allowed
         if(userData.isAdmin)
-          return callback();
+          return callback(userData);
           
         return res.json({
           error: 'Unauthorized user is making the request.'
@@ -49,8 +50,64 @@ const admin = function(req, res, callback){
 }
 
 //* Admin Routes
+router.post('/newannouncement', (req, res) => {
+  admin(req, res, async userData => {
+    const { title, content } = req.body;
+    const user_id = userData._id;
+    const timestamp = (new Date()).getTime();
+
+    const data = new Message({
+      _id: new mongoose.Types.ObjectId(),
+      user_id: user_id,
+      type: 'announcement',
+      title: title,
+      content: content,
+      timestamp: timestamp,
+    }, { collection: 'messages' });
+
+    // Try to save to database
+    try {
+      let announcement = await data.save();
+      return res.status(200).json({
+        message: 'Announcement was posted.',
+      });
+    } catch (error) {
+      return res.json({ 
+        message: 'Server error.',
+        error: error.message 
+      }).status(500);
+    }
+  })
+});
+
+router.post('/deleteannouncement', (req, res) => {
+  admin(req, res, async userData => {
+    const { id } = req.body;
+    const _id = mongoose.Types.ObjectId(id);
+    const announcement = await Message.findOne({ _id: _id });
+
+    // Check if announcement exists
+    if(announcement) {
+      try {
+        await Message.deleteOne({ _id: _id });
+        return res.status(200).json({
+          message: 'Announcement deletion success.',
+        });
+      } catch(err) {
+        return res.json({
+          error: 'Something went wrong. Try again.'
+        }).status(500);
+      }
+    } else {
+      return res.json({
+        error: 'Announcement to be deleted does not exist.'
+      }).status(401);
+    }
+  })
+});
+
 router.post('/registeruser', (req, res) => {
-  admin(req, res, async () => {
+  admin(req, res, async userData => {
     const { username, password, category } = req.body;
     const isAdmin = req.body.isAdmin || false;
     const user = await User.findOne({ username: username });
@@ -102,7 +159,7 @@ router.post('/registeruser', (req, res) => {
 });
 
 router.post('/edituser', (req, res) => {
-  admin(req, res, async () => {
+  admin(req, res, async userData => {
     const { username, password, category, status } = req.body;
     const user = await User.findOne({ username: username });
     let userStatus = status;
@@ -159,7 +216,7 @@ router.post('/edituser', (req, res) => {
 });
 
 router.post('/deleteuser', (req, res) => {
-  admin(req, res, async () => {
+  admin(req, res, async userData => {
     const { username } = req.body;
     const user = await User.findOne({ username: username });
 
@@ -184,7 +241,7 @@ router.post('/deleteuser', (req, res) => {
 });
 
 router.post('/userlist', (req, res) => {
-  admin(req, res, async () => {
+  admin(req, res, async userData => {
     
     // Retrieve data from database and send to user
     const users = await User.find();
@@ -201,7 +258,7 @@ router.post('/userlist', (req, res) => {
 });
 
 router.post('/configlist', (req, res) => {
-  admin(req, res, async () => {
+  admin(req, res, async userData => {
     
     // Retrieve data from database and send to user
     const config = await Config.find();
@@ -218,7 +275,7 @@ router.post('/configlist', (req, res) => {
 });
 
 router.post('/editconfig', (req, res) => {
-  admin(req, res, async () => {
+  admin(req, res, async userData => {
     const { key, value } = req.body;
     const configParameter = await Config.findOne({ key: key });
 
@@ -250,12 +307,12 @@ router.post('/editconfig', (req, res) => {
 });
 
 router.post('/registerproblem', (req, res) => {
-  admin(req, res, async () => {
+  admin(req, res, async userData => {
     const { name, code, answer, tolerance, points } = req.body;
     const problemCode = await Problem.findOne({ "code.number": code.number, "code.alpha": code.alpha });
     const problemName = await Problem.findOne({ name: name });
 
-    // Check if user exists
+    // Check if problem exists
     if (problemCode || problemName)
       return res.json({
         message: "Problem already exists.",
@@ -289,7 +346,7 @@ router.post('/registerproblem', (req, res) => {
 });
 
 router.post('/editproblem', (req, res) => {
-  admin(req, res, async () => {
+  admin(req, res, async userData => {
     const { name, code, answer, tolerance, points, status } = req.body;
     const problemName = await Problem.findOne({ name: name });
 
@@ -337,7 +394,7 @@ router.post('/editproblem', (req, res) => {
 });
 
 router.post('/deleteproblem', (req, res) => {
-  admin(req, res, async () => {
+  admin(req, res, async userData => {
     const { name } = req.body;
     const problem = await Problem.findOne({ name: name });
 
@@ -362,7 +419,7 @@ router.post('/deleteproblem', (req, res) => {
 });
 
 router.post('/recheckproblem', (req, res) => {
-  admin(req, res, async () => {
+  admin(req, res, async userData => {
     const { name } = req.body;
     const problem = await Problem.findOne({ name: name });
 
@@ -437,7 +494,7 @@ router.post('/recheckproblem', (req, res) => {
 });
 
 router.post('/problemlist', (req, res) => {
-  admin(req, res, async () => {
+  admin(req, res, async userData => {
     
     // Retrieve data from database and send to user
     const problems = await Problem.find();
@@ -454,7 +511,7 @@ router.post('/problemlist', (req, res) => {
 });
 
 router.post('/submissionlog', (req, res) => {
-  admin(req, res, async () => {
+  admin(req, res, async userData => {
     
     // Retrieve data from database and send to user
     const submissions = await Submission.find({});
@@ -472,7 +529,7 @@ router.post('/submissionlog', (req, res) => {
 
 // Score related routes
 router.post('/updatescores', (req, res) => {
-  admin(req, res, async () => {
+  admin(req, res, async userData => {
     const users = await User.find({});
     const problems = await Problem.find({});
     const submissions = await Submission.find({});

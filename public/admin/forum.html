@@ -34,6 +34,13 @@
         padding: 0;
         height: calc(100vh - 390px);
       }
+
+      #toast-container {
+        top: auto !important;
+        right: auto !important;
+        bottom: 5%;
+        left: 70%;  
+      }
     </style>
   </head>
 
@@ -51,7 +58,7 @@
           <li><a href="./finals" class="ui-text">Finals</a></li>
           <li><a href="./dashboard" class="ui-text">Dashboard</a></li>
           <li><a href="./leaderboard" class="ui-text">Leaderboard</a></li>
-          <li><a href="./forum" class="ui-text">Forum</a></li>
+          <li><a href="./forum" class="ui-text">Updates</a></li>
           <li><a href="#" class="ui-text logout-button">Logout</a></li>
         </ul>
 
@@ -62,7 +69,7 @@
           <li><a href="./finals" class="ui-text">Finals</a></li>
           <li><a href="./dashboard" class="ui-text">Dashboard</a></li>
           <li><a href="./leaderboard" class="ui-text">Leaderboard</a></li>
-          <li><a href="./forum" class="ui-text">Forum</a></li>
+          <li><a href="./forum" class="ui-text">Updates</a></li>
           <li><div class="divider" ></div></li>
           <li><a class="waves-effect ui-text logout-button" href="#">Logout</a></li>
         </ul>
@@ -77,11 +84,11 @@
         <div class="container">
           <br>
           <h2 class="title-text">
-            Forum
+            Updates
           </h2>
 
           <p class="info-text">
-            This is the primary point of communication between the contestants and the organizers. Questions can be forwarded here, and official clarifications will also be posted.
+            This is the primary point of communication between the contestants and the organizers. Official clarifications and other contest reminders will be posted here.
           </p>
 
           <div>
@@ -107,22 +114,22 @@
           <div class="row grey lighten-4">
             <div class="col s12">
               <ul class="tabs forum-tabs grey lighten-4">
-                <li class="tab col s6"><a class="active ui-text" href="#announcements">Announcements</a></li>
-                <li class="tab col s6"><a class="ui-text" href="#clarifications">Clarifications</a></li>
+                <li class="tab col s12"><a class="active ui-text" href="#announcements">Announcements</a></li>
+                <!-- <li class="tab col s6"><a class="ui-text" href="#clarifications">Clarifications</a></li> -->
               </ul>
             </div>
 
             <div id="announcements" class="table-card col s12">
               <table class="bordered announcements-table"></table>
             </div>
-            <div id="clarifications" class="table-card col s12">
+            <!-- <div id="clarifications" class="table-card col s12">
               <table class="bordered clarifications-table"></table>
-            </div>
+            </div> -->
           </div>
 
           <br>
           <div class="s6" style="margin-top: -32px; padding: 20px;">
-            <a class="waves-effect btn white grey-text text-darken-3 modal-trigger white ui-text" style="margin-right: 10px;" href="#new-user">New Announcement</a>
+            <a class="waves-effect btn white grey-text text-darken-3 modal-trigger white ui-text" style="margin-right: 10px;" href="#announcement">New Announcement</a>
           </div>
         </div>
       </div>
@@ -131,10 +138,48 @@
         <div class="modal-content">
           <h4 class="title-text">Create a new announcement</h4>
           <p style="margin-bottom: 30px">This announcement will be publicly visible to everyone.</p>
+        
+          <div class="input-field title-input">
+            <input placeholder="Enter Post Title" id="post-title" type="text" class="validate ui-text">
+            <label for="post-title">Post title</label>
+          </div>
+  
+          <div class="input-field content-input">
+            <div class="textarea-container">
+              <textarea placeholder="Enter Post Content" id="post-content" type="text" class="card grey lighten-4 validate mono-text"></textarea>
+            </div>
+            <label style="transform: scale(0.8);" for="post-content">Post content</label>
+          </div>
         </div>
   
         <div class="modal-footer">
           <a href="#!" class="waves-effect waves-green btn-flat announcement-button ui-text">Post</a>
+          <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
+        </div>
+      </div>
+
+      <div id="view-announcement" class="modal view-announcement-modal">
+        <div class="modal-content">
+          <h4 class="title-text"></h4>
+          <p style="font-family: monoFont; margin: 30px 16px 30px 0"></p>
+        </div>
+  
+        <div class="modal-footer">
+          <a href="#!" class="modal-close waves-effect waves-green btn-flat view-announcement-button ui-text">Okay</a>
+          <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Close</a>
+        </div>
+      </div>
+
+      <div id="delete-announcement" class="modal delete-announcement-modal">
+        <div class="modal-content">
+          <h4 class="title-text"></h4>
+          <p style="margin-bottom: 30px">Are you sure you want to delete the following announcement?</p>
+        </div>
+
+        <div id="delete-announcement-id" hidden></div>
+  
+        <div class="modal-footer">
+          <a href="#!" class="waves-effect waves-green btn-flat delete-announcement-button ui-text">Confirm</a>
           <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
         </div>
       </div>
@@ -145,39 +190,7 @@
     <script src="/utils/js/xhr"></script>
     <script src="/utils/js/filter"></script>
     <script src="/utils/js/logout"></script>
+    <script src="/forum/js"></script>
     <script src="/navbar"></script>
-    <script>
-      const announcements_table = document.querySelectorAll(".announcements-table")[0];
-      const clarifications_table = document.querySelectorAll(".clarifications-table")[0];
-      filterFunc([announcements_table, clarifications_table]);
-
-      document.addEventListener('DOMContentLoaded', function() {
-        M.Sidenav.init(document.querySelectorAll('.sidenav'), {});
-        M.Tabs.init(document.querySelectorAll('.forum-tabs'), {});
-
-        loadAnnouncements();
-        loadClarifications();
-      });
-
-      const loadAnnouncements = () => {
-        createXHR('./user/announcements', 'POST', {}, data => {
-          data.announcements.forEach(announcement => {
-            DATA.announcements[announcement._id] = announcement;
-          });
-        });
-      }
-
-      const loadClarifications = () => {
-        createXHR('./user/clarifications', 'POST', {}, data => {
-          data.clarifications.forEach(clarification => {
-            DATA.clarifications[clarification._id] = clarification;
-          });
-        });
-      }
-
-      const displayForum = (announcements_table, clarifications_table) => {
-        
-      }
-    </script>
   </body>
 </html>

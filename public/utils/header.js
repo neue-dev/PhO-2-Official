@@ -3,7 +3,7 @@ const DATA = {
   userData: { 
     lastSubmit: localStorage.getItem('submitThen'),
     lastMessage: localStorage.getItem('messageThen') 
-  }, users: [], problems: [], autocomplete: [], submissions: [] 
+  }, users: [], problems: [], autocomplete: [], submissions: [], announcements: [],
 };
 
 const loadUserData = () => {

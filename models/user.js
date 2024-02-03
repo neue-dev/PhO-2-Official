@@ -44,6 +44,10 @@ const userSchema = new mongoose.Schema({
     type: Array,
     default: [],
   },
+  isMuted: {
+    type: Boolean,
+    default: false,
+  },
   lastSubmit: {
     type: Number,
     default: 0,

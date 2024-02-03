@@ -13,6 +13,7 @@ const Config = require('../models/config');
 const User = require('../models/user');
 const Problem = require('../models/problem');
 const Submission = require('../models/submission');
+const Message = require('../models/message');
 
 //* User Authentication
 const isuser = function(req, res, callback){
@@ -95,6 +96,26 @@ router.post('/configlist', (req, res) => {
           key: configParameter.key,
           value: configParameter.value
         })
+    });
+
+    res.json(data);
+  });
+});
+
+router.post('/announcementlist', (req, res) => {
+  isuser(req, res, async () => {
+  
+    // Retrieve data from database and send to user
+    const announcements = await Message.find();
+    const data = { announcements: [] };
+
+    announcements.forEach(announcement => {
+      data.announcements.push({
+        id: announcement._id.toString(),
+        title: announcement.title,
+        content: announcement.content,
+        timestamp: announcement.timestamp,
+      })
     });
 
     res.json(data);

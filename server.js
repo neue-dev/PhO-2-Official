@@ -209,6 +209,32 @@ app.get('/leaderboard/js', (req, res) => {
   }
 })
 
+app.get('/forum/js', (req, res) => {
+  const user = auth(req, res);
+  if(user){
+
+    // Look for user
+    if(user._id) {
+      identify(user._id)
+        .then(userData => {
+          if(!userData)
+            // User not found
+            return res.status(401);
+
+          // Provide right page given user rights
+          if(userData.isAdmin)
+            return res.sendFile('./public/admin/forum.js', { root: __dirname });
+          return res.sendFile('./public/user/forum.js', { root: __dirname });
+        });
+    } else {
+      return res.status(403);
+    }
+  } else {
+    // Isnt logged in
+    return res.status(403);
+  }
+})
+
 app.get('/leaderboard', (req, res) => {
   const user = auth(req, res);
   if(user){

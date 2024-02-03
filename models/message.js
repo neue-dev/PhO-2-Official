@@ -6,7 +6,6 @@ const messageSchema = new mongoose.Schema({
     required: true,
     type: ObjectId,
   },
-  //! add a privacy parameter or something
   type: {
     required: true,
     type: String,
@@ -18,7 +17,7 @@ const messageSchema = new mongoose.Schema({
       message: 'Type must be a valid string.',
     },
   },
-  subject: {
+  title: {
     required: true,
     type: String,
   },
@@ -28,7 +27,15 @@ const messageSchema = new mongoose.Schema({
   },
   parent_id: {
     type: ObjectId,
-  }
+  },
+  recipient_id: {
+    type: Array,
+    default: [],
+  },
+  timestamp: {
+    required: true,
+    type: Number,
+  },
 }, { collection: 'messages' });
 
 module.exports = mongoose.model('Message', messageSchema)
