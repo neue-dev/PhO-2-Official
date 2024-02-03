@@ -250,6 +250,10 @@ app.get('/utils/js/timer', (req, res) => {
   res.sendFile('./public/utils/timer.js', { root: __dirname });
 })
 
+app.get('/utils/js/filter', (req, res) => {
+  res.sendFile('./public/utils/filter.js', { root: __dirname });
+})
+
 // The official logos
 app.get('/pho-2-logo', (req, res) => {
   res.sendFile('./public/resources/images/pho-2-official-logo.png', { root: __dirname });

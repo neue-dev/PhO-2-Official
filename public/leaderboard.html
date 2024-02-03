@@ -18,31 +18,27 @@
 
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
+  
     <!-- Overrides -->
-    <style type="text/css">
-      .full-vh-height {
-        min-height: 100vh;
+    <style>
+      .leaderboard-table {
+        margin-top: 80px;
       }
 
-      body {
-        overflow-y: hidden;
+      .leaderboard-table-header-card {
+        margin-top: -30px;
       }
 
-      html {
-        font-family: Manrope;
+      .leaderboard-table-card {
+        margin: 0;
+        padding: 0;
+        height: calc(100vh - 390px);
       }
 
-      .main-content {
-        height: calc(100vh);
-      }
-
-      .title-text {
-        font-family: titleFont;
-      }
-
-      .ui-text {
-        font-family: Lexend;
+      .table-card {
+        padding: 0;
+        height: calc(100vh - 440px);
+        overflow-y: auto;
       }
     </style>
   </head>
@@ -80,55 +76,71 @@
       </div>
     </nav>
 
-    <div class="main-content row">
-      <br>
-      <div class="col s1 m1 l1"></div>
-      <div class="col s10 m10 l10 card">
-        <div class="row card blue-grey user-table-header-card" style="margin-top: -30px">
-          <div class="s6">
-            <h3 class="title-text white-text" style="padding: 20px;">
-              Leaderboard (base points only)
-            </h3>
+    <div class="main-content row grey lighten-4">
+      <div class="main-content-info col s0 m4 l3 card hide-on-small-only">
+        <div class="container">
+          <br>
+          <h2 class="title-text">
+            Leaderboard
+          </h2>
+
+          <p>
+            This page will show the scores of the different teams throughout the competition. Note that the scores do not update in real time and may fluctuate when updated.
+          </p>
+
+          <div>
+            <div class="timer"></div>
           </div>
+
+          <div class="container logo-container">
+            <img class="responsive-img" src="./pho-2-icon">
+          </div>
+          <br>
+        </div>
+      </div>
+
+      <div class="leaderboard-table col s12 m6 l8">
+        <img class="hide-on-small-only" src="../resources/icons/search-icon.png" width="25px" style="margin-left: 15px; margin-bottom: -5px; display: inline-block">
+        <div class="input-field inline filter-field ui-text" 
+          style="display: inline-block; padding: 0 10px 0 10px; border-radius: 2.5px; width: 90%;">
+          <input id="filter-text" type="text">
+          <label style="margin-left: 10px;" for="filter-text">Filter Entries</label>
         </div>
 
         <div class="leaderboard-table-card z-depth-2">
-          <div class="row white ">
-            <div id="leaderboard" class="table-card col s12" style="height: 69vh; overflow-y: auto">
-              <ul class="tabs leaderboard-tabs">
+          <div class="row grey lighten-4">
+            <div class="col s12">
+              <ul class="tabs leaderboard-tabs grey lighten-4">
                 <li class="tab col s4"><a class="active ui-text" href="#overall">Overall</a></li>
                 <li class="tab col s4"><a class="ui-text" href="#junior">Junior</a></li>
                 <li class="tab col s4"><a class="ui-text" href="#senior">Senior</a></li>
               </ul>
+            </div>
 
-              <div id="overall" class="table-card col s12">
-                <table class="bordered overall-table"></table>
-              </div>
-              <div id="junior" class="table-card col s12">
-                <table class="bordered junior-table"></table>
-              </div>
-              <div id="senior" class="table-card col s12">
-                <table class="bordered senior-table"></table>
-              </div>
+            <div id="overall" class="table-card col s12">
+              <table class="bordered overall-table"></table>
+            </div>
+            <div id="junior" class="table-card col s12">
+              <table class="bordered junior-table"></table>
+            </div>
+            <div id="senior" class="table-card col s12">
+              <table class="bordered senior-table"></table>
             </div>
           </div>
         </div>
       </div>
-      <div class="col s1 m1 l1"></div>
     </div>
 
-    <script src="./utils/js/xhr"></script>
     <script src="./utils/js/header"></script>
+    <script src="./utils/js/timer"></script>
+    <script src="./utils/js/xhr"></script>
+    <script src="./utils/js/filter"></script>
     <script src="./navbar"></script>
     <script>
-      const DATA = {
-        users: {},
-        problems: {},
-      };
-
       const overall_table = document.querySelectorAll(".overall-table")[0];
       const junior_table = document.querySelectorAll(".junior-table")[0];
       const senior_table = document.querySelectorAll(".senior-table")[0];
+      filterFunc([overall_table, junior_table, senior_table]);
 
       document.addEventListener('DOMContentLoaded', function() {
         M.Sidenav.init(document.querySelectorAll('.sidenav'), {});
@@ -222,6 +234,7 @@
           user_name.innerHTML = user_catname.innerHTML = `<b>${user.username}</b>`;
           user_score.innerHTML = user_catscore.innerHTML = user.score;
 
+          user_data.style.width = user_catdata.style.width = '500px';
           user_rank.style.width = user_catrank.style.width = '50px';
           if(overall_index % 2 == 1) user_data.className = 'blue-grey lighten-5';
           if(junior_index % 2 == 1 && user.category == 'junior') user_catdata.className = 'blue-grey lighten-5';

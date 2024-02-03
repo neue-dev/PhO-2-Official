@@ -25,6 +25,20 @@
 }
 
 /* Info board */
+.main-content {
+  height: 100vh;
+}
+
+.main-content-info {
+  margin: 0;
+  margin-right: 100px;
+  height: 100vh;
+}
+
+.logo-container {
+  width: 100%;
+}
+
 .timer pre {
   width: 50px;
   margin: 0;
@@ -39,8 +53,28 @@
 }
 
 /* General stylings */
+body {
+  overflow-y: hidden;
+}
+
+html {
+  font-family: Manrope;
+}
+
+.full-vh-height {
+  min-height: 100vh;
+}
+
 .no-margin {
   margin: 0;
+}
+
+.title-text {
+  font-family: titleFont;
+}
+
+.ui-text {
+  font-family: Lexend;
 }
 
 @media (max-width : 1440px) {

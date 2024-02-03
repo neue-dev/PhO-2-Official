@@ -1,5 +1,5 @@
 // Loads user data from the server
-const DATA = { userData: { lastSubmit: localStorage.getItem('then'), }, problems: [], autocomplete: [], submissions: [] };
+const DATA = { userData: { lastSubmit: localStorage.getItem('then'), }, users: [], problems: [], autocomplete: [], submissions: [] };
 localStorage.setItem('location', location.href);
 
 const loadUserData = () => {

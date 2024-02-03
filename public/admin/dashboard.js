@@ -1,6 +1,7 @@
 const config_table = document.querySelectorAll('.config-table')[0];
 const user_table = document.querySelectorAll('.user-table')[0];
 const problem_table = document.querySelectorAll('.problem-table')[0];
+filterFunc([config_table, user_table, problem_table]);
 
 // Some preloading sht
 document.addEventListener('DOMContentLoaded', function() {
@@ -12,47 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
   loadConfig();
   loadUsers();
   loadProblems();
-});
-
-// Filter functionality
-const filterText = document.querySelector('#filter-text');
-
-filterText.addEventListener('input', e => {
-  let config_entries = config_table.children;
-  let user_entries = user_table.children;
-  let problem_entries = problem_table.children;
-
-  for(let i = 0; i < config_entries.length; i++) {
-    let config_entry = config_entries[i];
-
-    if (!config_entry.children[0].children[0].textContent.toLowerCase().includes(filterText.value.toLowerCase())){
-      config_entry.style.display = 'none';
-    } else {
-      config_entry.style.display = '';
-    }
-  }
-
-  for(let i = 0; i < user_entries.length; i++) {
-    let user_entry = user_entries[i];
-
-    if (!user_entry.children[0].children[0].textContent.toLowerCase().includes(filterText.value.toLowerCase())){
-      user_entry.style.display = 'none';
-    } else {
-      user_entry.style.display = '';
-    }
-  }
-
-  for(let i = 0; i < problem_entries.length; i++) {
-    let problem_entry = problem_entries[i];
-
-    if (!problem_entry.children[0].textContent.toLowerCase().includes(filterText.value.toLowerCase()) &&
-      !problem_entry.children[1].children[0].textContent.toLowerCase().includes(filterText.value.toLowerCase())){
-
-      problem_entry.style.display = 'none';
-    } else {
-      problem_entry.style.display = '';
-    }
-  }
 });
 
 // User handling JS

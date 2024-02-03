@@ -1,5 +1,6 @@
 const problem_table = document.querySelectorAll('.problem-table')[0];
 const submission_table = document.querySelectorAll('.submission-table')[0];
+filterFunc([problem_table, submission_table]);
 
 // Configure some preloaders
 document.addEventListener('DOMContentLoaded', function() {
@@ -27,37 +28,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadSubmissions();
   });
 });
-
-// Filter functionality
-const filterText = document.querySelector('#filter-text');
-
-if(filterText) {
-  filterText.addEventListener('input', e => {
-    let problem_entries = problem_table.children;
-    let submission_entries = submission_table.children;
-
-    for(let i = 0; i < problem_entries.length; i++) {
-      let problem_entry = problem_entries[i];
-
-      if (!problem_entry.children[0].textContent.toLowerCase().includes(filterText.value.toLowerCase()) && 
-      !problem_entry.children[1].textContent.toLowerCase().includes(filterText.value.toLowerCase())){
-        problem_entry.style.display = 'none';
-      } else {
-        problem_entry.style.display = '';
-      }
-    }
-
-    for(let i = 0; i < submission_entries.length; i++) {
-      let submission_entry = submission_entries[i];
-
-      if (!submission_entry.children[0].textContent.toLowerCase().includes(filterText.value.toLowerCase())){
-        submission_entry.style.display = 'none';
-      } else {
-        submission_entry.style.display = '';
-      }
-    }
-  });
-}
 
 // Submit button
 const submitAnswerModal = document.querySelector('#submit-answer-modal');
