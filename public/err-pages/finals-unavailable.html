@@ -66,17 +66,16 @@
       </h5>
     </div>
 
+    <script src="./utils/js/config"></script>
+    <script src="./utils/js/header"></script>
+    <script src="./utils/js/xhr"></script>
+    <script src="./utils/js/logout"></script>
     <script src="./navbar"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         let elems = document.querySelectorAll('.sidenav');
         let instances = M.Sidenav.init(elems, {});
       });
-
-      const logoutButton = document.querySelectorAll('.logout-button');
-      logoutButton.forEach(button => button.addEventListener('click', e => {
-        createXHR('./auth/logout', 'POST', {}, () => { location.href = '/' });
-      }));
     </script>
   </body>
 </html>

@@ -47,6 +47,10 @@ const userSchema = new mongoose.Schema({
   lastSubmit: {
     type: Number,
     default: 0,
+  },
+  lastMessage: {
+    type: Number,
+    default: 0,
   }
 }, { collection: 'users' });
 

@@ -337,7 +337,7 @@ const displayConfig = config_table => {
     })()}`;
 
     let editConfig = document.querySelector('#edit-config');
-    config_actions.innerHTML = '<a class="waves-effect btn modal-trigger white grey-text text-darken-3 ui-text" href="#edit-config">edit</a>';
+    config_actions.innerHTML = '<a class="waves-effect table-btn btn modal-trigger ui-text" href="#edit-config">edit</a>';
     config_actions.addEventListener('click', e => (editConfig.children[0].children[0].innerHTML = 
       `Edit Parameter - <span class="red-text text-lighten-1">${configParameter.key}</span>`) && 
       (editKey.textContent = configParameter.key) &&
@@ -378,30 +378,31 @@ const displayUsers = user_table => {
     let user_delete = document.createElement('td');
 
     user_username.innerHTML = `<b>${user.username}</b>`;
-    user_isAdmin.innerHTML = user.isAdmin ? '<b class="blue-text">admin</b>' : 'user';
+    user_isAdmin.innerHTML = user.isAdmin ? '<b class="red-text">admin</b>' : 'user';
     user_category.innerHTML = user.category;
     user_status.innerHTML = 
-      user.status == 'disqualified' ? '<b class="blue-grey-text">disqualified</b>' : 
+      user.status == 'disqualified' ? '<b class="grey-text text-darken-2">disqualified</b>' : 
       user.status == 'participating' ? '<b class="green-text">participating</b>' : user.status;
     user_score.innerHTML = (Math.round(user.score * 1000) / 1000).toString() || '-';
-    user_actions.innerHTML = '<a class="waves-effect btn modal-trigger white grey-text text-darken-3 ui-text" href="#edit-user">edit</a>';
-    user_delete.innerHTML = user.isAdmin ? '' :
-      `<a class="waves-effect waves-red btn modal-trigger white grey-text text-darken-3 ui-text" href="#delete-user">
-        <img src="../resources/icons/trash-icon.png" width="25px" style="margin-top: 5px; opacity: 1; filter: invert(32%) sepia(49%) saturate(2501%) hue-rotate(338deg) brightness(91%) contrast(96%);">
+    user_actions.innerHTML = '<a class="waves-effect btn table-btn modal-trigger ui-text" href="#edit-user">edit</a>';
+    user_delete.innerHTML = user.isAdmin ? '<div class="table-btn" hidden></div>' :
+      `<a class="waves-effect waves-red btn table-btn modal-trigger ui-text" href="#delete-user">
+        <img src="../resources/icons/trash-icon.png" width="25px" style="margin-top: 5px; opacity: 1;">
       </a>`;
 
     let editUser = document.querySelector('#edit-user');
     let deleteUser = document.querySelector('#delete-user');
+
     user_actions.addEventListener('click', e => (editUser.children[0].children[0].innerHTML = 
       `Edit User - <span class="red-text text-lighten-1">${user.username}</span>`) && (editUsername.textContent = user.username));
     user_delete.addEventListener('click', e => (deleteUser.children[0].children[0].innerHTML = 
       `Delete User - <span class="red-text text-lighten-1">${user.username}</span>`) && (deleteUsername.textContent = user.username));
 
     if(user.isAdmin){
-      user_element.className = 'blue lighten-4';
+      user_element.className = 'red lighten-4';
     } else {
       if(user.status == 'disqualified') {
-        user_element.className = 'blue-grey lighten-4';
+        user_element.className = 'grey lighten-2';
       }
     }
 
@@ -454,11 +455,11 @@ const displayProblems = problem_table => {
     problem_status.innerHTML = 
       problem.status == 'disabled' ? '<b class="blue-grey-text">disabled</b>' : 
       problem.status == 'active' ? '<b class="green-text">active</b>' : problem.status;
-    problem_actions.innerHTML = '<a class="waves-effect btn modal-trigger white grey-text text-darken-3 ui-text" href="#edit-problem">edit</a>';
-    problem_recheck.innerHTML = '<a class="waves-effect btn modal-trigger white grey-text text-darken-3 ui-text" href="#recheck-problem">recheck</a>';
+    problem_actions.innerHTML = '<a class="waves-effect btn modal-trigger ui-text" href="#edit-problem">edit</a>';
+    problem_recheck.innerHTML = '<a class="waves-effect btn modal-trigger ui-text" href="#recheck-problem">recheck</a>';
     problem_delete.innerHTML = 
-      `<a class="waves-effect waves-red btn modal-trigger white grey-text text-darken-3 ui-text" href="#delete-problem">
-      <img src="../resources/icons/trash-icon.png" width="25px" style="margin-top: 5px; opacity: 1; filter: invert(32%) sepia(49%) saturate(2501%) hue-rotate(338deg) brightness(91%) contrast(96%);">
+      `<a class="waves-effect waves-red btn modal-trigger text-darken-3 ui-text" href="#delete-problem">
+      <img src="../resources/icons/trash-icon.png" width="25px" style="margin-top: 5px; opacity: 1;">
       </a>`;
 
     let editProblem = document.querySelector('#edit-problem');

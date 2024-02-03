@@ -34,12 +34,6 @@
         padding: 0;
         height: calc(100vh - 390px);
       }
-
-      .table-card {
-        padding: 0;
-        height: calc(100vh - 440px);
-        overflow-y: auto;
-      }
     </style>
   </head>
 
@@ -86,7 +80,7 @@
             Leaderboard
           </h2>
 
-          <p>
+          <p class="info-text">
             This page will show the scores of the different teams throughout the competition. Note that the scores do not update in real time and may fluctuate when updated.
           </p>
 
@@ -239,9 +233,6 @@
 
           user_data.style.width = user_catdata.style.width = '500px';
           user_rank.style.width = user_catrank.style.width = '50px';
-          if(overall_index % 2 == 1) user_data.className = 'blue-grey lighten-5';
-          if(junior_index % 2 == 1 && user.category == 'junior') user_catdata.className = 'blue-grey lighten-5';
-          if(senior_index % 2 == 1 && user.category == 'senior') user_catdata.className = 'blue-grey lighten-5';
 
           user_data.appendChild(user_rank);
           user_data.appendChild(user_name);

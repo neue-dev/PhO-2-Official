@@ -181,20 +181,23 @@ const submitAnswerContent = document.getElementsByClassName('submit-answer-conte
 const submitAnswerCooldown = document.getElementsByClassName('submit-answer-cooldown')[0];
 const cooldown = document.getElementsByClassName('cooldown')[0];
 const cooldownInterval = () => {
-  localStorage.setItem('then', DATA.userData.lastSubmit);
-  let interval = parseInt(localStorage.getItem('SUBMISSION_COOLDOWN')) - (parseInt(Date.now()) - localStorage.getItem('then'));
+  localStorage.setItem('submitThen', DATA.userData.lastSubmit);
+  localStorage.setItem('messageThen', DATA.userData.lastMessage);
+
+  let submissionInterval = parseInt(localStorage.getItem('SUBMISSION_COOLDOWN')) - (parseInt(Date.now()) - localStorage.getItem('submitThen'));
+  let messageInterval = parseInt(localStorage.getItem('MESSAGE_COOLDOWN')) - (parseInt(Date.now()) - localStorage.getItem('messageThen'));
 
   submitAnswerContent.hidden = true;
   submitAnswerCooldown.hidden = false;
 
-  if(interval < 0) {
+  if(submissionInterval < 0) {
     submitAnswerContent.hidden = false;
     submitAnswerCooldown.hidden = true;  
-    interval = 0
+    submissionInterval = 0
   };
 
-  let minutes = Math.floor(interval / 1000 / 60);
-  let seconds = Math.floor(interval / 1000) % 60;
+  let minutes = Math.floor(submissionInterval / 1000 / 60);
+  let seconds = Math.floor(submissionInterval / 1000) % 60;
   cooldown.innerHTML = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
 }
 

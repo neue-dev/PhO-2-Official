@@ -10,6 +10,12 @@ const configSchema = new mongoose.Schema({
     required: false,
     type: String,
     default: 'text',
+    validate: {
+      validator: val => {
+        return ['text', 'date', 'url', 'duration'].includes(val);
+      },
+      message: 'Type must be a valid string.',
+    }
   },
   value: {
     required: true,
@@ -17,7 +23,13 @@ const configSchema = new mongoose.Schema({
   },
   security: {
     type: String,
-    default: 'private'
+    default: 'private',
+    validate: {
+      validator: val => {
+        return ['private', 'public'].includes(val);
+      },
+      message: 'Privacy can only be private or public.',
+    }
   }
 }, { collection: 'config' });
 

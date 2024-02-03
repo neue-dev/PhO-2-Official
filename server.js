@@ -204,6 +204,27 @@ app.get('/leaderboard', (req, res) => {
   }
 });
 
+app.get('/forum', (req, res) => {
+  const user = auth(req, res);
+  if(user){
+
+    // Look for user
+    if(user._id) {
+      identify(user._id)
+        .then(userData => {
+          if(!userData)
+            return res.sendFile('./public/home-redirect.html', { root: __dirname });
+          return res.sendFile('./public/forum.html', { root: __dirname });
+        });
+    } else {
+      return res.sendFile('./public/home-redirect.html', { root: __dirname });
+    }
+  } else {
+    // Isnt logged in
+    return res.sendFile('./public/home-redirect.html', { root: __dirname });
+  }
+});
+
 app.get('/navbar', (req, res) => {
   const user = auth(req, res);
   if(user){

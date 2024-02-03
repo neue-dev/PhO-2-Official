@@ -61,6 +61,19 @@ html {
   font-family: Manrope;
 }
 
+table {
+  table-layout:fixed;
+}
+
+td {
+  border-radius: 0;
+}
+
+.info-text {
+  height: 100px;
+  line-height: 1.6;
+}
+
 .full-vh-height {
   min-height: 100vh;
 }
@@ -109,11 +122,37 @@ html {
 
 /* Overrides to Materialize */
 td .btn {
-  min-width: 96px;
+  padding: 0;
+  margin: 0;
+  margin-right: 24px;
+  float: right;
+  min-width: 108px;
+  
+  background-color: rgba(0, 0, 0, 0);
+  color: #424242;
+}
+
+td .btn:hover {
+  box-shadow: none;
+  background-color: #616161;
+  color: #e0e0e0;
+}
+
+td .btn img {
+  filter: invert(32%) sepia(49%) saturate(2501%) hue-rotate(338deg) brightness(91%) contrast(96%);
+}
+
+td .btn:hover img {
+  filter: invert(92%);
 }
 
 .btn {
   min-width: 160px;
+}
+
+.tabs {
+  height: 48px;
+  border-bottom: 1px solid #616161;
 }
 
 .tabs .tab a {
@@ -141,5 +180,26 @@ td .btn {
 }
 
 .tabs .indicator {
-  background-color:#616161;
+  visibility: hidden;
+}
+
+/* Table formatting */
+.table-card table tr td {
+  height: 80px;
+}
+
+.table-card {
+  padding: 0;
+  height: calc(100vh - 440px);
+  overflow-y: auto;
+}
+
+td:has(.table-btn) {
+  margin: 0;
+  width: 128px;
+  max-width: 128px !important;
+}
+
+.table-btn {
+  margin: 0;
 }

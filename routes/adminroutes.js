@@ -78,6 +78,7 @@ router.post('/registeruser', (req, res) => {
           answered: [],
           submissions: [],
           lastSubmit: 0,
+          lastMessage: 0,
         }, { collection: 'users' });
 
         // Try to save to database

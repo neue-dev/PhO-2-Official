@@ -7,11 +7,17 @@ const messageSchema = new mongoose.Schema({
   //   unique: true,
   //   type: String,
   // },
-  // type: {
-  //   required: false,
-  //   type: String,
-  //   default: 'text',
-  // },
+  type: {
+    required: true,
+    type: String,
+    default: 'message',
+    validate: {
+      validator: val => {
+        return ['message', 'reply', 'announcement', 'notification', 'clarification'].includes(val);
+      },
+      message: 'Type must be a valid string.',
+    },
+  },
   // value: {
   //   required: true,
   //   type: String
