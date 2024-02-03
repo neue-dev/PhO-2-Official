@@ -1,4 +1,4 @@
-// Configure the contest config
+// Configure the contest config in localStorage
 document.addEventListener('DOMContentLoaded', function() {
   createXHR('./user/configlist', 'POST', {}, data => { 
     data.config.forEach(configParameter => {
