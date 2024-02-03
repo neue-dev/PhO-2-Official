@@ -230,9 +230,7 @@
           user_catrank.innerHTML = (user.category == 'junior' ? junior_rank : (user.category == 'senior' ? senior_rank : '')) + '.';
           user_name.innerHTML = user_catname.innerHTML = `<b>${user.username}</b>`;
           user_score.innerHTML = user_catscore.innerHTML = user.score;
-
-          user_data.style.width = user_catdata.style.width = '500px';
-          user_rank.style.width = user_catrank.style.width = '50px';
+          user_rank.style.maxWidth = user_catrank.style.maxWidth = '32px';
 
           user_data.appendChild(user_rank);
           user_data.appendChild(user_name);

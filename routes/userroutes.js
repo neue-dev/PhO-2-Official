@@ -227,18 +227,17 @@ router.post('/submit', (req, res) => {
 
 router.post('/message', (req, res) => {
   isuser(req, res, async userData => {
-    // const { message, answer } = req.body;
-    // const username = userData.username;
-
-    // // Retrieve data from database and send to user
-    // const user = await User.findOne({ username: username });
-    // const problem = await Problem.findOne({ "code.number": code.number, "code.alpha": code.alpha });
-    // const answerKey = problem.answer;
-    // const tolerance = problem.tolerance;
-
+    
     //! Save the message into the messages database
     //! Update the user's lastMessage property
 
+
+  })
+});
+
+router.post('/messages', (req, res) => {
+  isuser(req, res, async userData => {
+    //! retrieve the user's messages
 
   })
 });

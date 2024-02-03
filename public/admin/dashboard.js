@@ -318,18 +318,21 @@ const displayConfig = config_table => {
     let config_value = document.createElement('td');
     let config_actions = document.createElement('td');
 
+    config_key.style.width = '256px';
+    config_value.style.width = '256px';
+
     config_key.innerHTML = `<b>${configParameter.key}</b>`;
     config_value.innerHTML = `${(function(){
       switch(configParameter.type) {
         case 'date':
-          return `${(new Date(parseInt(configParameter.value))).toString().split(' ').slice(1, 5).join(' ')}
-            <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>${configParameter.value}</i>]</span>`;
+          return `<div>${(new Date(parseInt(configParameter.value))).toString().split(' ').slice(1, 5).join(' ')}
+            <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>${configParameter.value}</i>]</span></div>`;
         case 'url':
           return `<a href="${configParameter.value}" target="_blank">${configParameter.key} 
             <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>${configParameter.value}</i>]</span></a>`;
         case 'duration':
-          return `${Math.floor(configParameter.value / 1000 / 60)}m ${Math.floor(configParameter.value) / 1000 % 60}s
-            <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>${configParameter.value}</i>]</span>`;
+          return `<div>${Math.floor(configParameter.value / 1000 / 60)}m ${Math.floor(configParameter.value) / 1000 % 60}s
+            <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>${configParameter.value}</i>]</span></div>`;
         default:
           editValue.type = 'text';
           return configParameter.value;
@@ -377,6 +380,7 @@ const displayUsers = user_table => {
     let user_actions = document.createElement('td');
     let user_delete = document.createElement('td');
 
+    // Set the content
     user_username.innerHTML = `<b>${user.username}</b>`;
     user_isAdmin.innerHTML = user.isAdmin ? '<b class="red-text">admin</b>' : 'user';
     user_category.innerHTML = user.category;
@@ -453,12 +457,12 @@ const displayProblems = problem_table => {
     problem_tolerance.innerHTML = problem.tolerance;
     problem_tolerance.innerHTML = problem.points + (problem.points == 1 ? ' pt' : ' pts');
     problem_status.innerHTML = 
-      problem.status == 'disabled' ? '<b class="blue-grey-text">disabled</b>' : 
+      problem.status == 'disabled' ? '<b class="grey-text text-darken-2">disabled</b>' : 
       problem.status == 'active' ? '<b class="green-text">active</b>' : problem.status;
-    problem_actions.innerHTML = '<a class="waves-effect btn modal-trigger ui-text" href="#edit-problem">edit</a>';
-    problem_recheck.innerHTML = '<a class="waves-effect btn modal-trigger ui-text" href="#recheck-problem">recheck</a>';
+    problem_actions.innerHTML = '<a class="waves-effect btn table-btn modal-trigger ui-text" href="#edit-problem">edit</a>';
+    problem_recheck.innerHTML = '<a class="waves-effect btn table-btn modal-trigger ui-text" href="#recheck-problem">recheck</a>';
     problem_delete.innerHTML = 
-      `<a class="waves-effect waves-red btn modal-trigger text-darken-3 ui-text" href="#delete-problem">
+      `<a class="waves-effect waves-red btn table-btn modal-trigger text-darken-3 ui-text" href="#delete-problem">
       <img src="../resources/icons/trash-icon.png" width="25px" style="margin-top: 5px; opacity: 1;">
       </a>`;
 
@@ -473,10 +477,10 @@ const displayProblems = problem_table => {
     problem_delete.addEventListener('click', e => (deleteProblem.children[0].children[0].innerHTML = 
       `Delete Problem - <span class="red-text text-lighten-1">${problem.name}</span>`) && (deleteProblemname.textContent = problem.name));
 
-    problem_code.style.width = '50px';
-    problem_name.style.width = '250px';
+    problem_code.style.width = '64px';
+    problem_name.style.width = '200px';
     if(problem.status == 'disabled'){
-      problem_element.className = 'blue-grey lighten-4';
+      problem_element.className = 'grey lighten-2';
     }
 
     problem_element.appendChild(problem_code);
