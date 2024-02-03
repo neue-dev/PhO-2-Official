@@ -24,31 +24,31 @@ const updateInterval = () => {
   // The contest hasn't begun
   if(now < contest_elims_start) {
     timer.innerHTML = `
-      <h4>${displayTime(contest_elims_start - now)}</h4>
+      <h4 style="margin-bottom: 24px;">${displayTime(contest_elims_start - now)}</h4>
       <p class="timer-label">BEFORE ELIMINATIONS BEGIN</p>`;
   
   // The eliminations are underway
   } else if(contest_elims_start <= now && now < contest_elims_end) {
     timer.innerHTML = `
-      <h4>${displayTime(contest_elims_end - now)}</h4>
+      <h4 style="margin-bottom: 24px;">${displayTime(contest_elims_end - now)}</h4>
       <p class="timer-label">BEFORE ELIMINATIONS END</p>`;
   
   // The elims are done, waiting for finals
   } else if(contest_elims_end <= now && now < contest_finals_start) {
     timer.innerHTML = `
-      <h4>${displayTime(contest_finals_start - now)}</h4>
+      <h4 style="margin-bottom: 24px;">${displayTime(contest_finals_start - now)}</h4>
       <p class="timer-label">BEFORE FINALS BEGIN</p>`;
   
   // The finals are underway
   } else if(contest_finals_start <= now && now < contest_finals_end) {
     timer.innerHTML = `
-      <h4>${displayTime(contest_finals_end - now)}</h4>
+      <h4 style="margin-bottom: 24px;">${displayTime(contest_finals_end - now)}</h4>
       <p class="timer-label">BEFORE FINALS END</p>`;
   
   // The contest is done
   } else {
     timer.innerHTML = `
-      <h4>${displayTime(now - contest_finals_end)}</h4>
+      <h4 style="margin-bottom: 24px;">${displayTime(now - contest_finals_end)}</h4>
       <p class="timer-label">SINCE THE CONTEST ENDED</p>`;
   }
 }

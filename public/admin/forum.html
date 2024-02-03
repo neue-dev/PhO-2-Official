@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>(PhO)&#178; - Dashboard</title>
+    <title>(PhO)&#178; - Leaderboard</title>
     <link rel="icon" type="image/x-icon" href="/pho-2-icon">
 
     <!--Import Google Icon Font-->
@@ -18,46 +18,21 @@
 
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
+  
     <!-- Overrides -->
-    <style type="text/css">
-
-
-      .user-table {
+    <style>
+      .forum-table {
         margin-top: 80px;
       }
 
-      .user-table-header-card {
+      .forum-table-header-card {
         margin-top: -30px;
       }
 
-      .user-table-card {
+      .forum-table-card {
         margin: 0;
         padding: 0;
         height: calc(100vh - 390px);
-      }
-
-      .cooldown {
-        font-size: 64px;
-      }
-
-      .logo-container {
-        width: 100%;
-      }
-
-      .problem-table>tr>td {
-        width: 100px;
-      }
-
-      .submission-table>tr>td {
-        width: 100px;
-      }
-
-      #toast-container {
-        top: auto !important;
-        right: auto !important;
-        bottom: 5%;
-        left: 70%;  
       }
     </style>
   </head>
@@ -67,8 +42,8 @@
       <div class="nav-wrapper">
         <div class="nav-title title-text">
           <h3 class="nav-title-text">
-            <span class="hide-on-med-and-down">PHILIPPINE ONLINE PHYSICS OLYMPIAD</span>
-            <span class="hide-on-large-only">(PhO)&#178;</span>
+            <span id="navbar-title-desktop" class="hide-on-med-and-down">PHILIPPINE ONLINE PHYSICS OLYMPIAD</span>
+            <span id="navbar-title-mobile" class="hide-on-large-only">(PhO)&#178;</span>
           </h3>
         </div>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
@@ -102,11 +77,11 @@
         <div class="container">
           <br>
           <h2 class="title-text">
-            Dashboard
+            Forum
           </h2>
 
           <p class="info-text">
-            The dashboard displays your's team's progress, and is also where you can submit answers to problems during the duration of the contest.
+            This is the primary point of communication between the contestants and the organizers. Questions can be forwarded here, and official clarifications will also be posted.
           </p>
 
           <div>
@@ -119,8 +94,8 @@
           <br>
         </div>
       </div>
-      
-      <div class="user-table col s12 m6 l7">
+
+      <div class="forum-table col s12 m6 l7">
         <img class="hide-on-small-only" src="../resources/icons/search-icon.png" width="25px" style="margin-left: 15px; margin-bottom: -5px; display: inline-block">
         <div class="input-field inline filter-field ui-text" 
           style="display: inline-block; padding: 0 10px 0 10px; border-radius: 2.5px; width: 90%;">
@@ -128,70 +103,69 @@
           <label style="margin-left: 10px;" for="filter-text">Filter Entries</label>
         </div>
 
-        <div class="user-table-card z-depth-2 grey lighten-4">
-          <div class="row grey lighten-4 no-margin">
+        <div class="forum-table-card z-depth-2">
+          <div class="row grey lighten-4">
             <div class="col s12">
-              <ul class="tabs dashboard-tabs grey lighten-4">
-                <li class="tab col s6"><a class="active ui-text" href="#problems">Problems</a></li>
-                <li class="tab col s6"><a class="ui-text" href="#submissions">Submissions</a></li>
+              <ul class="tabs forum-tabs grey lighten-4">
+                <li class="tab col s6"><a class="active ui-text" href="#announcements">Announcements</a></li>
+                <li class="tab col s6"><a class="ui-text" href="#clarifications">Clarifications</a></li>
               </ul>
             </div>
-            <div id="problems" class="table-card col s12">
-              <table class="bordered problem-table"></table>
+
+            <div id="announcements" class="table-card col s12">
+              <table class="bordered announcements-table"></table>
             </div>
-            <div id="submissions" class="table-card col s12">
-              <table class="bordered submission-table"></table>
+            <div id="clarifications" class="table-card col s12">
+              <table class="bordered clarifications-table"></table>
             </div>
           </div>
-        </div>
-        
-        <br><br>
-        <div class="s6" style="margin-top: -32px; padding: 20px;">
-          <a class="waves-effect btn white grey-text text-darken-3 modal-trigger ui-text" href="#submit-answer-modal">Submit Answer</a>
+
+          <br>
+          <div class="s6" style="margin-top: -32px; padding: 20px;">
+            <a class="waves-effect btn white grey-text text-darken-3 modal-trigger white ui-text" style="margin-right: 10px;" href="#new-user">New Announcement</a>
+          </div>
         </div>
       </div>
     </div>
 
-    <div id="submit-answer-modal" class="modal">
-      <div class="modal-content">
-        <div class="submit-answer-content">
-          <h4 class="title-text">Submit Answer</h4>
-          <p style="margin-bottom: 30px">Select a problem to submit an answer to. Make sure that the format of the answer is valid. Any of the following formats work: </p>
-
-          <div class="input-field col s12">
-            <input placeholder="Enter Problem Name or Code" type="text" id="submit-problem" class="autocomplete">
-            <label style="margin-left: -12px" for="submit-problem">problem</label>
-          </div>
-
-          <div class="input-field submit-answer-input">
-            <input placeholder="Enter Answer" id="submit-answer" type="text" class="validate ui-text">
-            <label for="submit-answer">answer</label>
-          </div>
-        </div>
-        <div class="submit-answer-cooldown" hidden>
-          Please wait for the cooldown to end before submitting another answer.<br><br>
-          
-          <br><br>
-          <h1 class="row center-align">
-            <b><span class="cooldown red-text"></span></b>
-          </h1>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <a href="#!" class="waves-effect submit-button waves-green btn-flat ui-text">Submit</a>
-        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
-      </div>
-    </div>
-    
     <script src="./utils/js/header"></script>
     <script src="./utils/js/timer"></script>
-    <script src="./utils/js/filter"></script>
     <script src="./utils/js/xhr"></script>
-    <script src="./utils/js/regex"></script>
-    <script src="./utils/js/answer"></script>
-    <script src="./utils/js/config"></script>
+    <script src="./utils/js/filter"></script>
     <script src="./utils/js/logout"></script>
-    <script src="./dashboard/js"></script>
-    <script src="/navbar"></script>
+    <script src="./navbar"></script>
+    <script>
+      const announcements_table = document.querySelectorAll(".announcements-table")[0];
+      const clarifications_table = document.querySelectorAll(".clarifications-table")[0];
+      filterFunc([announcements_table, clarifications_table]);
+
+      document.addEventListener('DOMContentLoaded', function() {
+        M.Sidenav.init(document.querySelectorAll('.sidenav'), {});
+        M.Tabs.init(document.querySelectorAll('.forum-tabs'), {});
+
+        loadAnnouncements();
+        loadClarifications();
+      });
+
+      const loadAnnouncements = () => {
+        createXHR('./user/announcements', 'POST', {}, data => {
+          data.announcements.forEach(announcement => {
+            DATA.announcements[announcement._id] = announcement;
+          });
+        });
+      }
+
+      const loadClarifications = () => {
+        createXHR('./user/clarifications', 'POST', {}, data => {
+          data.clarifications.forEach(clarification => {
+            DATA.clarifications[clarification._id] = clarification;
+          });
+        });
+      }
+
+      const displayForum = (announcements_table, clarifications_table) => {
+        
+      }
+    </script>
   </body>
 </html>

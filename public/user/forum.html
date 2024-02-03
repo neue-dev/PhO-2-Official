@@ -103,27 +103,23 @@
           <label style="margin-left: 10px;" for="filter-text">Filter Entries</label>
         </div>
 
-        <!-- <div class="leaderboard-table-card z-depth-2">
+        <div class="forum-table-card z-depth-2">
           <div class="row grey lighten-4">
             <div class="col s12">
-              <ul class="tabs leaderboard-tabs grey lighten-4">
-                <li class="tab col s4"><a class="active ui-text" href="#overall">Overall</a></li>
-                <li class="tab col s4"><a class="ui-text" href="#junior">Junior</a></li>
-                <li class="tab col s4"><a class="ui-text" href="#senior">Senior</a></li>
+              <ul class="tabs forum-tabs grey lighten-4">
+                <li class="tab col s6"><a class="active ui-text" href="#announcements">Announcements</a></li>
+                <li class="tab col s6"><a class="ui-text" href="#clarifications">Clarifications</a></li>
               </ul>
             </div>
 
-            <div id="overall" class="table-card col s12">
-              <table class="bordered overall-table"></table>
+            <div id="announcements" class="table-card col s12">
+              <table class="bordered announcements-table"></table>
             </div>
-            <div id="junior" class="table-card col s12">
-              <table class="bordered junior-table"></table>
-            </div>
-            <div id="senior" class="table-card col s12">
-              <table class="bordered senior-table"></table>
+            <div id="clarifications" class="table-card col s12">
+              <table class="bordered clarifications-table"></table>
             </div>
           </div>
-        </div> -->
+        </div>
       </div>
     </div>
 
@@ -133,5 +129,38 @@
     <script src="./utils/js/filter"></script>
     <script src="./utils/js/logout"></script>
     <script src="./navbar"></script>
+    <script>
+      const announcements_table = document.querySelectorAll(".announcements-table")[0];
+      const clarifications_table = document.querySelectorAll(".clarifications-table")[0];
+      filterFunc([announcements_table, clarifications_table]);
+
+      document.addEventListener('DOMContentLoaded', function() {
+        M.Sidenav.init(document.querySelectorAll('.sidenav'), {});
+        M.Tabs.init(document.querySelectorAll('.forum-tabs'), {});
+
+        loadAnnouncements();
+        loadClarifications();
+      });
+
+      const loadAnnouncements = () => {
+        createXHR('./user/announcements', 'POST', {}, data => {
+          data.announcements.forEach(announcement => {
+            DATA.announcements[announcement._id] = announcement;
+          });
+        });
+      }
+
+      const loadClarifications = () => {
+        createXHR('./user/clarifications', 'POST', {}, data => {
+          data.clarifications.forEach(clarification => {
+            DATA.clarifications[clarification._id] = clarification;
+          });
+        });
+      }
+
+      const displayForum = (announcements_table, clarifications_table) => {
+        
+      }
+    </script>
   </body>
 </html>

@@ -15,47 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
   loadProblems();
 });
 
-// User handling JS
-const downloadModal = document.querySelectorAll('.submission-log-modal')[0];
-const downloadButton = document.querySelectorAll('.submission-log-button')[0];
-
-const updateScoresModal = document.querySelectorAll('.update-scores-modal')[0];
-const updateScoresButton = document.querySelectorAll('.update-scores-button')[0];
-
-// Sht this actually works thanks stackoverflow
-const download = (filename, text) => {
-
-  let a = document.createElement('a');
-  a.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-  a.setAttribute('download', filename);
-  a.style.display = 'none';
-
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a);
-}
-
-downloadButton.addEventListener('click', e => {
-  createXHR('./admin/submissionlog', 'POST', {}, data => {
-    download('SUBMISSION_LOG - ' + (Date()).split(' ').slice(1, 5).join('_') + '.txt', (() => {
-      let text = '';
-
-      data.submissions.forEach(submission => {
-        text += `${submission.username},${submission.problemCodeName},${submission.answer.mantissa}` + 
-          `e${submission.answer.exponent},${submission.verdict},${submission.timestamp}\n`;
-      })
-
-      M.Modal.getInstance(downloadModal).close();
-      return text;
-    })());
-  })
-});
-
-updateScoresButton.addEventListener('click', e => {
-  createXHR('./admin/updatescores', 'POST', {}, () => {
-    M.Modal.getInstance(updateScoresModal).close();
-  });
-});
-
 const editConfigModal = document.querySelectorAll('.edit-config-modal')[0];
 const editConfigButton = document.querySelectorAll('.edit-config-button')[0];
 const editKey = document.querySelector('#edit-config-key');
