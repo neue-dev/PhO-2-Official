@@ -77,6 +77,16 @@ html {
   font-family: Lexend;
 }
 
+.err-logo-container{
+  width: 500px;
+}
+
+@media (max-width : 800px) {
+  .err-logo-container {
+    width: 250px;
+  }
+}
+
 @media (max-width : 1440px) {
   h2 {
     font-size: 40px;
@@ -89,7 +99,23 @@ html {
   }
 }
 
+@media (max-width : 1200px) {
+  .btn {
+    width: 45%;
+    display: inline-block;
+    margin-bottom: 5px;
+  }
+}
+
 /* Overrides to Materialize */
+td .btn {
+  min-width: 96px;
+}
+
+.btn {
+  min-width: 160px;
+}
+
 .tabs .tab a {
   color: #212121;
 }

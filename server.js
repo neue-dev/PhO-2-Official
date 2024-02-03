@@ -78,8 +78,8 @@ app.get('/problems', (req, res) => {
         if(!userData)
           return res.sendFile('./public/home-redirect.html', { root: __dirname });
 
-        // If it's during the elims
-        if(Date.now() > process.env.CONTEST_ELIMS_START && Date.now() < process.env.CONTEST_ELIMS_END) {
+        // If it's during the elims OR if the user is an admin
+        if((Date.now() > process.env.CONTEST_ELIMS_START && Date.now() < process.env.CONTEST_ELIMS_END) || userData.isAdmin) {
 
           // Parse the HTML file and replace the mustache tags.
           fs.readFile('./public/problems.html', 'utf-8', (err, data) => {
@@ -107,8 +107,8 @@ app.get('/finals', (req, res) => {
         if(!userData)
           return res.sendFile('./public/home-redirect.html', { root: __dirname });
 
-        // If it's during the finals
-        if(Date.now() > process.env.CONTEST_FINALS_START && Date.now() < process.env.CONTEST_FINALS_END) {
+        // If it's during the finals OR user is an admin
+        if((Date.now() > process.env.CONTEST_FINALS_START && Date.now() < process.env.CONTEST_FINALS_END) || userData.isAdmin) {
           
           // Parse the HTML file and replace the mustache tags.
           fs.readFile('./public/finals.html', 'utf-8', (err, data) => {
