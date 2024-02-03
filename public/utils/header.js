@@ -7,9 +7,4 @@ const loadUserData = () => {
     DATA.userData.username = data.username;
     DATA.userData.lastSubmit = data.lastSubmit || 0;
   });
-
-  updateInterval();
-  if(!DATA.interval){
-    DATA.interval = setInterval(updateInterval, 1000);
-  }
 }
