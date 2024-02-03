@@ -489,9 +489,3 @@ const displayProblems = problem_table => {
     problem_table.appendChild(problem_element);
   })
 }
-
-// Log out functionality
-const logoutButton = document.querySelectorAll('.logout-button');
-logoutButton.forEach(button => button.addEventListener('click', e => {
-  createXHR('./auth/logout', 'POST', {}, () => { location.href = '/' });
-}));

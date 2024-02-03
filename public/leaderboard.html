@@ -57,6 +57,7 @@
           <li><a href="./finals" class="ui-text">Finals</a></li>
           <li><a href="./dashboard" class="ui-text">Dashboard</a></li>
           <li><a href="./leaderboard" class="ui-text">Leaderboard</a></li>
+          <li><a href="./forum" class="ui-text">Forum</a></li>
           <li><a href="#" class="ui-text logout-button">Logout</a></li>
         </ul>
 
@@ -67,6 +68,7 @@
           <li><a href="./finals" class="ui-text">Finals</a></li>
           <li><a href="./dashboard" class="ui-text">Dashboard</a></li>
           <li><a href="./leaderboard" class="ui-text">Leaderboard</a></li>
+          <li><a href="./forum" class="ui-text">Forum</a></li>
           <li><div class="divider" ></div></li>
           <li><a class="waves-effect ui-text logout-button" href="#">Logout</a></li>
         </ul>
@@ -135,6 +137,7 @@
     <script src="./utils/js/timer"></script>
     <script src="./utils/js/xhr"></script>
     <script src="./utils/js/filter"></script>
+    <script src="./utils/js/logout"></script>
     <script src="./navbar"></script>
     <script>
       const overall_table = document.querySelectorAll(".overall-table")[0];
@@ -255,11 +258,6 @@
             senior_table.appendChild(user_catdata);
         })
       }
-
-      const logoutButton = document.querySelectorAll('.logout-button');
-      logoutButton.forEach(button => button.addEventListener('click', e => {
-        createXHR('./auth/logout', 'POST', {}, () => { location.href = '/' });
-      }));
     </script>
   </body>
 </html>

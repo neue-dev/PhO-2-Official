@@ -12,7 +12,7 @@ const Submission = require('../models/submission');
 const Score = require('../models/score');
 
 //* Admin Routes
-router.get('/submissionlog', async (req, res) => {
+router.post('/submissionlog', async (req, res) => {
 
   // Retrieve data from database and send to user
   const submissions = await Submission.find({});
