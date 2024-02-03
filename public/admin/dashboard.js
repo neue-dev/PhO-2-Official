@@ -426,8 +426,8 @@ const displayUsers = user_table => {
     user_score.innerHTML = (Math.round(user.score * 1000) / 1000).toString() || '-';
     user_actions.innerHTML = '<a class="waves-effect btn modal-trigger white grey-text text-darken-3 ui-text" href="#edit-user">edit</a>';
     user_delete.innerHTML = user.isAdmin ? '' :
-      `<a class="waves-effect btn modal-trigger red lighten-3 grey-text text-darken-3 ui-text" href="#delete-user">
-        <img src="../resources/icons/trash-icon.png" width="25px" style="margin-top: 5px">
+      `<a class="waves-effect waves-red btn modal-trigger white grey-text text-darken-3 ui-text" href="#delete-user">
+        <img src="../resources/icons/trash-icon.png" width="25px" style="margin-top: 5px; opacity: 1; filter: invert(32%) sepia(49%) saturate(2501%) hue-rotate(338deg) brightness(91%) contrast(96%);">
       </a>`;
 
     let editUser = document.querySelector('#edit-user');
@@ -497,8 +497,8 @@ const displayProblems = problem_table => {
     problem_actions.innerHTML = '<a class="waves-effect btn modal-trigger white grey-text text-darken-3 ui-text" href="#edit-problem">edit</a>';
     problem_recheck.innerHTML = '<a class="waves-effect btn modal-trigger white grey-text text-darken-3 ui-text" href="#recheck-problem">recheck</a>';
     problem_delete.innerHTML = 
-      `<a class="waves-effect btn modal-trigger red lighten-3 grey-text text-darken-3 ui-text" href="#delete-problem">
-        <img src="../resources/icons/trash-icon.png" width="25px" style="margin-top: 5px">
+      `<a class="waves-effect waves-red btn modal-trigger white grey-text text-darken-3 ui-text" href="#delete-problem">
+      <img src="../resources/icons/trash-icon.png" width="25px" style="margin-top: 5px; opacity: 1; filter: invert(32%) sepia(49%) saturate(2501%) hue-rotate(338deg) brightness(91%) contrast(96%);">
       </a>`;
 
     let editProblem = document.querySelector('#edit-problem');
