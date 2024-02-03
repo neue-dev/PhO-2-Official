@@ -4,6 +4,7 @@ const fs = require('fs');
 const express = require('express');
 const mongoose = require('mongoose');
 const mustache = require('mustache');
+const apiroutes = require('./routes/apiroutes');
 const authroutes = require('./routes/authroutes');
 const adminroutes = require('./routes/adminroutes');
 const userroutes = require('./routes/userroutes');
@@ -53,9 +54,13 @@ const server = app.listen(server_port, () => {
   console.log(`Server opened on port ${server_port}.`)
 });
 
+// Middleware
 app.use(express.json());
 app.use(cookieparser());
 app.use(express.static(__dirname + '/public'));
+
+// The different routes
+app.use('/api', apiroutes);
 app.use('/auth', authroutes);
 app.use('/admin', adminroutes);
 app.use('/user', userroutes);

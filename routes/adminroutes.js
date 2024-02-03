@@ -14,7 +14,6 @@ const Config = require('../models/config');
 const Problem = require('../models/problem');
 const Submission = require('../models/submission');
 const Score = require('../models/score');
-const submission = require('../models/submission');
 
 //* Constants
 const saltRounds = 10;

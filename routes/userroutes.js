@@ -13,7 +13,6 @@ const Config = require('../models/config');
 const User = require('../models/user');
 const Problem = require('../models/problem');
 const Submission = require('../models/submission');
-const user = require('../models/user');
 
 //* User Authentication
 const isuser = function(req, res, callback){
