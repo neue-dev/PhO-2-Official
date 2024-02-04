@@ -512,18 +512,32 @@ router.post('/problemlist', (req, res) => {
 
 router.post('/submissionlog', (req, res) => {
   admin(req, res, async userData => {
+    const { api_key } = req.body;
+    const master_api_key = process.env.API_KEY;
     
-    // Retrieve data from database and send to user
-    const submissions = await Submission.find({});
-    const data = { submissions: [] };
+    // Make sure the api key is right
+    if(master_api_key == api_key) {
 
-    submissions.forEach(submission => { 
-      data.submissions.push(submission)
-    });
+      // Retrieve data from database and send to user
+      const submissions = await Submission.find({});
+      const data = { submissions: [] };
 
-    res.json({
-      submissions: data.submissions,
-    });
+      submissions.forEach(submission => { 
+        data.submissions.push(submission)
+      });
+
+      res.json({
+        submissions: data.submissions,
+      });
+    } else {
+      
+      // Cheeky error
+      res.json({
+        submissions: [{
+          'error': 'Invalid api key.'
+        }],
+      });
+    }
   });
 });
 
