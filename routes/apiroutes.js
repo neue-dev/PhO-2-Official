@@ -11,7 +11,7 @@ const Problem = require('../models/problem');
 const Submission = require('../models/submission');
 const Score = require('../models/score');
 
-//* Admin Routes
+//* API Routes
 router.post('/submissionlog', async (req, res) => {
   const { api_key } = req.body;
   const master_api_key = process.env.MASTER_API_KEY;
