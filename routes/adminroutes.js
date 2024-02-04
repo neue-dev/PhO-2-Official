@@ -513,7 +513,7 @@ router.post('/problemlist', (req, res) => {
 router.post('/submissionlog', (req, res) => {
   admin(req, res, async userData => {
     const { api_key } = req.body;
-    const master_api_key = process.env.API_KEY;
+    const master_api_key = process.env.MASTER_API_KEY;
     
     // Make sure the api key is right
     if(master_api_key == api_key) {
