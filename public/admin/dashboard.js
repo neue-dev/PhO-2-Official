@@ -301,7 +301,7 @@ const displayConfig = config_table => {
     let editConfig = document.querySelector('#edit-config');
     config_actions.innerHTML = '<a class="waves-effect table-btn btn modal-trigger ui-text" href="#edit-config">edit</a>';
     config_actions.addEventListener('click', e => (editConfig.children[0].children[0].innerHTML = 
-      `Edit Parameter - <span class="red-text text-lighten-1">${configParameter.key}</span>`) && 
+      `Edit parameter - <span class="red-text text-lighten-1">${configParameter.key}</span>`) && 
       (editKey.textContent = configParameter.key) &&
       (editValue.type = (function() {
         switch(configParameter.type) {
@@ -357,9 +357,9 @@ const displayUsers = user_table => {
     let deleteUser = document.querySelector('#delete-user');
 
     user_actions.addEventListener('click', e => (editUser.children[0].children[0].innerHTML = 
-      `Edit User - <span class="red-text text-lighten-1">${user.username}</span>`) && (editUsername.textContent = user.username));
+      `Edit user - <span class="red-text text-lighten-1">${user.username}</span>`) && (editUsername.textContent = user.username));
     user_delete.addEventListener('click', e => (deleteUser.children[0].children[0].innerHTML = 
-      `Delete User - <span class="red-text text-lighten-1">${user.username}</span>`) && (deleteUsername.textContent = user.username));
+      `Delete user - <span class="red-text text-lighten-1">${user.username}</span>`) && (deleteUsername.textContent = user.username));
 
     if(user.isAdmin){
       user_element.className = 'red lighten-4';
@@ -430,11 +430,11 @@ const displayProblems = problem_table => {
     let deleteProblem = document.querySelector('#delete-problem');
     
     problem_actions.addEventListener('click', e => (editProblem.children[0].children[0].innerHTML = 
-      `Edit Problem - <span class="red-text text-lighten-1">${problem.name}</span>`) && (editProblemname.textContent = problem.name));
+      `Edit problem - <span class="red-text text-lighten-1">${problem.name}</span>`) && (editProblemname.textContent = problem.name));
     problem_recheck.addEventListener('click', e => (recheckProblem.children[0].children[0].innerHTML = 
-      `Recheck Problem - <span class="red-text text-lighten-1">${problem.name}</span>`) && (recheckProblemname.textContent = problem.name));
+      `Recheck problem - <span class="red-text text-lighten-1">${problem.name}</span>`) && (recheckProblemname.textContent = problem.name));
     problem_delete.addEventListener('click', e => (deleteProblem.children[0].children[0].innerHTML = 
-      `Delete Problem - <span class="red-text text-lighten-1">${problem.name}</span>`) && (deleteProblemname.textContent = problem.name));
+      `Delete problem - <span class="red-text text-lighten-1">${problem.name}</span>`) && (deleteProblemname.textContent = problem.name));
 
     problem_code.style.width = '64px';
     problem_name.style.width = '200px';

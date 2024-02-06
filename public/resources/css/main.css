@@ -3,7 +3,12 @@
 /* Assets */
 @font-face {
   font-family: titleFont;
-  src: url(/resources/fonts/glacial-indifference.bold.otf);
+  src: url(/resources/fonts/Heebo-SemiBold.ttf);
+}
+
+@font-face {
+  font-family: headerFont;
+  src: url(/resources/fonts/GlacialIndifference-Bold.otf);
 }
 
 @font-face {
@@ -17,6 +22,7 @@
   height: 100%;
   margin-left: 30px;
   margin-top: -30px;
+  font-family: headerFont;
 }
 
 .nav-title-text {
@@ -132,6 +138,8 @@ td:has(.table-btn) {
 
 .title-text {
   font-family: titleFont;
+  max-width: 100%;
+  margin-bottom: 24px;
 }
 
 .ui-text {

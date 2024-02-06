@@ -67,7 +67,7 @@ const displayForum = (announcements_table) => {
       view_content.innerHTML = announcement.content;
     });
     announcement_delete.addEventListener('click', e => (
-      (announcementDeleteModal.children[0].children[0].innerHTML = `Delete Announcement - <span class="red-text text-lighten-1">${announcement.title}</span>`) &&
+      (announcementDeleteModal.children[0].children[0].innerHTML = `Delete announcement - <span class="red-text text-lighten-1">${announcement.title}</span>`) &&
       (delete_id.textContent = announcement.id)
     ));
 
