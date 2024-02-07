@@ -92,10 +92,10 @@ const displayLeaderboard = (overall_table, junior_table, senior_table) => {
       senior_index++;
     }
 
-    user_rank.innerHTML = overall_rank + '.';
-    user_catrank.innerHTML = (user.category == 'junior' ? junior_rank : (user.category == 'senior' ? senior_rank : '')) + '.';
+    user_rank.innerHTML = `<div>${overall_rank + '.'}</div>`;
+    user_catrank.innerHTML = `<div>${(user.category == 'junior' ? junior_rank : (user.category == 'senior' ? senior_rank : '')) + '.'}<div>`;
     user_name.innerHTML = user_catname.innerHTML = `<b>${user.username}</b>`;
-    user_score.innerHTML = user_catscore.innerHTML = user.score;
+    user_score.innerHTML = user_catscore.innerHTML = `<div>${user.score}</div>`;
     user_rank.style.maxWidth = user_catrank.style.maxWidth = '32px';
 
     user_data.appendChild(user_rank);

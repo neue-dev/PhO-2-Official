@@ -341,12 +341,12 @@ const displayUsers = user_table => {
 
     // Set the content
     user_username.innerHTML = `<b>${user.username}</b>`;
-    user_isAdmin.innerHTML = user.isAdmin ? '<b class="red-text">admin</b>' : 'user';
+    user_isAdmin.innerHTML = user.isAdmin ? '<b class="red-text">admin</b>' : '<div>user</div>';
     user_category.innerHTML = user.category;
     user_status.innerHTML = 
       user.status == 'disqualified' ? '<b class="grey-text text-darken-2">disqualified</b>' : 
-      user.status == 'participating' ? '<b class="green-text">participating</b>' : user.status;
-    user_score.innerHTML = (Math.round(user.score * 1000) / 1000).toString() || '-';
+      user.status == 'participating' ? '<b class="green-text">participating</b>' : `<div>${user.status}</div>`;
+    user_score.innerHTML = `<div>${(Math.round(user.score * 1000) / 1000).toString() || '-'}</div>`;
     user_actions.innerHTML = '<a class="waves-effect btn table-btn modal-trigger ui-text" href="#edit-user">edit</a>';
     user_delete.innerHTML = user.isAdmin ? '<div class="table-btn" hidden></div>' :
       `<a class="waves-effect waves-red btn table-btn modal-trigger ui-text" href="#delete-user">
@@ -411,13 +411,13 @@ const displayProblems = problem_table => {
     let problem_delete = document.createElement('td');
 
     problem_name.innerHTML = `<b>${problem.name}</b>`;
-    problem_code.innerHTML = `[ ${problem.code.number + problem.code.alpha} ]`;
-    problem_answer.innerHTML = `${problem.answer.mantissa} ${problem.answer.exponent != 0 ? '&#215; 10<sup>' + problem.answer.exponent + '</sup>' : ''}`;
-    problem_tolerance.innerHTML = problem.tolerance;
-    problem_tolerance.innerHTML = problem.points + (problem.points == 1 ? ' pt' : ' pts');
+    problem_code.innerHTML = `<div>[ ${problem.code.number + problem.code.alpha} ]</div>`;
+    problem_answer.innerHTML = `<div>${problem.answer.mantissa} ${problem.answer.exponent != 0 ? '&#215; 10<sup>' + problem.answer.exponent + '</sup>' : ''}</div>`;
+    problem_tolerance.innerHTML = `<div>${problem.tolerance}</div>`;
+    problem_tolerance.innerHTML = `<div>${problem.points + (problem.points == 1 ? ' pt' : ' pts')}</div>`;
     problem_status.innerHTML = 
       problem.status == 'disabled' ? '<b class="grey-text text-darken-2">disabled</b>' : 
-      problem.status == 'active' ? '<b class="green-text">active</b>' : problem.status;
+      problem.status == 'active' ? '<b class="green-text">active</b>' : `<div>problem.status</div>`;
     problem_actions.innerHTML = '<a class="waves-effect btn table-btn modal-trigger ui-text" href="#edit-problem">edit</a>';
     problem_recheck.innerHTML = '<a class="waves-effect btn table-btn modal-trigger ui-text" href="#recheck-problem">recheck</a>';
     problem_delete.innerHTML = 

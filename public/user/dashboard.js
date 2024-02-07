@@ -100,12 +100,12 @@ const displayProblems = problem_table => {
     }
 
     problem_name.innerHTML = `<b>${problem.name}</b>`;
-    problem_code.innerHTML = `[ ${problem.code.number + problem.code.alpha} ]`;
-    problem_points.innerHTML = `${problem.points} ${problem.points == 1 ? 'pt' : 'pts'}`;
-    problem_attempts.innerHTML = `${problem.attempts} attempt${problem.attempts == 1 ? '' : 's'}`;
+    problem_code.innerHTML = `<div>[ ${problem.code.number + problem.code.alpha} ]</div>`;
+    problem_points.innerHTML = `<div>${problem.points} ${problem.points == 1 ? 'pt' : 'pts'}</div>`;
+    problem_attempts.innerHTML = `<div>${problem.attempts} attempt${problem.attempts == 1 ? '' : 's'}</div>`;
     problem_verdict.innerHTML = 
       problem.verdict == 'correct' ? '<b class="green-text">correct</b>' : 
-      problem.verdict == 'wrong' ? '<b class="red-text">wrong</b>' : problem.verdict;
+      problem.verdict == 'wrong' ? '<b class="red-text">wrong</b>' : `<div>${problem.verdict}</div>`;
     
     problem_code.style.width = '50px';
     problem_name.style.width = '400px';
@@ -158,10 +158,10 @@ const displaySubmissions = submission_table => {
     let submission_timestamp = document.createElement('td');
     let timestamp = new Date(submission.timestamp).toString();
     
-    submission_problem.innerHTML = `${submission.problemCodeName.split(' ')[0]} - <b>${submission.problemCodeName.replace(submission.problemCodeName.split(' ')[0], '')}</b>`;
-    submission_answer.innerHTML = `answer: <b>${submission.answer.mantissa} ${submission.answer.exponent != 0 ? '&#215; 10<sup>' + submission.answer.exponent + '</sup>' : ''}</b>`;
+    submission_problem.innerHTML = `<div>${submission.problemCodeName.split(' ')[0]} - <b>${submission.problemCodeName.replace(submission.problemCodeName.split(' ')[0], '')}</b></div>`;
+    submission_answer.innerHTML = `<div>answer: <b>${submission.answer.mantissa} ${submission.answer.exponent != 0 ? '&#215; 10<sup>' + submission.answer.exponent + '</sup>' : ''}</b></div>`;
     submission_verdict.innerHTML = submission.verdict == 'correct' ? `<b class="green-text">correct</b>` : `<b class="red-text">wrong</b>`;
-    submission_timestamp.innerHTML = `${timestamp.split(' GMT')[0].replace(timestamp.split(' GMT')[0].split(' ')[0], '')}`;
+    submission_timestamp.innerHTML = `<div>${timestamp.split(' GMT')[0].replace(timestamp.split(' GMT')[0].split(' ')[0], '')}</div>`;
     
     submission_problem.style.width = '250px';
     if(submission.verdict == 'correct'){

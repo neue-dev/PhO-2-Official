@@ -81,7 +81,7 @@
         let instances = M.Modal.init(elems, {});
       });
 
-      loginButton.addEventListener('click', e => {
+      function doLogin() {
         if(!username.value || !password.value) {
           return M.Modal.getInstance(loginModal).open();
         }
@@ -108,6 +108,18 @@
             }
           }
         };
+      }
+
+      loginButton.addEventListener('click', e => {
+        doLogin();
+      });
+
+      username.addEventListener('keydown', e => {
+        if(e.keyCode == 13) doLogin();
+      });
+
+      password.addEventListener('keydown', e => {
+        if(e.keyCode == 13) doLogin();
       });
     </script>
   </body>

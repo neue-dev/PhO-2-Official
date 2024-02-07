@@ -124,8 +124,29 @@ td:has(.table-btn) {
 }
 
 .info-text {
-  height: 128px;
+  height: 168px;
   line-height: 1.6;
+  margin-bottom: 0;
+  display: -webkit-box;
+  position: relative;
+
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.info-text::before {
+    content: "";
+    
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+    height: 24px;    
+    background-image: linear-gradient(180deg, rgba(0, 0, 0, 0), white);
+  }
 }
 
 .full-vh-height {
@@ -140,6 +161,10 @@ td:has(.table-btn) {
   font-family: titleFont;
   max-width: 100%;
   margin-bottom: 24px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ui-text {
@@ -283,6 +308,24 @@ td .btn:hover img {
 /* Table formatting */
 .table-card table tr td {
   height: 80px;
+}
+
+.table-card table tr td a {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table-card table tr td b {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table-card table tr td div {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .table-card {
