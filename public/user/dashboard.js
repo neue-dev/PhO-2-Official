@@ -58,6 +58,12 @@ submitButton.addEventListener('click', e => {
       answer: answerValue,
     },
     () => {
+
+      // Clear the values first
+      submitProblem.value = '';
+      submitAnswer.value = '';
+      
+      // Update display
       loadUserData();
       loadSubmissions();
       M.Modal.getInstance(submitAnswerModal).close();
