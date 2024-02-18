@@ -293,13 +293,13 @@ td:has(.table-btn) {
 
   font-size: 15px;
   opacity: 0.4;
-  color: black;
+  color: var(--fg1);
   transition: 0.3s;
 }
 
 .trademark:hover {
-  background-color: #212121;
-  color: #e0e0e0;
+  background-color: var(--fg1);
+  color: var(--bg2);
   opacity: 1;
   transform: scale(1.2) rotate(-5deg);
 }
@@ -311,6 +311,18 @@ td:has(.table-btn) {
 
 .trademark:hover a {
   color: #cfd8dc;
+}
+
+#toast-container div {
+  color: var(--bg2);
+  background-color: var(--fg2);
+}
+
+#toast-container {
+  top: auto !important;
+  right: auto !important;
+  bottom: 5%;
+  left: 70%;  
 }
 
 @media (max-width : 1440px) {

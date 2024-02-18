@@ -344,6 +344,10 @@ app.get('/utils/js/logout', (req, res) => {
   res.sendFile('./public/utils/logout.js', { root: __dirname });
 })
 
+app.get('/darkmode', (req, res) => {
+  res.sendFile('./public/utils/darkmode.js', { root: __dirname });
+})
+
 app.get('/trademark', (req, res) => {
   res.sendFile('./public/utils/trademark.js', { root: __dirname });
 })
