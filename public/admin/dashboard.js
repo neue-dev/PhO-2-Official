@@ -345,7 +345,7 @@ const displayUsers = user_table => {
     user_category.innerHTML = user.category;
     user_status.innerHTML = 
       user.status == 'disqualified' ? '<b class="grey-text text-darken-2">disqualified</b>' : 
-      user.status == 'participating' ? '<b class="green-text">participating</b>' : `<div>${user.status}</div>`;
+      user.status == 'participating' ? '<b class="">participating</b>' : `<div>${user.status}</div>`;
     user_score.innerHTML = `<div>${(Math.round(user.score * 1000) / 1000).toString() || '-'}</div>`;
     user_actions.innerHTML = '<a class="waves-effect btn table-btn modal-trigger ui-text" href="#edit-user">edit</a>';
     user_delete.innerHTML = user.isAdmin ? '<div class="table-btn" hidden></div>' :
@@ -362,10 +362,10 @@ const displayUsers = user_table => {
       `Delete user - <span class="red-text text-lighten-1">${user.username}</span>`) && (deleteUsername.textContent = user.username));
 
     if(user.isAdmin){
-      user_element.className = 'red lighten-4';
+      user_element.className = 'selected-tr red lighten-4';
     } else {
       if(user.status == 'disqualified') {
-        user_element.className = 'grey lighten-2';
+        user_element.className = 'selected-tr grey lighten-2';
       }
     }
 
@@ -417,7 +417,7 @@ const displayProblems = problem_table => {
     problem_tolerance.innerHTML = `<div>${problem.points + (problem.points == 1 ? ' pt' : ' pts')}</div>`;
     problem_status.innerHTML = 
       problem.status == 'disabled' ? '<b class="grey-text text-darken-2">disabled</b>' : 
-      problem.status == 'active' ? '<b class="green-text">active</b>' : `<div>problem.status</div>`;
+      problem.status == 'active' ? '<b class="">active</b>' : `<div>problem.status</div>`;
     problem_actions.innerHTML = '<a class="waves-effect btn table-btn modal-trigger ui-text" href="#edit-problem">edit</a>';
     problem_recheck.innerHTML = '<a class="waves-effect btn table-btn modal-trigger ui-text" href="#recheck-problem">recheck</a>';
     problem_delete.innerHTML = 
@@ -439,7 +439,7 @@ const displayProblems = problem_table => {
     problem_code.style.width = '64px';
     problem_name.style.width = '200px';
     if(problem.status == 'disabled'){
-      problem_element.className = 'grey lighten-2';
+      problem_element.className = 'selected-tr grey lighten-2';
     }
 
     problem_element.appendChild(problem_code);

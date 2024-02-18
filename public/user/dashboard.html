@@ -51,12 +51,12 @@
   </head>
 
   <body>
-    <nav class="grey darken-4">
+    <nav>
       <div class="nav-wrapper">
         <div class="nav-title">
           <h3 class="nav-title-text">
-            <span class="hide-on-med-and-down">PHILIPPINE ONLINE PHYSICS OLYMPIAD</span>
-            <span class="hide-on-large-only">(PhO)&#178;</span>
+            <span id="navbar-title-desktop" class="hide-on-med-and-down">PHILIPPINE ONLINE PHYSICS OLYMPIAD</span>
+            <span id="navbar-title-mobile" class="hide-on-large-only">(PhO)&#178;</span>
           </h3>
         </div>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
@@ -85,7 +85,7 @@
       </div>
     </nav>
 
-    <div class="main-content row grey lighten-4">
+    <div class="main-content row ">
       <div class="main-content-info col s0 m4 l3 card hide-on-small-only">
         <div class="container">
           <br>
@@ -116,10 +116,10 @@
           <label style="margin-left: 10px;" for="filter-text">Filter Entries</label>
         </div>
 
-        <div class="user-table-card z-depth-2 grey lighten-4">
-          <div class="row grey lighten-4 no-margin">
+        <div class="user-table-card z-depth-2 ">
+          <div class="row  no-margin">
             <div class="col s12">
-              <ul class="tabs dashboard-tabs grey lighten-4">
+              <ul class="tabs dashboard-tabs ">
                 <li class="tab col s6"><a class="active ui-text" href="#problems">Problems</a></li>
                 <li class="tab col s6"><a class="ui-text" href="#submissions">Submissions</a></li>
               </ul>
@@ -147,7 +147,7 @@
           <p style="margin-bottom: 30px">Select a problem to submit an answer to. Make sure that the format of the answer is valid. Any of the following formats work: </p>
 
           <div class="input-field col s12">
-            <input placeholder="Enter Problem Name or Code" type="text" id="submit-problem" class="autocomplete">
+            <input placeholder="Enter Problem Name or Code" type="text" id="submit-problem" class="autocomplete ui-text">
             <label style="margin-left: -12px" for="submit-problem">problem</label>
           </div>
 

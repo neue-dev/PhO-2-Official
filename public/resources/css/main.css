@@ -1,5 +1,58 @@
 /* The main css file for general stylings */
 
+:root {
+  --black: #212121;
+
+  --bg1: #ffffff;
+  --bg2: #f5f5f5;
+  --bg3: #616161;
+  --bg4: #212121;
+
+  --navbg: #212121;
+  --btnbg: #ffffff;
+  --posbg: #c8e8c8;
+  --posfg: #4caf50;
+  --adminbg: #d32f2f;
+  --adminfg: #f0f0f0;
+
+  --fg1: #272727;
+  --fg2: #323232;
+  --fg3: #eeeeee;
+  --fg4: #f5f5f5;
+
+  --scroll: #616161;
+  --scrollhover: #424242;
+  --shadow: rgba(0, 0, 0, 0.25);
+  --hover: rgba(0, 0, 0, 0.1);
+  --logo: invert(0);
+
+
+
+
+  /* --bg1: #181818;
+  --bg2: #242424;
+  --bg3: #aaaaaa;
+  --bg4: #cccccc;
+
+  --navbg: #181818;
+  --btnbg: #e2e2e2;
+  --posbg: #aaaaaa;
+  --posfg: #212121;
+  --adminbg: #f0f0f0;
+  --adminfg: #e53935;
+
+  --fg1: #cccccc;
+  --fg2: #bbbbbb;
+  --fg3: #555555;
+  --fg4: #212121;
+
+  --scroll: #616161;
+  --scrollhover: #808080;
+  --shadow: rgba(255, 255, 255, 0.25);
+  --hover: rgba(255, 255, 255, 0.05);
+  --logo: grayscale(1) invert(0.9); */
+}
+
 /* Assets */
 @font-face {
   font-family: titleFont;
@@ -16,7 +69,54 @@
   src: url(/resources/fonts/RobotoMono-Regular.ttf);
 }
 
+/* Uhmm */
+.hellyeahimanadminmf {
+  background-color: var(--adminbg) !important;
+}
+
+/* Home page things */
+.main-logo {
+  filter: var(--logo);
+  box-shadow: 0 0 32px 32px white inset;
+}
+
+.home-bg {
+  background-color: var(--bg1) !important;
+}
+
+/* Scrollbar things */
+::-webkit-scrollbar {
+  width: 16px;
+  margin-left: -16px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scroll);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollhover);
+}
+
 /* Navbar things */
+nav {
+  color: var(--fg3);
+  background-color: var(--navbg);
+  box-shadow: none;
+}
+
+nav a.ui-text {
+  color: var(--fg3);
+}
+
+nav a.ui-text:hover {
+  background-color: var(--fg1);
+}
+
 .nav-title {
   display: inline-block;
   height: 100%;
@@ -31,19 +131,28 @@
   margin: 0;
 
   font-size: 28px;
-  opacity: 0.88;
+  opacity: 0.96;
   letter-spacing: 1.5px;
+}
+
+.admin-label {
+  color: var(--adminfg);
+  font-size: 40%;
 }
 
 /* Info board */
 .main-content {
   height: 100vh;
+  background-color: var(--bg2);
 }
 
 .main-content-info {
   margin: 0;
   margin-right: 100px;
   height: 100vh;
+
+  color: var(--fg1);
+  background-color: var(--bg1);
 }
 
 .logo-container {
@@ -66,6 +175,7 @@
 /* General stylings */
 body {
   overflow-y: hidden;
+  background-color: var(--bg1);
 }
 
 html {
@@ -74,6 +184,7 @@ html {
 
 table {
   table-layout: fixed;
+  color: var(--fg1);
 }
 
 textarea {
@@ -101,6 +212,7 @@ tr {
   display: flex;
   width: 100%;
   align-items: center;
+  border: 0;
 }
 
 td:first-child {
@@ -123,6 +235,11 @@ td:has(.table-btn) {
   flex: initial;
 }
 
+.selected-tr {
+  color: var(--black);
+  background-color: var(--posbg);
+}
+
 .info-text {
   height: 168px;
   line-height: 1.6;
@@ -133,20 +250,6 @@ td:has(.table-btn) {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.info-text::before {
-    content: "";
-    
-    display: block;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-
-    width: 100%;
-    height: 24px;    
-    background-image: linear-gradient(180deg, rgba(0, 0, 0, 0), white);
-  }
 }
 
 .full-vh-height {
@@ -243,6 +346,19 @@ td:has(.table-btn) {
 }
 
 /* Overrides to Materialize */
+.modal {
+  color: var(--fg1);
+  background-color: var(--bg1);
+}
+
+.modal-content {
+  background-color: var(--bg1);
+}
+
+.modal-footer {
+  background-color: var(--bg1) !important;
+}
+
 td .btn {
   padding: 0;
   margin: 0;
@@ -272,33 +388,60 @@ td .btn:hover img {
   min-width: 160px;
 }
 
+.waves-effect {
+  background-color: var(--btnbg) !important;
+}
+
+input {
+  color: var(--fg1);
+  -webkit-box-shadow: 0 0 0 30px var(--bg1) inset !important;
+  -webkit-text-fill-color: var(--fg1) !important;
+}
+
+#filter-text {
+  -webkit-box-shadow: 0 0 0 30px var(--bg2) inset !important;
+}
+
 .tabs {
   height: 48px;
-  border-bottom: 1px solid #616161;
+  border-bottom: 1px solid var(--bg3);
+  background-color: var(--bg2);
 }
 
 .tabs .tab a {
-  color: #212121;
+  color: var(--fg1);
+}
+
+.tabs .tab a.active::before {
+  font-size: 120%;
+  content: "\276E  ";
+  opacity: 0.33;
+}
+
+.tabs .tab a.active::after {
+  font-size: 120%;
+  content: " \276F";
+  opacity: 0.33;
 }
 
 .tabs .tab a.active {
-  color: #f5f5f5;
-  background-color: #616161;
+  color: var(--fg4);
+  background-color: var(--bg3);
 }
 
 .tabs .tab a:hover {
-  color:#424242;
-  background-color: #e0e0e0;
+  color: var(--fg1);
+  background-color: var(--hover);
 }
 
 .tabs .tab a:focus.active {
-  color:#f5f5f5;
-  background-color: #616161;
+  color:var(--bg1);
+  background-color: var(--bg3);
 }
 
 .tabs .tab a:focus {
-  color:#f5f5f5;
-  background-color: #616161;
+  color: var(--bg1);
+  background-color: var(--bg3);
 }
 
 .tabs .indicator {
@@ -306,6 +449,10 @@ td .btn:hover img {
 }
 
 /* Table formatting */
+.row {
+  background-color: var(--bg2);
+}
+
 .table-card table tr td {
   height: 80px;
 }

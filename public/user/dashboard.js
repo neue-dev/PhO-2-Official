@@ -41,7 +41,7 @@ submitButton.addEventListener('click', e => {
 
   if(!DATA.autocomplete.includes(problem)) 
     return M.toast({html: 'Invalid problem name.'});
-  if(!answer.toLowerCase().match(REGEX.ANSWER))
+  if(!answer.toLowerCase().match(REGEX.ANSWER) || !answer.length)
     return M.toast({html: 'Answer is not in a valid answer format.'});
 
   const code = problem.split(' ')[0];
@@ -110,14 +110,14 @@ const displayProblems = problem_table => {
     problem_points.innerHTML = `<div>${problem.points} ${problem.points == 1 ? 'pt' : 'pts'}</div>`;
     problem_attempts.innerHTML = `<div>${problem.attempts} attempt${problem.attempts == 1 ? '' : 's'}</div>`;
     problem_verdict.innerHTML = 
-      problem.verdict == 'correct' ? '<b class="green-text">correct</b>' : 
+      problem.verdict == 'correct' ? '<b class="">correct</b>' : 
       problem.verdict == 'wrong' ? '<b class="red-text">wrong</b>' : `<div>${problem.verdict}</div>`;
     
     problem_code.style.width = '50px';
     problem_name.style.width = '400px';
 
     if(problem.verdict == 'correct'){
-      problem_element.className = 'green lighten-4';
+      problem_element.className = 'selected-tr';
     }
 
     problem_element.appendChild(problem_code);
@@ -166,12 +166,12 @@ const displaySubmissions = submission_table => {
     
     submission_problem.innerHTML = `<div>${submission.problemCodeName.split(' ')[0]} - <b>${submission.problemCodeName.replace(submission.problemCodeName.split(' ')[0], '')}</b></div>`;
     submission_answer.innerHTML = `<div>answer: <b>${submission.answer.mantissa} ${submission.answer.exponent != 0 ? '&#215; 10<sup>' + submission.answer.exponent + '</sup>' : ''}</b></div>`;
-    submission_verdict.innerHTML = submission.verdict == 'correct' ? `<b class="green-text">correct</b>` : `<b class="red-text">wrong</b>`;
+    submission_verdict.innerHTML = submission.verdict == 'correct' ? `<b class="">correct</b>` : `<b class="red-text">wrong</b>`;
     submission_timestamp.innerHTML = `<div>${timestamp.split(' GMT')[0].replace(timestamp.split(' GMT')[0].split(' ')[0], '')}</div>`;
     
     submission_problem.style.width = '250px';
     if(submission.verdict == 'correct'){
-      submission_element.className = 'green lighten-4';
+      submission_element.className = 'selected-tr';
     }
 
     submission_element.appendChild(submission_problem);
