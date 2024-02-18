@@ -67,7 +67,7 @@ router.post('/scorelist', (req, res) => {
       const userData = {
         _id: user._id,
         username: user.username,
-        answered: user.answered,
+        attempts: (user.attempts.filter(attempt => attempt.verdict)).map(attempt => attempt.problem_id),
         category: user.category,
       };
 
@@ -201,12 +201,15 @@ router.post('/submit', (req, res) => {
         error: "You cannot submit to a nonexistent problem.",
       }).status(401);
 
-    if(user.answered.includes(problem._id))
-      return res.json({
-        message: "You have already answered this problem correctly.",
-        error: "Don't try too hard haha.",
-      }).status(401);
+    if(user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length)
+      if(user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString())[0].count >= process.env.SUBMISSION_ATTEMPTS)
+        return res.json({
+          message: "Max attempts for problem reached.",
+          error: "There is a limit to the number of submissions per problem.",
+        }).status(401);
 
+    console.log(user.attempts);
+  
     const verdict = checkAnswer(answer, answerKey, tolerance);
     const timestamp = (new Date()).getTime();
     const submission_id = new mongoose.Types.ObjectId();
@@ -224,15 +227,42 @@ router.post('/submit', (req, res) => {
 
     // Try to save to database
     try {
+
       let submission = await data.save();
-      let updateData = { lastSubmit: timestamp };
+      let count = 
+        user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length ?
+        user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString())[0].count : 0;
 
-      if(verdict) 
-        updateData['answered'] = user.answered.concat([ problem._id ]);
+      // Update the user's attempts
+      if(!count) {
+        await User.updateOne(
+          { username: username },
+          { $set: { 
+            "attempts": user.attempts.concat([{
+              problem_id: problem._id,
+              count: 1,
+              verdict: verdict, 
+            }]),
+            "lastSubmit": timestamp,
+          }},
+          { arrayFilters: [
+            { "attempt.problem_id": problem._id, }
+          ]}
+        );  
 
-      await User.updateOne(
-        { username: username },
-        { $set: updateData });
+      } else {
+        await User.updateOne(
+          { username: username },
+          { $set: { 
+            "attempts.$[attempt].count": count + 1,
+            "attempts.$[attempt].verdict": verdict,
+            "lastSubmit": timestamp,
+          }},
+          { arrayFilters: [
+            { "attempt.problem_id": problem._id, }
+          ]}
+        );
+      }
 
       return res.status(200).json({
         message: 'Submission logged successfully.',
@@ -240,7 +270,7 @@ router.post('/submit', (req, res) => {
     } catch (error) {
       return res.json({ 
         message: 'Server error.',
-        error: error.message 
+        error: error.message
       }).status(500);
     }
   });

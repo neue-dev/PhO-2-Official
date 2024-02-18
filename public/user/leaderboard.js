@@ -23,7 +23,7 @@ const loadLeaderboard = () => {
           username: user.username,
           category: user.category,
           score: (function(){
-            let sum = 0; user.answered.forEach(problem => {
+            let sum = 0; user.attempts.forEach(problem => {
               sum += Object.keys(DATA.problems).includes(problem) ? DATA.problems[problem].points : 0;
             });
 

@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  answered: {
+  attempts: {
     type: Array,
     default: [],
   },

@@ -132,7 +132,7 @@ router.post('/registeruser', (req, res) => {
           category: category,
           status: 'participating',
           score: 0,
-          answered: [],
+          attempts: [],
           submissions: [],
           lastSubmit: 0,
           lastMessage: 0,
@@ -431,16 +431,16 @@ router.post('/recheckproblem', (req, res) => {
         const users = await User.find({});
         users.forEach(user => {
           (async() => {
-            if(user.answered.includes(problem._id)){
-              let updated_answered = [];
-              user.answered.forEach(p => {
-                if(p.toString() != problem._id.toString())
-                  updated_answered.push(p);
+            if(user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length){
+              let updated_attempts = [];
+              user.attempts.forEach(attempt => {
+                if(attempt.problem_id.toString() != problem._id.toString())
+                  updated_attempts.push(attempt);
               });
 
               await User.updateOne(
                 { username: user.username },
-                { $set: { answered: updated_answered }});
+                { $set: { attempts: updated_attempts }});
             }
           })()
         });
@@ -463,15 +463,48 @@ router.post('/recheckproblem', (req, res) => {
           (async() => {
             const user = await User.findOne({ _id: submission.user_id });
             if(user){
-              if(!user.answered.includes(problem._id)){
-                if(checkAnswer(submission.answer, problem.answer, problem.tolerance)){
-                  await Submission.updateOne(
-                    { _id: submission._id },
-                    { $set: { verdict: 'correct' } });
-                  await User.updateOne(
-                    { username: user.username },
-                    { $set: { answered: user.answered.concat([problem._id]) }});
-                }
+
+              // The problem hasn't been attempted by the user yet
+              if(!user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length){
+                await User.updateOne(
+                  { username: user.username },
+                  { $set: { attempts: user.attempts.concat([{
+                    problem_id: problem._id,
+                    count: 1,
+                    verdict: false,
+                  }]) 
+                }});
+
+              // The problem has been attempted
+              } else {
+                let count = user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString())[0].count;
+
+                await User.updateOne(
+                  { username: user.username },
+                  { $set: { 
+                    "attempts.$[].count": count + 1,
+                  }},
+                  { arrayFilters: [
+                    { "problem_id": problem._id, }
+                  ]}
+                );
+              }
+
+              // The answer was correct
+              if(checkAnswer(submission.answer, problem.answer, problem.tolerance)){
+                await Submission.updateOne(
+                  { _id: submission._id },
+                  { $set: { verdict: 'correct' } });
+                
+                await User.updateOne(
+                  { username: user.username },
+                  { $set: { 
+                    "attempts.$[].verdict": true,
+                  }},
+                  { arrayFilters: [
+                    { "problem_id": problem._id, }
+                  ]}
+                );
               }
             } 
           })()
