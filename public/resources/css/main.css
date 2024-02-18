@@ -398,6 +398,10 @@ input {
   -webkit-text-fill-color: var(--fg1) !important;
 }
 
+input::placeholder {
+  opacity: 0.5;
+}
+
 #filter-text {
   -webkit-box-shadow: 0 0 0 30px var(--bg2) inset !important;
 }
