@@ -82,6 +82,13 @@
     document.body.style.opacity = '1';
   }
 
+  window.addEventListener('DOMContentLoaded', e => {
+    if(localStorage.getItem('displayMode') == 'default')
+      lightSwitch.checked = setDefaultMode() && false;
+    else lightSwitch.checked = setDarkMode() || true;
+  })
+
+  // Add the event listener to the light switch
   toggler.addEventListener('click', e => {
     localStorage.setItem('displayMode', lightSwitch.checked ? 'dark' : 'default');
 
@@ -92,9 +99,7 @@
       setDarkMode();
   });
 
-  window.addEventListener('load', e => {
-    if(localStorage.getItem('displayMode') == 'default')
-      lightSwitch.checked = setDefaultMode() && false;
-    else lightSwitch.checked = setDarkMode() || true;
-  })
+  // Set things up
+  if(localStorage.getItem('displayMode') == 'default') setDefaultMode();
+  if(localStorage.getItem('displayMode') == 'dark') setDarkMode();
 })();

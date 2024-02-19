@@ -8,6 +8,12 @@
   transition: 0.1s;
 }
 
+.fh5---banner---container {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  z-index: -1 !important;
+}
+
 /* Assets */
 @font-face {
   font-family: titleFont;
@@ -44,6 +50,13 @@
   background-color: var(--bg1) !important;
 }
 
+.pho-2-short-title::after {
+  content: "2";
+  font-size: 50%;
+  display: inline-block;
+  -webkit-transform: translate(0, -32%);
+}
+
 /* Scrollbar things */
 ::-webkit-scrollbar {
   width: 16px;
@@ -75,6 +88,15 @@ nav a.ui-text {
 
 nav a.ui-text:hover {
   background-color: var(--fg1);
+}
+
+.sidenav {
+  background-color: var(--bg1);
+  color: var(--fg2);
+}
+
+.sidenav .subheader {
+  color: var(--fg2);
 }
 
 .nav-title {
