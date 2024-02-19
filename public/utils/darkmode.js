@@ -28,7 +28,7 @@
 
     '--scroll': '#616161',
     '--scrollhover': '#424242',
-    '--shadow': 'rgba(0, 0, 0, 0.25)',
+    '--shadow': '0 2px 4px rgba(0,0,0,0.19), 0 3px 3px rgba(0,0,0,0.23)',
     '--hover': 'rgba(0, 0, 0, 0.1)',
     '--logo': 'invert(0)',
   };
@@ -53,7 +53,7 @@
 
     '--scroll': '#616161',
     '--scrollhover': '#808080',
-    '--shadow': 'rgba(255, 255, 255, 0.25)',
+    '--shadow': '0 4px 6px rgba(0,0,0,0.33), 0 3px 3px rgba(0,0,0,0.4)',
     '--hover': 'rgba(255, 255, 255, 0.05)',
     '--logo': 'grayscale(1) invert(0.9)',
   };

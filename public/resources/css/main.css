@@ -4,6 +4,10 @@
   --black: #212121;
 }
 
+* {
+  transition: 0.1s;
+}
+
 /* Assets */
 @font-face {
   font-family: titleFont;
@@ -361,14 +365,15 @@ td .btn {
   float: right;
   min-width: 108px;
   
-  background-color: rgba(0, 0, 0, 0);
-  color: #424242;
+  box-shadow: var(--shadow);
+  background-color: var(--bg1) !important;
+  color: var(--fg1);
 }
 
 td .btn:hover {
   box-shadow: none;
-  background-color: #616161;
-  color: #e0e0e0;
+  background-color: var(--bg3) !important;
+  color: var(--fg4);
 }
 
 td .btn img {
