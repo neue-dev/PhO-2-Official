@@ -94,6 +94,17 @@
       </div>
     </div>
 
+    <div class="darkmode-toggle center-align">  
+      <div class="switch">
+        <label>
+          Light
+          <input class="darkmode-toggle-switch" type="checkbox">
+          <span class="lever"></span>
+          Dark
+        </label>
+      </div>
+    </div>
+      
     <script src="/darkmode"></script>
     <script src="/trademark"></script>
     <script>
@@ -206,9 +217,6 @@
           backButtonContainer.style.display = 'block';
           moreButtonContainer.style.display = 'block';
         })
-
-        for(let i = 0; i < homeTabsArr.length; i++)
-          console.log(homeTabsArr[i].style.marginTop);
 
         // Animation frames
         function anims() {

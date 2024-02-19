@@ -3,6 +3,8 @@
  */
 
 (function() {
+  const toggler = document.querySelectorAll('.darkmode-toggle')[0];
+  const lightSwitch = document.querySelectorAll('.darkmode-toggle-switch')[0];
   const ROOT = document.querySelector(':root');
   const RS = getComputedStyle(ROOT);
 
@@ -80,5 +82,19 @@
     document.body.style.opacity = '1';
   }
 
-  setDefaultMode();
+  toggler.addEventListener('click', e => {
+    localStorage.setItem('displayMode', lightSwitch.checked ? 'dark' : 'default');
+
+    if(localStorage.getItem('displayMode') == 'default')
+      setDefaultMode();
+
+    if(localStorage.getItem('displayMode') == 'dark')
+      setDarkMode();
+  });
+
+  window.addEventListener('load', e => {
+    if(localStorage.getItem('displayMode') == 'default')
+      lightSwitch.checked = setDefaultMode() && false;
+    else lightSwitch.checked = setDarkMode() || true;
+  })
 })();
