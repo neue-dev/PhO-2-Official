@@ -1,6 +1,7 @@
 /* The main css file for general stylings */
 
 :root {
+  --black: #212121;
 }
 
 /* Assets */
@@ -193,8 +194,8 @@ td:has(.table-btn) {
 }
 
 .selected-tr {
-  color: var(--black);
-  background-color: var(--posbg);
+  color: var(--black) !important;
+  background-color: var(--posbg) !important;
 }
 
 .info-text {
