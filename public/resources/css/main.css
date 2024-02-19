@@ -8,10 +8,17 @@
   transition: 0.1s;
 }
 
-.fh5---banner---container {
-  visibility: hidden !important;
-  opacity: 0 !important;
-  z-index: -1 !important;
+.wont-load-warning {
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+  z-index: 0;
+}
+
+.wont-load-warning-content {
+  padding: 8px;
+  color: var(--fg1);
+  opacity: 0.8;
 }
 
 /* Assets */
