@@ -1,27 +1,15 @@
 # (PhO)^2 Official Content Management Site
 > Version 2.0
 
-<div style="text-align: center; overflow-x: hidden;">
-<pre style="display: inline-block margin-left: -100%; margin-right: -100%; text-align: left;">
+The Philippine Online Physics Olympiad (stylized as (PhO)^2) is an annual contest held by the Physics Youth Honor Society of the PSHS-Main Campus devoted to promoting a shared interest in the field of physics while offering high school students the opportunity to express their skills and competence through an online collaborative battle of the smarts. This repository represents the development resources behind its content management system (CMS).
 
+<br>
+The website may currently be visited at <a href="http://pho-2-official.org/">pho-2-official.org</a>.
 
-										    ..           ,,              ..      /\         
-										  pd'`7MM"""Mq.`7MM               `bq   //\\        
-										 6P    MM   `MM. MM                 YA //  \\       
-										6M'    MM   ,M9  MMpMMMb.  ,pW"Wq.  `Mb     pd*"*b.
-										MN     MMmmdM9   MM    MM 6W'   `Wb  8M    (O)   j8
-										MN     MM        MM    MM 8M     M8  8M        ,;j9 
-										YM.    MM        MM    MM YA.   ,A9 ,M9     ,-='    
-										 Mb  .JMML.    .JMML  JMML.`Ybmd9'  dM     Ammmmmmm 
-										  Yq.                             .pY               
-											  ``                           ''                 
-
-
-
-</pre>
-</div>
-
-The Philippine Online Physics Olympiad is an annual contest held by the Physics Youth Honor Society of the PSHS-Main Campus devoted to promoting a shared interest in the field of physics while offering high school students the opportunity to express their skills and competence through an online collaborative battle of the smarts. This repository represents the development resources behind its content management system (CMS).
+<br>
+<p align="center">
+	<img src="./README/images/UI/Landing Page.png">
+</p>
 
 <br>
 <div style="text-align: center; overflow-x: hidden;">
@@ -115,7 +103,7 @@ The utils folder contained herein offers some IO handling functionalities, since
 ## 2 AWS Management
 
 <p align="center">
-	<img src="./images/AWS/AWS Logo.jpg">
+	<img src="./README/images/AWS/AWS Logo.jpg">
 </p>
 
 In the case of this CMS, we will be using Amazon Web Services (AWS) to host all its features.
@@ -129,7 +117,7 @@ If this is your first time using AWS to help manage (PhO)^2, it might be best to
 Developers will be given access to the (PhO)^2 website through an invitation sent to their inboxes. This invitation will prompt them to register under the (PhO)^2 organization in AWS and will give them developer permissions to manage the resources of the (PhO)^2 CMS. After following the instructions highlighted by the email, they should be greeted by the access portal (the link is also provided in the email in case this does not happen automatically). Clicking on the `AWS Account` icon will show the `(PhO)^2 Organization` account; clicking this will then enumerate the different permissions available to a user. For developers, the two default permissions available are the `DatabaseAdministrator` and `NetworkAdministrator` permissions. The `Management console` button to the right of these will open options to manage the pertinent resources.
 
 <p align="center">
-	<img src="./images/AWS/AWS Access Portal.jpg">
+	<img src="./README/images/AWS/AWS Access Portal.jpg">
 </p>
 
 > **NOTE:** `AdministratorAccess` will be restricted to the head developer to ensure the security of the CMS.
