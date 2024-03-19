@@ -14,15 +14,14 @@ The website may currently be visited at <a href="http://pho-2-official.org/">pho
 <br>
 <div style="text-align: center; overflow-x: hidden;">
 <pre style="display: inline-block margin-left: -100%; margin-right: -100%; text-align: left;">
-
-
-				|\      _,,,---,,_
- 	ZZZzz /,\`.-'\`'    -.  ;-;;,_
-			 |,4-  ) )-,_. ,\ (  `'-'
-			 '---''(_/--'  `-'\_)
-
-
-					[Mo David @2022-@2024]
+      
+      |\      _,,,---,,_
+ZZZzz /,`.-'`'    -.  ;-;;,_
+     |,4-  ) )-,_. ,\ (  `'-'
+      '---''(_/--'  `-'\_)
+			
+			
+			[Mo David @2022-@2024]
 </pre>
 </div>
 
