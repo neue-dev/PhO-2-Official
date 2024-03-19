@@ -17,12 +17,12 @@ The website may currently be visited at <a href="http://pho-2-official.org/">pho
 
 
 				|\      _,,,---,,_
-	ZZZzz /,`.-'`'    -.  ;-;;,_
-			|,4-  ) )-,_. ,\ (  `'-'
-			'---''(_/--'  `-'\_)
+ 	ZZZzz /,\`.-'\`'    -.  ;-;;,_
+			 |,4-  ) )-,_. ,\ (  `'-'
+			 '---''(_/--'  `-'\_)
 
 
-				[Mo David @2022-@2024]
+					[Mo David @2022-@2024]
 </pre>
 </div>
 
