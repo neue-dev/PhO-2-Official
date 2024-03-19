@@ -1,27 +1,28 @@
-# (PhO)^2 Official Content Management Site
-> Version 2.0
+# (PhO)^2 Official Content Management Site (Version 2.0)
 
 The Philippine Online Physics Olympiad (stylized as (PhO)^2) is an annual contest held by the Physics Youth Honor Society of the PSHS-Main Campus devoted to promoting a shared interest in the field of physics while offering high school students the opportunity to express their skills and competence through an online collaborative battle of the smarts. This repository represents the development resources behind its content management system (CMS).
 
 The website may currently be visited at <a href="http://pho-2-official.org/">pho-2-official.org</a>.
 
 <br>
+
+> The (PhO)^2 website landing page.
 <p align="center">
 	<img src="./README/images/UI/Landing Page.png">
 </p>
 
+
 <br>
 <br>
 <div style="text-align: center; overflow-x: hidden;">
-<pre style="display: inline-block margin-left: -100%; margin-right: -100%; text-align: left;">
+<pre style="display: inline-block; margin-left: -100%; margin-right: -100%; text-align: left;">
+	
+	         |\      _,,,---,,_
+      ZZZzz /,`.-'`'    -.  ;-;;,_
+           |,4-  ) )-,_. ,\ (  `'-'
+            '---''(_/--'  `-'\_)
       
-      |\      _,,,---,,_
-ZZZzz /,`.-'`'    -.  ;-;;,_
-     |,4-  ) )-,_. ,\ (  `'-'
-      '---''(_/--'  `-'\_)
-			
-			
-			[Mo David @2022-@2024]
+      [Mo David @2022-@2024]
 </pre>
 </div>
 
