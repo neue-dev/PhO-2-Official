@@ -55,6 +55,17 @@ const problemSchema = new mongoose.Schema({
     unique: true,
     type: String
   },
+  type: {
+    required: true,
+    type: String,
+    default: 'official',
+    validate: {
+      validator: val => {
+        return ['official', 'debug'].includes(val);
+      },
+      message: 'Type must be a valid string.',
+    }
+  },
   code: {
     required: true,
     type: codeSchema,

@@ -323,6 +323,7 @@ router.post('/registerproblem', (req, res) => {
     const data = new Problem({
       _id: new mongoose.Types.ObjectId(),
       name: name,
+      type: 'official',
       code: code,
       answer: answer,
       tolerance: tolerance,
@@ -347,10 +348,11 @@ router.post('/registerproblem', (req, res) => {
 
 router.post('/editproblem', (req, res) => {
   admin(req, res, async userData => {
-    const { name, code, answer, tolerance, points, status } = req.body;
+    const { name, type, code, answer, tolerance, points, status } = req.body;
     const problemName = await Problem.findOne({ name: name });
 
     const pcode = code || problemName.code;
+    const ptype = type || problemName.type;
     const panswer = answer || problemName.answer;
     const ptolerance = tolerance || problemName.tolerance;
     const ppoints = points || problemName.points;
@@ -373,6 +375,7 @@ router.post('/editproblem', (req, res) => {
         { name: name },
         { $set: 
           {
+            type: ptype,
             code: pcode,
             answer: panswer,
             tolerance: ptolerance,

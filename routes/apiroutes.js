@@ -6,10 +6,7 @@ const bcrypt = require('bcrypt');
 const router = express.Router();
 
 //* Models
-const User = require('../models/user');
-const Problem = require('../models/problem');
 const Submission = require('../models/submission');
-const Score = require('../models/score');
 
 //* API Routes
 router.post('/submissionlog', async (req, res) => {
