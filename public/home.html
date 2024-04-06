@@ -15,6 +15,7 @@
 
     <!-- General CSS styling -->
     <link rel="stylesheet" href="/utils/css/main">
+    <link rel="stylesheet" href="/utils/css/landing">
 
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
@@ -35,33 +36,32 @@
   <body>
     <div class="home-tabs">
       <div class="row home-login home-tab">
-        <div class="col s1 m4"></div>
-        <div class="col s10 m4">
-          <br>
-          <div class="container logo-container">
-            <img class="responsive-img main-logo" src="./pho-2-logo">
-          </div><br>
-          
-          <div class="container fields-container">
-            <div class="input-field username-input">
-              <input placeholder="Enter Username" id="username" type="text" class="validate ui-text">
-              <label for="username">username</label>
-            </div>
-    
-            <div class="input-field password-input">
-              <input placeholder="Enter Password" id="password" type="password" class="validate ui-text">
-              <label for="username">password</label>
-            </div>
+        <div class="landing-title-bg"></div>
+        <div class="landing-title">
+          <div class="landing-title-upper">Philippine Online</div>
+          <div class="landing-title-lower">Physics Olympiad</div>
+        </div>
+
+        <div class="container fields-container">
+          <div class="input-field username-input">
+            <input placeholder="Enter Username" id="username" type="text" class="validate ui-text">
+            <label for="username">username</label>
           </div>
-          <br>
-          
-          <div class="center-align login-button-container">
+  
+          <div class="input-field password-input">
+            <input placeholder="Enter Password" id="password" type="password" class="validate ui-text">
+            <label for="username">password</label>
+          </div>
+        </div>
+
+        <div class="field-buttons-container">          
+          <div class="login-button-container">
             <a class="waves-effect btn white grey-text text-darken-3 ui-text login-button" href="#!">login</a>
           </div>
-          <div class="center-align back-button-container" style="display: none">
+          <div class="back-button-container" style="display: none">
             <a class="waves-effect btn white grey-text text-darken-3 ui-text back-button" href="#">go back</a>
           </div>
-          <div class="center-align more-button-container" style="display: none">
+          <div class="more-button-container" style="display: none">
             <a class="waves-effect btn white grey-text text-darken-3 ui-text more-button" href="#">more info</a>
           </div>
         </div>
@@ -177,10 +177,7 @@
         backButtonContainer.style.transition = '0.3s';
 
         function respondToResize() {
-          backButtonContainer.style.left = loginButton.getBoundingClientRect().left + 'px';
           backButtonContainer.style.top = (loginButton.offsetTop) + 'px';
-          
-          moreButtonContainer.style.left = loginButton.getBoundingClientRect().left + 'px';
           moreButtonContainer.style.top = (loginButton.offsetTop + loginButton.offsetHeight * 1.28) + 'px';
         }
 

@@ -365,3 +365,7 @@ app.get('/pho-2-icon', (req, res) => {
 app.get('/utils/css/main', (req, res) => {
   res.sendFile('./public/resources/css/main.css', { root: __dirname });
 })
+
+app.get('/utils/css/landing', (req, res) => {
+  res.sendFile('./public/resources/css/landing.css', { root: __dirname });
+})
