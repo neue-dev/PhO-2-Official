@@ -118,6 +118,10 @@ deleteUserButton.addEventListener('click', e => {
 // Problem handling JS
 const registerProblemModal = document.querySelectorAll('.register-problem-modal')[0];
 const registerProblemButton = document.querySelectorAll('.register-problem-button')[0];
+const enableOfficialModal = document.querySelectorAll('.enable-official-modal')[0];
+const enableOfficialButton = document.querySelectorAll('.enable-official-button')[0];
+const disableOfficialModal = document.querySelectorAll('.disable-official-modal')[0];
+const disableOfficialButton = document.querySelectorAll('.disable-official-button')[0];
 const problemName = document.querySelector('#name');
 const code = document.querySelector('#code');
 const answer = document.querySelector('#answer');
@@ -181,6 +185,28 @@ registerProblemButton.addEventListener('click', e => {
     () => {
       loadProblems();
       M.Modal.getInstance(registerProblemModal).close();
+    });
+});
+
+enableOfficialButton.addEventListener('click', e => {
+
+  // Make request to register problem
+  createXHR('./admin/enableofficial', 'POST',
+    {},
+    () => {
+      loadProblems();
+      M.Modal.getInstance(enableOfficialModal).close();
+    });
+});
+
+disableOfficialButton.addEventListener('click', e => {
+
+  // Make request to register problem
+  createXHR('./admin/disableofficial', 'POST',
+    {},
+    () => {
+      loadProblems();
+      M.Modal.getInstance(disableOfficialModal).close();
     });
 });
 
