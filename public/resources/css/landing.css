@@ -5,16 +5,16 @@
 
 .landing-title {
   position: absolute;
-  top: 33%;
+  top: 61%;
   margin-left: 10%;
 
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
 
   font-family: landingTitleFont;
-  font-size: 7rem;
-  line-height: 10rem;
-  letter-spacing: -5px;
+  font-size: 5.4vw;
+  line-height: 6.8vw;
+  letter-spacing: -0.25vw;
   text-wrap: nowrap;
   color: var(--fg1);
 }
@@ -23,45 +23,104 @@
   background-color: var(--fg1);
   position: fixed;
   margin: 0;
-  top: 0; 
+  top: 61vh; 
   left: 0;
   width: 100vw;
-  height: 33vh;
+  height: 39vh;
   opacity: 0.08;
+}
+
+.landing-title-upper {
+  margin-bottom: 1rem;
 }
 
 .fields-container {
   position: fixed;
-  width: 48rem;
-  margin-top: 64vh;
-  margin-left: 10%;
+  width: 28rem;
+  right: 16%;
+  margin-top: calc(61vh - 1vw);
+  -ms-transform: translateY(-100%);
+  transform: translateY(-100%);
+}
 
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
+.input-field {
+  margin-top: 32px;
 }
 
 .field-buttons-container {
   position: fixed;
-  width: 48rem;
-  margin-top: 77vh;
-  margin-left: 10%;
-
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
+  width: 28rem;
+  right: 16%;
+  margin-top: calc(61vh + 1.5vw);
 }
 
+.logo-container {
+  position: fixed;
+  margin: 0;
+  top: 0%;
+  width: 24vw;
+  left: 10%;
+}
+
+
 @media (max-width : 1280px) {
+  .logo-container {
+    top: -1000px;
+  }
+
   .landing-title {
-    font-size: 4.5rem;
-    line-height: 6.9rem;
+    font-size: 8vw;
+    line-height: 10vw;
     text-wrap: balance;
   }
-}
 
-@media (max-width : 1280px) {
+  .fields-container {
+    width: 50vw;
+    left: 10%;
+    margin: 0;
+    margin-top: calc(61vh - 20vw);
+  }
+
+  .field-buttons-container {
+    width: 50vw;
+    left: 10%;
+    margin-top: calc(61vh - 18vw);
+  }
+
   .btn {
     width: 22%;
     display: inline-block;
     margin-bottom: 5px;
+  }
+}
+
+@media (max-width : 1024px) {
+  .fields-container {
+    left: 10%;
+    margin: 0;
+    margin-top: calc(61vh - 24vw);
+  }
+
+  .field-buttons-container {
+    left: 10%;
+    margin-top: calc(61vh - 22vw);
+  }
+}
+
+@media (max-width : 800px) {
+  .logo-container {
+    width: 25vh;
+    top: 70vh;
+  }
+
+  .fields-container {
+    left: 10%;
+    margin: 0;
+    margin-top: calc(61vh - 40vw);
+  }
+
+  .field-buttons-container {
+    left: 10%;
+    margin-top: calc(61vh - 38vw);
   }
 }

@@ -42,6 +42,10 @@
           <div class="landing-title-lower">Physics Olympiad</div>
         </div>
 
+        <div class="container logo-container">
+          <img class="responsive-img" src="./pho-2-icon">
+        </div>
+
         <div class="container fields-container">
           <div class="input-field username-input">
             <input placeholder="Enter Username" id="username" type="text" class="validate ui-text">
@@ -57,12 +61,6 @@
         <div class="field-buttons-container">          
           <div class="login-button-container">
             <a class="waves-effect btn white grey-text text-darken-3 ui-text login-button" href="#!">login</a>
-          </div>
-          <div class="back-button-container" style="display: none">
-            <a class="waves-effect btn white grey-text text-darken-3 ui-text back-button" href="#">go back</a>
-          </div>
-          <div class="more-button-container" style="display: none">
-            <a class="waves-effect btn white grey-text text-darken-3 ui-text more-button" href="#">more info</a>
           </div>
         </div>
 
@@ -109,14 +107,6 @@
     <script src="/trademark"></script>
     <script>
       (function() {       
-        const homeTabs = document.querySelectorAll('.home-tabs')[0];
-        const homeTabsArr = document.querySelectorAll('.home-tab');
-        
-        const backButtonContainer = document.querySelectorAll('.back-button-container')[0];
-        const backButton = document.querySelectorAll('.back-button')[0];
-        const moreButtonContainer = document.querySelectorAll('.more-button-container')[0];
-        const moreButton = document.querySelectorAll('.more-button')[0];
-
         const loginButtonContainer = document.querySelectorAll('.login-button-container')[0];
         const loginButton = document.querySelectorAll('.login-button')[0];
         const loginModal = document.querySelectorAll('.login-modal')[0];
@@ -170,77 +160,6 @@
         password.addEventListener('keydown', e => {
           if(e.keyCode == 13) doLogin();
         });
-
-        // More info button functionalities
-        moreButtonContainer.style.position = 'fixed';
-        backButtonContainer.style.position = 'fixed';
-        backButtonContainer.style.transition = '0.3s';
-
-        function respondToResize() {
-          backButtonContainer.style.top = (loginButton.offsetTop) + 'px';
-          moreButtonContainer.style.top = (loginButton.offsetTop + loginButton.offsetHeight * 1.28) + 'px';
-        }
-
-        // Some variables to help page browsing
-        let page = 0;
-        let limit = 3;
-        let pageX = 0, targetPageX = 0;
-        let clientHeight = document.body.clientHeight;
-
-        function browseInfo(direction) {
-          if(direction > 0)
-            page += page < limit - 1 ? 1 : 0;
-          else page -= page > 0 ? 1 : 0;
-
-          targetPageX = page * clientHeight / limit;
-        }
-
-        // Add functionality to the buttons
-        moreButton.addEventListener('click', e => { browseInfo(1); });
-        backButton.addEventListener('click', e => { browseInfo(-1); });
-
-        // Make sure button doesn't shift when resized
-        window.addEventListener('resize', e => {
-          respondToResize();
-          
-          // Makes sure other content dont shift too
-          clientHeight = document.body.clientHeight;
-        })
-
-        window.addEventListener('load', e => {
-          respondToResize();
-
-          // Make buttons visible
-          backButtonContainer.style.display = 'block';
-          moreButtonContainer.style.display = 'block';
-        })
-
-        // Animation frames
-        function anims() {
-          requestAnimationFrame(anims);
-
-          // Hide back button
-          if(page && Math.round(parseFloat(homeTabs.style.marginTop)))
-            backButtonContainer.style.opacity = '1';
-          else backButtonContainer.style.opacity = '0';
-
-          // Smooth page movement
-          pageX -= (pageX - targetPageX) * 0.1;
-          homeTabs.style.marginTop = -pageX + 'px';
-
-          // If page gets reloaded
-          if ((window.performance.navigation && window.performance.navigation.type === 1) ||
-            window.performance
-              .getEntriesByType('navigation')
-              .map((nav) => nav.type)
-              .includes('reload')) {
-
-              location.href = '/';
-          }
-        }
-
-        anims();
-
       })();
     </script>
   </body>
