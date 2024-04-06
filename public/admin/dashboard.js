@@ -351,6 +351,7 @@ const displayConfig = config_table => {
 const loadUsers = () => {
   createXHR('./admin/userlist', 'POST', {}, data => {
     DATA.users = [];
+    data.users.sort((a, b) => a.username.localeCompare(b.username));
     data.users.forEach(user => DATA.users.push(user));
     displayUsers(user_table);
   });
