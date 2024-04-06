@@ -208,7 +208,13 @@ router.post('/submit', (req, res) => {
           error: "There is a limit to the number of submissions per problem.",
         }).status(401);
 
-    console.log(user.attempts);
+    if(user.attempts.filter(attempt => 
+      attempt.problem_id.toString() == problem._id.toString() && 
+      attempt.verdict.toString() == 'correct').length) 
+      return res.json({
+        message: "Problem already answered correctly.",
+        error: "You already got this problem right....",
+      }).status(401);
   
     const verdict = checkAnswer(answer, answerKey, tolerance);
     const timestamp = (new Date()).getTime();
