@@ -363,20 +363,18 @@ const displayUsers = user_table => {
   DATA.users.forEach(user => {
     let user_element = document.createElement('tr');
     let user_username = document.createElement('td');
-    let user_isAdmin = document.createElement('td');
-    let user_category = document.createElement('td');
     let user_status = document.createElement('td');
     let user_score = document.createElement('td');
     let user_actions = document.createElement('td');
     let user_delete = document.createElement('td');
 
     // Set the content
-    user_username.innerHTML = `<b>${user.username}</b>`;
-    user_isAdmin.innerHTML = user.isAdmin ? '<b class="red-text">admin</b>' : '<div>user</div>';
-    user_category.innerHTML = user.category;
+    user_username.innerHTML = `<div><b>${user.username}</b>
+      <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>${user.category}</i>]</span></div>`;
     user_status.innerHTML = 
+      user.isAdmin ? '<b class="red-text">admin</b>' : (
       user.status == 'disqualified' ? '<b class="grey-text text-darken-2">disqualified</b>' : 
-      user.status == 'participating' ? '<b class="">participating</b>' : `<div>${user.status}</div>`;
+      user.status == 'participating' ? '<b class="">participating</b>' : `<div>${user.status}</div>`);
     user_score.innerHTML = `<div>${(Math.round(user.score * 1000) / 1000).toString() || '-'}</div>`;
     user_actions.innerHTML = '<a class="waves-effect btn table-btn modal-trigger ui-text" href="#edit-user">edit</a>';
     user_delete.innerHTML = user.isAdmin ? '<div class="table-btn" hidden></div>' :
@@ -401,8 +399,6 @@ const displayUsers = user_table => {
     }
 
     user_element.appendChild(user_username);
-    user_element.appendChild(user_category);
-    user_element.appendChild(user_isAdmin);
     user_element.appendChild(user_status);
     user_element.appendChild(user_score);
     user_element.appendChild(user_actions);
@@ -444,7 +440,7 @@ const displayProblems = problem_table => {
       <br><span style="${problem.type == 'debug' ? 'color: #2962ff;' : ''} opacity: 0.4; font-size: 0.67em;">[<i>${problem.type}</i>]</span></div>`;
     problem_code.innerHTML = `<div>[ ${problem.code.number + problem.code.alpha} ]</div>`;
     problem_answer.innerHTML = `<div> ${problem.answer.mantissa} ${problem.answer.exponent != 0 ? '&#215; 10<sup>' + problem.answer.exponent + '</sup>' : ''}
-      <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>tolerance: ${problem.tolerance}%</i>]</span></div>`;
+      <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>${problem.tolerance}%</i>]</span></div>`;
     problem_points.innerHTML = `<div>${problem.points + (problem.points == 1 ? ' pt' : ' pts')}</div>`;
     problem_status.innerHTML = 
       problem.status == 'disabled' ? '<b class="grey-text text-darken-2">disabled</b>' : 
