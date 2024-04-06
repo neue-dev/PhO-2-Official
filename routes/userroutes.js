@@ -210,7 +210,7 @@ router.post('/submit', (req, res) => {
 
     if(user.attempts.filter(attempt => 
       attempt.problem_id.toString() == problem._id.toString() && 
-      attempt.verdict.toString()).length) 
+      attempt.verdict).length) 
       return res.json({
         message: "Problem already answered correctly.",
         error: "You already got this problem right....",

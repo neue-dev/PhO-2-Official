@@ -15,7 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     for(let i = 0; i < DATA.problems.length; i++) {
       let problem = DATA.problems[i];
-      DATA.autocomplete.push(problem.code.number + problem.code.alpha + ' ' + problem.name);
+
+      if(!DATA.submissions.filter(submission => submission.name == problem.name && submission.verdict == 'correct').length)
+        DATA.autocomplete.push(problem.code.number + problem.code.alpha + ' ' + problem.name);
     };
 
     let problem_dict = {}; DATA.autocomplete.forEach(problem => problem_dict[problem] = null);
@@ -135,17 +137,35 @@ const loadSubmissions = () => {
     DATA.problems.forEach(problem => (problem.attempts = 0));
 
     data.submissions.forEach(submission => {
+      let problemName = submission.problemCodeName.replace(
+        submission.problemCodeName.split(' ')[0], '').trim();
+
       DATA.problems.forEach(problem => {
         if(!problem.attempts) 
           problem.attempts = 0;
-        if(problem.name == submission.problemCodeName.replace(
-          submission.problemCodeName.split(' ')[0], '').trim()){
+        if(problem.name == problemName){
           problem.attempts++;
         if(submission.verdict == 'correct') 
           problem.verdict = 'correct';
         }
       });
-      DATA.submissions.push(submission)
+
+      DATA.submissions.push(submission);
+
+      let indexToDelete;
+      if(DATA.autocomplete.filter(entry => entry.includes(problemName) && submission.verdict == 'correct').length) {
+        DATA.autocomplete.forEach(entry => {
+          if(entry.includes(problemName)) 
+            indexToDelete = DATA.autocomplete.indexOf(entry)
+        })
+
+        DATA.autocomplete.splice(indexToDelete, 1);
+      }
+    });
+
+    let problem_dict = {}; DATA.autocomplete.forEach(problem => problem_dict[problem] = null);
+    M.Autocomplete.init(document.querySelectorAll('.autocomplete'), {
+      data: problem_dict,
     });
     
     displayProblems(problem_table);
