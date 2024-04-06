@@ -335,7 +335,7 @@ router.post('/registerproblem', (req, res) => {
       answer: answer,
       tolerance: tolerance,
       points: points,
-      status: 'active',
+      status: 'disabled',
     }, { collection: 'problems' });
 
     // Try to save to database
