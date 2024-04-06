@@ -19,6 +19,13 @@ const Score = require('../models/score');
 //* Constants
 const saltRounds = 10;
 
+// Don't ask why this is here AHAHAH
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 //* Admin Authentication
 const admin = function(req, res, callback){
   const user = auth(req, res);
@@ -340,6 +347,68 @@ router.post('/registerproblem', (req, res) => {
     } catch (error) {
       return res.json({ 
         message: 'Server error.',
+        error: error.message 
+      }).status(500);
+    }
+  })
+});
+
+router.post('/enableofficial', (req, res) => {
+  admin(req, res, async userData => {
+
+    // Try to update problem statuses
+    try {
+
+      // Update the problems
+      const officials = await Problem.find({ type: 'official' });
+      officials.forEach(official => {
+        (async() => {
+          await Problem.updateOne(
+            { name: official.name },
+            { $set: { status: 'active' }});
+        })()
+      });
+
+      // Just so the UI can update properly (doesn't fall behind by accident)
+      await sleep(250);
+
+      return res.status(200).json({
+        message: 'Official problems enabled.',
+      });
+    } catch (error) {
+      return res.json({ 
+        message: 'Server error.', 
+        error: error.message 
+      }).status(500);
+    }
+  })
+});
+
+router.post('/disableofficial', (req, res) => {
+  admin(req, res, async userData => {
+    
+    // Try to update problem statuses
+    try {
+      
+      // Update the problems
+      const officials = await Problem.find({ type: 'official' });
+      officials.forEach(official => {
+        (async() => {
+          await Problem.updateOne(
+            { name: official.name },
+            { $set: { status: 'disabled' }});
+        })()
+      });
+
+      // Just so the UI can update properly (doesn't fall behind by accident)
+      await sleep(250);
+
+      return res.status(200).json({
+        message: 'Official problems disabled.',
+      });
+    } catch (error) {
+      return res.json({ 
+        message: 'Server error.', 
         error: error.message 
       }).status(500);
     }
