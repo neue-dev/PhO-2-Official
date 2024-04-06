@@ -36,7 +36,7 @@
 
 .fields-container {
   position: fixed;
-  width: 28rem;
+  width: 25vw;
   right: 16%;
   margin-top: calc(61vh - 1vw);
   -ms-transform: translateY(-100%);
@@ -49,7 +49,7 @@
 
 .field-buttons-container {
   position: fixed;
-  width: 28rem;
+  width: 25vw;
   right: 16%;
   margin-top: calc(61vh + 1.5vw);
 }
