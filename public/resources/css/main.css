@@ -203,6 +203,7 @@ tr {
   display: flex;
   width: 100%;
   align-items: center;
+  line-height: 1.333;
   border: 0;
 }
 
@@ -216,6 +217,7 @@ td {
   flex-grow: 1;
   display: flex;
   border-radius: 0;
+  line-height: 1.333;
 
   text-wrap: nowrap;
   align-items: center;

@@ -126,7 +126,8 @@ const points = document.querySelector('#points');
 
 const editProblemModal = document.querySelectorAll('.edit-problem-modal')[0];
 const editProblemButton = document.querySelectorAll('.edit-problem-button')[0];
-const editProblemname = document.querySelector('#edit-problemname');
+const editProblemName = document.querySelector('#edit-problem-name');
+const editProblemType = document.querySelector('#edit-problem-type');
 const editProblemCode = document.querySelector('#edit-problem-code');
 const editProblemAnswer = document.querySelector('#edit-problem-answer');
 const editProblemTolerance = document.querySelector('#edit-problem-tolerance');
@@ -184,14 +185,16 @@ registerProblemButton.addEventListener('click', e => {
 });
 
 editProblemButton.addEventListener('click', e => {
-  if(!editProblemname.textContent) {
+  if(!editProblemName.textContent) {
     return M.toast({html: 'No selected user.'});
   }
 
-  editProblemname.textContent = editProblemname.textContent.trim();
+  editProblemName.textContent = editProblemName.textContent.trim();
+  editProblemType.value = editProblemType.value.trim();
   editProblemCode.value = editProblemCode.value.trim();
   editProblemAnswer.value = editProblemAnswer.value.trim();
   editProblemTolerance.value = editProblemTolerance.value.trim();
+  editProblemStatus.value = editProblemStatus.value.trim();
   editProblemPoints.value = editProblemPoints.value.trim();
 
   // Check validity of inputs
@@ -212,14 +215,15 @@ editProblemButton.addEventListener('click', e => {
   };
 
   // Set the payload
-  let payload = { name: editProblemname.textContent };
+  let payload = { name: editProblemName.textContent };
+  if(editProblemType.value != '') payload['type'] = editProblemType.value;
   if(editProblemCode.value != '') payload['code'] = codeValue;
   if(editProblemAnswer.value != '') payload['answer'] = answerValue;
   if(editProblemTolerance.value != '') payload['tolerance'] = editProblemTolerance.value;
   if(editProblemStatus.value != '') payload['status'] = editProblemStatus.value;
   if(editProblemPoints.value != '') payload['points'] = editProblemPoints.value;
 
-  // Request to delete problem
+  // Request to edit problem
   createXHR('./admin/editproblem', 'POST', 
     payload, 
     () => {
@@ -401,6 +405,7 @@ const displayProblems = problem_table => {
   sortedProblems.forEach(problem => {
     let problem_element = document.createElement('tr');
     let problem_name = document.createElement('td');
+    let problem_type = document.createElement('td');
     let problem_code = document.createElement('td');
     let problem_answer = document.createElement('td');
     let problem_tolerance = document.createElement('td');
@@ -412,9 +417,11 @@ const displayProblems = problem_table => {
 
     problem_name.innerHTML = `<b>${problem.name}</b>`;
     problem_code.innerHTML = `<div>[ ${problem.code.number + problem.code.alpha} ]</div>`;
-    problem_answer.innerHTML = `<div>${problem.answer.mantissa} ${problem.answer.exponent != 0 ? '&#215; 10<sup>' + problem.answer.exponent + '</sup>' : ''}</div>`;
-    problem_tolerance.innerHTML = `<div>${problem.tolerance}</div>`;
-    problem_tolerance.innerHTML = `<div>${problem.points + (problem.points == 1 ? ' pt' : ' pts')}</div>`;
+    problem_answer.innerHTML = `<div> ${problem.answer.mantissa} ${problem.answer.exponent != 0 ? '&#215; 10<sup>' + problem.answer.exponent + '</sup>' : ''}
+      <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>answer</i>]</span></div>`;
+    problem_tolerance.innerHTML = `<div>${problem.tolerance}
+      <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>tolerance</i>]</span></div>`;
+    problem_points.innerHTML = `<div>${problem.points + (problem.points == 1 ? ' pt' : ' pts')}</div>`;
     problem_status.innerHTML = 
       problem.status == 'disabled' ? '<b class="grey-text text-darken-2">disabled</b>' : 
       problem.status == 'active' ? '<b class="">active</b>' : `<div>problem.status</div>`;
@@ -430,7 +437,7 @@ const displayProblems = problem_table => {
     let deleteProblem = document.querySelector('#delete-problem');
     
     problem_actions.addEventListener('click', e => (editProblem.children[0].children[0].innerHTML = 
-      `Edit problem - <span class="red-text text-lighten-1">${problem.name}</span>`) && (editProblemname.textContent = problem.name));
+      `Edit problem - <span class="red-text text-lighten-1">${problem.name}</span>`) && (editProblemName.textContent = problem.name));
     problem_recheck.addEventListener('click', e => (recheckProblem.children[0].children[0].innerHTML = 
       `Recheck problem - <span class="red-text text-lighten-1">${problem.name}</span>`) && (recheckProblemname.textContent = problem.name));
     problem_delete.addEventListener('click', e => (deleteProblem.children[0].children[0].innerHTML = 
@@ -446,6 +453,7 @@ const displayProblems = problem_table => {
     problem_element.appendChild(problem_name);
     problem_element.appendChild(problem_answer);
     problem_element.appendChild(problem_tolerance);
+    problem_element.appendChild(problem_points);
     problem_element.appendChild(problem_status);
     problem_element.appendChild(problem_actions);
     problem_element.appendChild(problem_recheck);
