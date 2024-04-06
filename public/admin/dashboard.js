@@ -416,6 +416,7 @@ const displayProblems = problem_table => {
     let problem_delete = document.createElement('td');
 
     problem_name.innerHTML = `<b>${problem.name}</b>`;
+    problem_type.innerHTML = `<div>[ ${problem.type} ]</div>`;
     problem_code.innerHTML = `<div>[ ${problem.code.number + problem.code.alpha} ]</div>`;
     problem_answer.innerHTML = `<div> ${problem.answer.mantissa} ${problem.answer.exponent != 0 ? '&#215; 10<sup>' + problem.answer.exponent + '</sup>' : ''}
       <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>answer</i>]</span></div>`;
@@ -450,6 +451,7 @@ const displayProblems = problem_table => {
     }
 
     problem_element.appendChild(problem_code);
+    problem_element.appendChild(problem_type);
     problem_element.appendChild(problem_name);
     problem_element.appendChild(problem_answer);
     problem_element.appendChild(problem_tolerance);
