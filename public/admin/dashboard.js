@@ -405,23 +405,19 @@ const displayProblems = problem_table => {
   sortedProblems.forEach(problem => {
     let problem_element = document.createElement('tr');
     let problem_name = document.createElement('td');
-    let problem_type = document.createElement('td');
     let problem_code = document.createElement('td');
     let problem_answer = document.createElement('td');
-    let problem_tolerance = document.createElement('td');
     let problem_points = document.createElement('td');
     let problem_status = document.createElement('td');
     let problem_actions = document.createElement('td');
     let problem_recheck = document.createElement('td');
     let problem_delete = document.createElement('td');
 
-    problem_name.innerHTML = `<b>${problem.name}</b>`;
-    problem_type.innerHTML = `<div>[ ${problem.type} ]</div>`;
+    problem_name.innerHTML = `<div><b>${problem.name}</b>
+      <br><span style="${problem.type == 'debug' ? 'color: #2962ff;' : ''} opacity: 0.4; font-size: 0.67em;">[<i>${problem.type}</i>]</span></div>`;
     problem_code.innerHTML = `<div>[ ${problem.code.number + problem.code.alpha} ]</div>`;
     problem_answer.innerHTML = `<div> ${problem.answer.mantissa} ${problem.answer.exponent != 0 ? '&#215; 10<sup>' + problem.answer.exponent + '</sup>' : ''}
-      <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>answer</i>]</span></div>`;
-    problem_tolerance.innerHTML = `<div>${problem.tolerance}
-      <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>tolerance</i>]</span></div>`;
+      <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>tolerance: ${problem.tolerance}%</i>]</span></div>`;
     problem_points.innerHTML = `<div>${problem.points + (problem.points == 1 ? ' pt' : ' pts')}</div>`;
     problem_status.innerHTML = 
       problem.status == 'disabled' ? '<b class="grey-text text-darken-2">disabled</b>' : 
@@ -451,10 +447,8 @@ const displayProblems = problem_table => {
     }
 
     problem_element.appendChild(problem_code);
-    problem_element.appendChild(problem_type);
     problem_element.appendChild(problem_name);
     problem_element.appendChild(problem_answer);
-    problem_element.appendChild(problem_tolerance);
     problem_element.appendChild(problem_points);
     problem_element.appendChild(problem_status);
     problem_element.appendChild(problem_actions);
