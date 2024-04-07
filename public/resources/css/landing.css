@@ -5,7 +5,9 @@
 
 .landing-title {
   position: absolute;
+  overflow: hidden;
   top: 61%;
+  max-height: 100vh;
   margin-left: 10%;
 
   -ms-transform: translateY(-50%);
