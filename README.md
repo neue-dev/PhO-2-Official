@@ -8,13 +8,8 @@ The website may currently be visited at <a href="http://pho-2-official.org/">pho
 <br>
 
 <p align="center">
-<img src="./README/images/UI/Landing Page - Default.png">
+<img src="./README/images/UI/PhO2 Landing Page.png">
 </p>
-
-<p align="center">
-<img src="./README/images/UI/Landing Page - Dark.png">
-</p>
-
 
 <br>
 <br>
