@@ -30,8 +30,8 @@ body {
   position: fixed;
   top: 16vh;
   left: 12vw;
-  width: 40vw;
-  height: 32vh;
+  width: 58vw;
+  height: 16vw;
   transition: 0s !important;
 }
 
@@ -73,9 +73,10 @@ input:-webkit-autofill:active{
 }
 
 @media (max-width : 1024px) {
-  
-}
-
-@media (max-width : 800px) {
-  
+  .landing-title {
+    top: 16vh;
+    left: 12vw;
+    width: 58vh;
+    height: 16vh;
+  }
 }
