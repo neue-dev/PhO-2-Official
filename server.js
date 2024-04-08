@@ -57,7 +57,7 @@ const server = app.listen(server_port, () => {
 // Middleware
 app.use(express.json());
 app.use(cookieparser());
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/public', { maxAge: 3600000 }));  // One hour cache
 
 // The different routes
 app.use('/api', apiroutes);
