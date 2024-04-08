@@ -312,7 +312,7 @@ td:has(.table-btn) {
   font-size: 15px;
   opacity: 0.4;
   color: var(--fg1);
-  transition: 0.3s;
+  transition: 0.3s !important;
 }
 
 .trademark:hover {
