@@ -34,44 +34,34 @@
   </head>
 
   <body>
-    <div class="home-tabs">
-      <div class="row home-login home-tab">
-        <div class="landing-title-bg"></div>
-        <div class="landing-title">
-          <div class="landing-title-upper">Philippine Online</div>
-          <div class="landing-title-lower">Physics Olympiad</div>
+    <div class="row home-login">
+      <div class="landing-title"></div>
+      
+      <div class="container fields-container">
+        <div class="input-field username-input">
+          <input placeholder="Enter Username" id="username" type="text" class="validate ui-text">
+          <label for="username">username</label>
         </div>
 
-        <div class="container logo-container">
-          <img class="responsive-img pho2-icon" src="./pho-2-icon">
+        <div class="input-field password-input">
+          <input placeholder="Enter Password" id="password" type="password" class="validate ui-text">
+          <label for="username">password</label>
         </div>
+      </div>
 
-        <div class="container fields-container">
-          <div class="input-field username-input">
-            <input placeholder="Enter Username" id="username" type="text" class="validate ui-text">
-            <label for="username">username</label>
-          </div>
-  
-          <div class="input-field password-input">
-            <input placeholder="Enter Password" id="password" type="password" class="validate ui-text">
-            <label for="username">password</label>
-          </div>
+      <div class="field-buttons-container">          
+        <div class="login-button-container">
+          <a class="waves-effect btn white grey-text text-darken-3 ui-text login-button" href="#!">login</a>
         </div>
+      </div>
 
-        <div class="field-buttons-container">          
-          <div class="login-button-container">
-            <a class="waves-effect btn white grey-text text-darken-3 ui-text login-button" href="#!">login</a>
-          </div>
+      <div id="login" class="modal login-modal">
+        <div class="modal-content">
+          <h4 class="title-text">Invalid Login Attempt</h4>
+          <p>Please make sure your username and password are correct.</p>
         </div>
-
-        <div id="login" class="modal login-modal">
-          <div class="modal-content">
-            <h4 class="title-text">Invalid Login Attempt</h4>
-            <p>Please make sure your username and password are correct.</p>
-          </div>
-          <div class="modal-footer">
-            <a href="#!" class="modal-close waves-effect waves-green btn-flat ui-text">Okay</a>
-          </div>
+        <div class="modal-footer">
+          <a href="#!" class="modal-close waves-effect waves-green btn-flat ui-text">Okay</a>
         </div>
       </div>
     </div>

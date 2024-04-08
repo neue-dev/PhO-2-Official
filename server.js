@@ -365,6 +365,14 @@ app.get('/pho-2-icon-dark', (req, res) => {
   res.sendFile('./public/resources/images/pho-2-official-icon-dark.png', { root: __dirname });
 })
 
+app.get('/pho-2-bg', (req, res) => {
+  res.sendFile('./public/resources/images/pho-2-official-bg.png', { root: __dirname });
+})
+
+app.get('/pho-2-title', (req, res) => {
+  res.sendFile('./public/resources/images/pho-2-official-title.png', { root: __dirname });
+})
+
 // Other resources
 app.get('/utils/css/main', (req, res) => {
   res.sendFile('./public/resources/css/main.css', { root: __dirname });
