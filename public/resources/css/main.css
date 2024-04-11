@@ -29,7 +29,12 @@
 
 @font-face {
   font-family: headerFont;
-  src: url(/resources/fonts/GlacialIndifference-Bold.otf);
+  src: url(/resources/fonts/Helvetica-Bold.ttf);
+}
+
+@font-face {
+  font-family: subHeaderFont;
+  src: url(/resources/fonts/Helvetica.ttf);
 }
 
 @font-face {
@@ -87,14 +92,31 @@ nav {
   color: var(--fg3);
   background-color: var(--navbg);
   box-shadow: none;
+  height: 90px;
 }
 
 nav a.ui-text {
   color: var(--fg3);
+  padding-top: 12px;
+  padding-left: 24px;
+  padding-right: 24px;
+  height: 100%;
+
+  font-size: 16px;
+  font-family: subHeaderFont;
+  letter-spacing: 0;
 }
 
 nav a.ui-text:hover {
   background-color: var(--fg1);
+}
+
+nav ul {
+  height: 100%;
+}
+
+nav ul li {
+  height: 100%;
 }
 
 .sidenav {
@@ -109,8 +131,9 @@ nav a.ui-text:hover {
 .nav-title {
   display: inline-block;
   height: 100%;
-  margin-left: 30px;
-  margin-top: -30px;
+  margin-left: 48px;
+  margin-top: -10px;
+  padding: 0;
   font-family: headerFont;
 }
 
@@ -119,14 +142,48 @@ nav a.ui-text:hover {
   padding: 0;
   margin: 0;
 
-  font-size: 28px;
+  font-size: 32px;
+  line-height: 32px;
   opacity: 0.96;
-  letter-spacing: 1.5px;
+  letter-spacing: -0.04em;
+  text-overflow: ellipsis;
 }
 
-.admin-label {
-  color: var(--adminfg);
-  font-size: 40%;
+#navbar-title-desktop {
+  display: inline-block;
+  font-family: subHeaderFont;
+  font-size: 15px;
+  line-height: 16px;
+  letter-spacing: -0.025em;
+
+  transform: translate(0, -50%);
+  opacity: 0.5;
+}
+
+#navbar-title-mobile {
+  display: inline-block;
+  font-family: subHeaderFont;
+  font-size: 15px;
+  line-height: 16px;
+  letter-spacing: -0.025em;
+
+  transform: translate(0, -50%);
+  opacity: 0.5;
+}
+
+#navbar-title-team {
+  
+}
+
+#navbar-title-cat {
+  display: inline-block;
+  font-family: subHeaderFont;
+  font-size: 15px;
+  line-height: 16px;
+  letter-spacing: -0.025em;
+
+  transform: translate(0, -50%);
+  opacity: 0.5;
 }
 
 /* Info board */

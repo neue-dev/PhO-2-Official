@@ -50,6 +50,7 @@ router.post('/data', (req, res) => {
   isuser(req, res, async data => {
     res.json({
       username: data.username,
+      category: data.category,
       lastSubmit: data.lastSubmit,
       lastMessage: data.lastMessage,
     });
