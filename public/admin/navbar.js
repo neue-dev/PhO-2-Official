@@ -1,6 +1,7 @@
 const navbar = document.querySelectorAll('nav')[0];
 const navbarTitleDesktop = document.querySelector('#navbar-title-desktop');
 const navbarTitleMobile = document.querySelector('#navbar-title-mobile');
+const navbarUL = document.querySelectorAll('ul')[0];
 
 navbar.className = 'hellyeahimanadminmf';
 navbarTitleDesktop.innerHTML += ' <span class="admin-label"> - admin</span>';
@@ -18,5 +19,6 @@ setTimeout(() => {
     localStorage.setItem('category', DATA.userData.category);
   
     navbarTitleTeam.textContent = `welcome, ${data.username}!`;
+    navbarUL.style.backgroundImage = 'repeating-linear-gradient(90deg, rgba(0, 0, 0, 0), var(--adminbg) 4%, var(--adminbg))';
   });
 }, 500);
