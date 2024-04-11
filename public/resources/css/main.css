@@ -112,7 +112,12 @@ nav a.ui-text:hover {
 }
 
 nav ul {
+  background-image: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0), var(--fg1) 4%, var(--fg1));
   height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
 }
 
 nav ul li {
@@ -195,7 +200,7 @@ nav ul li {
 .main-content-info {
   margin: 0;
   margin-right: 100px;
-  height: 100vh;
+  height: 100vh !important;
 
   color: var(--fg1);
   background-color: var(--bg1);
