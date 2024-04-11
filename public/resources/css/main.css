@@ -2,6 +2,7 @@
 
 :root {
   --black: #212121;
+  --white: #f0f0f0;
 }
 
 * {
@@ -112,7 +113,7 @@ nav a.ui-text:hover {
 }
 
 nav ul {
-  background-image: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0), var(--fg1) 4%, var(--fg1));
+  background-image: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0), var(--navbg) 4%, var(--navbg));
   height: 100%;
   position: absolute;
   top: 0;
@@ -140,6 +141,7 @@ nav ul li {
   margin-top: -10px;
   padding: 0;
   font-family: headerFont;
+  color: var(--white);
 }
 
 .nav-title-text {
