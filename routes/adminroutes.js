@@ -500,35 +500,49 @@ router.post('/recheckproblem', (req, res) => {
       try {
         
         // Update the users first
-        const users = await User.find({});
-        users.forEach(user => {
-          (async() => {
-            if(user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length){
-              let updated_attempts = [];
-              user.attempts.forEach(attempt => {
-                if(attempt.problem_id.toString() != problem._id.toString())
-                  updated_attempts.push(attempt);
-              });
+        // const users = await User.find({});
+        // users.forEach(user => {
+        //   (async() => {
+        //     if(user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length){
+        //       let updated_attempts = [];
+        //       user.attempts.forEach(attempt => {
+        //         if(attempt.problem_id.toString() != problem._id.toString())
+        //           updated_attempts.push(attempt);
+        //       });
 
-              await User.updateOne(
-                { username: user.username },
-                { $set: { attempts: updated_attempts }});
-            }
-          })()
-        });
+        //       await User.updateOne(
+        //         { username: user.username },
+        //         { $set: { attempts: updated_attempts }});
+        //     }
+        //   })()
+        // });
 
         // Recheck pertinent submissions
         const submissions = await Submission.find({ problem_id: problem._id });
+        const users = await User.find({});
+        const userCounts = {};
+
         submissions.sort((a, b) => a.timestamp - b.timestamp );
 
         // Reset the verdicts first
         submissions.forEach(submission => {
           (async() => {
-            await Submission.updateOne(
+            await Submission.updateMany(
               { _id: submission._id },
               { $set: { verdict: 'wrong' } });
           })()
         })
+
+        // Reset the user verdicts too
+        users.forEach(user => {
+          
+          // Just skip if the user hasnt done the problem
+          if(!user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length)
+            return;
+
+          // Otherwise, reset the verdict
+          userCounts[user.username] = 0;
+        });
 
         // Redo the verdicts
         submissions.forEach(submission => {
@@ -536,51 +550,58 @@ router.post('/recheckproblem', (req, res) => {
             const user = await User.findOne({ _id: submission.user_id });
             if(user){
 
-              // The problem hasn't been attempted by the user yet
-              if(!user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length){
-                await User.updateOne(
-                  { username: user.username },
-                  { $set: { attempts: user.attempts.concat([{
-                    problem_id: problem._id,
-                    count: 1,
-                    verdict: false,
-                  }]) 
-                }});
-
               // The problem has been attempted
-              } else {
+              if(user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length){
                 let count = user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString())[0].count;
-
-                await User.updateOne(
-                  { username: user.username },
-                  { $set: { 
-                    "attempts.$[].count": count + 1,
-                  }},
-                  { arrayFilters: [
-                    { "problem_id": problem._id, }
-                  ]}
-                );
-              }
-
-              // The answer was correct
-              if(checkAnswer(submission.answer, problem.answer, problem.tolerance)){
-                await Submission.updateOne(
-                  { _id: submission._id },
-                  { $set: { verdict: 'correct' } });
                 
-                await User.updateOne(
-                  { username: user.username },
-                  { $set: { 
-                    "attempts.$[].verdict": true,
-                  }},
-                  { arrayFilters: [
-                    { "problem_id": problem._id, }
-                  ]}
-                );
+                // Increment the count first
+                userCounts[user.username]++;
+
+                // The answer was correct
+                if(checkAnswer(submission.answer, problem.answer, problem.tolerance)){
+                  await Submission.updateOne(
+                    { _id: submission._id },
+                    { $set: { verdict: 'correct' } });
+                  
+                  await User.updateOne(
+                    { username: user.username },
+                    { $set: { 
+                      "attempts.$[].verdict": true,
+                    }},
+                    { arrayFilters: [
+                      { "problem_id": problem._id, }
+                    ]}
+                  );
+                } 
               }
             } 
           })()
         });
+
+        // Update the counts
+        setTimeout(() => {
+          users.forEach(user => {
+          
+            // Just skip if the user hasnt done the problem
+            if(!user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length)
+              return;
+  
+            // Otherwise, reset the verdict
+            (async() => {
+              await User.updateOne(
+                { username: user.username },
+                { $set: { 
+                  "attempts.$[].count": userCounts[user.username],
+                }},
+                { arrayFilters: [
+                  { "problem_id": problem._id, }
+                ]}
+              );
+            })()
+          });
+
+        // Jesus fucking christ remove this and do this better next time
+        }, 1000);
 
         return res.json({
           message: 'Problem rechecked.'
