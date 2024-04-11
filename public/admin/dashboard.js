@@ -440,7 +440,7 @@ const displayProblems = problem_table => {
       <br><span style="${problem.type == 'debug' ? 'color: #2962ff;' : ''} opacity: 0.4; font-size: 0.67em;">[<i>${problem.type}</i>]</span></div>`;
     problem_code.innerHTML = `<div>[ ${problem.code.number + problem.code.alpha} ]</div>`;
     problem_answer.innerHTML = `<div> ${problem.answer.mantissa} ${problem.answer.exponent != 0 ? '&#215; 10<sup>' + problem.answer.exponent + '</sup>' : ''}
-      <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>${problem.tolerance}%</i>]</span></div>`;
+      <br><span style="opacity: 0.4; font-size: 0.67em;">[<i>${problem.tolerance * 100}%</i>]</span></div>`;
     problem_points.innerHTML = `<div>${problem.points + (problem.points == 1 ? ' pt' : ' pts')}</div>`;
     problem_status.innerHTML = 
       problem.status == 'disabled' ? '<b class="grey-text text-darken-2">disabled</b>' : 
