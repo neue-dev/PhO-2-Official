@@ -112,7 +112,7 @@ nav a.ui-text:hover {
   background-color: var(--fg1);
 }
 
-nav ul {
+nav ul#nav-mobile {
   background-image: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0), var(--navbg) 4%, var(--navbg));
   height: 100%;
   position: absolute;
@@ -121,13 +121,17 @@ nav ul {
   margin: 0;
 }
 
-nav ul li {
+nav ul#nav-mobile li {
   height: 100%;
 }
 
 .sidenav {
   background-color: var(--bg1);
-  color: var(--fg2);
+}
+
+.sidenav li .ui-text {
+  background-color: var(--bg1) !important;
+  color: var(--fg1) !important;
 }
 
 .sidenav .subheader {
