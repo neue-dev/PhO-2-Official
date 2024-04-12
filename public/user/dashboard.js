@@ -156,7 +156,7 @@ const loadSubmissions = () => {
       let indexToDelete;
       if(DATA.autocomplete.filter(entry => entry.split(' ')[0] == problemCode && submission.verdict == 'correct').length) {
         DATA.autocomplete.forEach(entry => {
-          if(entry.includes(problemName)) 
+          if(entry.split(' ')[0] == problemCode) 
             indexToDelete = DATA.autocomplete.indexOf(entry)
         })
 
