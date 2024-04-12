@@ -139,6 +139,7 @@ const loadSubmissions = () => {
     data.submissions.forEach(submission => {
       let problemName = submission.problemCodeName.replace(
         submission.problemCodeName.split(' ')[0], '').trim();
+      let problemCode = submission.problemCodeName.split(' ')[0].trim();
 
       DATA.problems.forEach(problem => {
         if(!problem.attempts) 
@@ -153,7 +154,7 @@ const loadSubmissions = () => {
       DATA.submissions.push(submission);
 
       let indexToDelete;
-      if(DATA.autocomplete.filter(entry => entry.includes(problemName) && submission.verdict == 'correct').length) {
+      if(DATA.autocomplete.filter(entry => entry.split(' ')[0] == problemCode && submission.verdict == 'correct').length) {
         DATA.autocomplete.forEach(entry => {
           if(entry.includes(problemName)) 
             indexToDelete = DATA.autocomplete.indexOf(entry)
