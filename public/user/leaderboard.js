@@ -31,9 +31,9 @@ const loadLeaderboard = () => {
           })()
         }
 
-        if(user.score){
-          DATA.users[user_id].score = user.score;
-        }
+        // if(user.score){
+        //   DATA.users[user_id].score = user.score;
+        // }
       });
 
       displayLeaderboard(overall_table, junior_table, senior_table);

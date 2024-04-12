@@ -498,29 +498,30 @@ router.post('/recheckproblem', (req, res) => {
     // Check if problem exists
     if(problem) {
       try {
-        
-        // Update the users first
-        // const users = await User.find({});
-        // users.forEach(user => {
-        //   (async() => {
-        //     if(user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length){
-        //       let updated_attempts = [];
-        //       user.attempts.forEach(attempt => {
-        //         if(attempt.problem_id.toString() != problem._id.toString())
-        //           updated_attempts.push(attempt);
-        //       });
-
-        //       await User.updateOne(
-        //         { username: user.username },
-        //         { $set: { attempts: updated_attempts }});
-        //     }
-        //   })()
-        // });
 
         // Recheck pertinent submissions
         const submissions = await Submission.find({ problem_id: problem._id });
         const users = await User.find({});
-        const userCounts = {};
+        
+        // Reset user verdicts first
+        users.forEach(user => {
+          (async() => {
+            if(user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length){
+              const count = await Submission.find({ problem_id: problem._id, username: user.username }).count();
+
+              await User.updateOne(
+                { username: user.username },
+                { $set: { 
+                  "attempts.$[attempt].verdict": false,
+                  "attempts.$[attempt].count": count,
+                }},
+                { arrayFilters: [
+                  { "attempt.problem_id": problem._id, }
+                ]}
+              );
+            }
+          })()
+        });
 
         submissions.sort((a, b) => a.timestamp - b.timestamp );
 
@@ -533,17 +534,6 @@ router.post('/recheckproblem', (req, res) => {
           })()
         })
 
-        // Reset the user verdicts too
-        users.forEach(user => {
-          
-          // Just skip if the user hasnt done the problem
-          if(!user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length)
-            return;
-
-          // Otherwise, reset the verdict
-          userCounts[user.username] = 0;
-        });
-
         // Redo the verdicts
         submissions.forEach(submission => {
           (async() => {
@@ -552,10 +542,6 @@ router.post('/recheckproblem', (req, res) => {
 
               // The problem has been attempted
               if(user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length){
-                let count = user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString())[0].count;
-                
-                // Increment the count first
-                userCounts[user.username]++;
 
                 // The answer was correct
                 if(checkAnswer(submission.answer, problem.answer, problem.tolerance)){
@@ -566,10 +552,10 @@ router.post('/recheckproblem', (req, res) => {
                   await User.updateOne(
                     { username: user.username },
                     { $set: { 
-                      "attempts.$[].verdict": true,
+                      "attempts.$[attempt].verdict": true,
                     }},
                     { arrayFilters: [
-                      { "problem_id": problem._id, }
+                      { "attempt.problem_id": problem._id, }
                     ]}
                   );
                 } 
@@ -577,31 +563,6 @@ router.post('/recheckproblem', (req, res) => {
             } 
           })()
         });
-
-        // Update the counts
-        setTimeout(() => {
-          users.forEach(user => {
-          
-            // Just skip if the user hasnt done the problem
-            if(!user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length)
-              return;
-  
-            // Otherwise, reset the verdict
-            (async() => {
-              await User.updateOne(
-                { username: user.username },
-                { $set: { 
-                  "attempts.$[].count": userCounts[user.username],
-                }},
-                { arrayFilters: [
-                  { "problem_id": problem._id, }
-                ]}
-              );
-            })()
-          });
-
-        // Jesus fucking christ remove this and do this better next time
-        }, 1000);
 
         return res.json({
           message: 'Problem rechecked.'
@@ -711,8 +672,6 @@ router.post('/updatescores', (req, res) => {
               Math.pow(2, -crossCheckTable[problem][user].wrong / 2) * 
               Math.pow(2, -(crossCheckTable[problem][user].timestamp - process.env.CONTEST_ELIMS_START) / (process.env.CONTEST_ELIMS_END - process.env.CONTEST_ELIMS_START)) * 
               Math.pow(2, 2 * problemNumbers[problem] / 30);
-
-            console.log(crossCheckTable[problem][user].timestamp);
           }
         }
       })
