@@ -267,6 +267,10 @@ textarea:focus {
   padding-left: 96px;
 }
 
+h1.row.center-align {
+  background-color: rgba(0,0,0,0);
+}
+
 tr {
   display: flex;
   width: 100%;
