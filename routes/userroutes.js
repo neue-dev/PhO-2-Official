@@ -221,21 +221,9 @@ router.post('/submit', (req, res) => {
     const timestamp = (new Date()).getTime();
     const submission_id = new mongoose.Types.ObjectId();
 
-    const data = new Submission({
-      _id: submission_id,
-      user_id: user._id,
-      username: user.username,
-      problem_id: problem._id,
-      problemCodeName: problem.code.number + problem.code.alpha + ' ' + problem.name,
-      answer: answer,
-      verdict: verdict ? 'correct' : 'wrong',
-      timestamp: timestamp,
-    }, { collection: 'submissions' });
-
     // Try to save to database
     try {
 
-      let submission = await data.save();
       let count = 
         user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length ?
         user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString())[0].count : 0;
@@ -270,6 +258,18 @@ router.post('/submit', (req, res) => {
           ]}
         );
       }
+
+      const data = new Submission({
+        _id: submission_id,
+        user_id: user._id,
+        username: user.username,
+        problem_id: problem._id,
+        problemCodeName: problem.code.number + problem.code.alpha + ' ' + problem.name,
+        answer: answer,
+        verdict: verdict ? 'correct' : 'wrong',
+        timestamp: timestamp,
+      }, { collection: 'submissions' });
+      let submission = await data.save();
 
       return res.status(200).json({
         message: 'Submission logged successfully.',
