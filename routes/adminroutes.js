@@ -533,30 +533,23 @@ router.post('/recheckproblem', async(req, res) => {
         // Redo the verdicts
         submissions.forEach(submission => {
           (async() => {
-            const user = await User.findOne({ _id: submission.user_id });
-            if(user){
-
-              // The problem has been attempted
-              if(user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length){
-
-                // The answer was correct
-                if(checkAnswer(submission.answer, problem.answer, problem.tolerance)){
-                  await Submission.updateOne(
-                    { _id: submission._id },
-                    { $set: { verdict: 'correct' } });
-                  
-                  await User.updateOne(
-                    { username: user.username },
-                    { $set: { 
-                      "attempts.$[attempt].verdict": true,
-                    }},
-                    { arrayFilters: [
-                      { "attempt.problem_id": problem._id, }
-                    ]}
-                  );
-                } 
-              }
-            } 
+            
+            // The answer was correct
+            if(checkAnswer(submission.answer, problem.answer, problem.tolerance)){
+              await Submission.updateOne(
+                { _id: submission._id },
+                { $set: { verdict: 'correct' } });
+            
+              await User.updateOne(
+                { _id: submission.user_id },
+                { $set: { 
+                  "attempts.$[attempt].verdict": true,
+                }},
+                { arrayFilters: [
+                  { "attempt.problem_id": problem._id, }
+                ]}
+              );
+            }
           })()
         });
 
