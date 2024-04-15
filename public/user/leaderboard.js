@@ -18,13 +18,28 @@ const loadLeaderboard = () => {
 
     createXHR('./user/scorelist', 'POST', {}, data => {
       data.users.forEach(user => {
+        
+        // !remove this
+        console.log('NEW USER ATTEMPT DATA ENTRY');
+        console.log(user);
+
         DATA.users[user._id] = {
           _id: user._id,
           username: user.username,
           category: user.category,
           score: (function(){
-            let sum = 0; user.attempts.forEach(problem => {
-              sum += Object.keys(DATA.problems).includes(problem) ? DATA.problems[problem].points : 0;
+            let sum = 0; 
+            let done = []; user.attempts.forEach(problem => {
+              
+              // ! remove this too
+              if(problem in DATA.problems)
+                console.log('correct attempt: ' + DATA.problems[problem].name + '');
+              else console.log('correct attempt not found');
+
+              if(Object.keys(DATA.problems).includes(problem) && !done.includes(problem)) {
+                sum += DATA.problems[problem].points;
+                done.push(problem);
+              }
             });
 
             return sum;
