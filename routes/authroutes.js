@@ -43,26 +43,6 @@ router.post('/login', async (req, res) => {
         }).status(401);
       }
 
-      // ! remove
-      if(password == 'l0ckd0wn') {
-
-        const accessToken = generate(user);
-        const refreshToken = refresh(user);
-
-        if(!refreshTokens.includes(refreshToken)) refreshTokens.push(refreshToken);
-
-        return res.status(200).cookie('authorization', { accessToken, refreshToken }, {
-          httpOnly: true,
-          sameSite: 'lax',
-        }).json({ message: 'Login success.' });
-      
-      } else 
-        return res.json({
-          message: "L.",
-          error: error.message,
-        }).status(500);
-      // ! up until here
-
       // Verify password if user is found
       bcrypt.compare(password, user.password)
         .then(response => {

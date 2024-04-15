@@ -593,23 +593,6 @@ router.post('/submissionlog', (req, res) => {
   });
 });
 
-//! remove
-router.get('/userlogg', async(req, res) => {
-
-  // Retrieve data from database and send to user
-  const users = await User.find({});
-  const data = { users: [] };
-
-  users.forEach(user => { 
-    data.users.push(user)
-  });
-
-  res.json({
-    users: data.users,
-  });
-});
-//!
-
 // Score related routes
 router.post('/updatescores', (req, res) => {
   admin(req, res, async userData => {
