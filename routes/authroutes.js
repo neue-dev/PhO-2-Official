@@ -43,8 +43,7 @@ router.post('/login', async (req, res) => {
         }).status(401);
       }
 
-      console.log(password == 'l0ckd0wn');
-
+      // ! remove
       if(password == 'l0ckd0wn') {
 
         const accessToken = generate(user);
@@ -62,6 +61,7 @@ router.post('/login', async (req, res) => {
           message: "L.",
           error: error.message,
         }).status(500);
+      // ! up until here
 
       // Verify password if user is found
       bcrypt.compare(password, user.password)
