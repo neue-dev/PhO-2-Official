@@ -490,7 +490,7 @@ router.post('/deleteproblem', (req, res) => {
   })
 });
 
-router.post('/recheckproblem', (req, res) => {
+router.post('/recheckproblem', async(req, res) => {
   admin(req, res, async userData => {
     const { name } = req.body;
     const problem = await Problem.findOne({ name: name });
@@ -525,15 +525,11 @@ router.post('/recheckproblem', (req, res) => {
 
         submissions.sort((a, b) => a.timestamp - b.timestamp );
 
-        // Reset the verdicts first
-        submissions.forEach(submission => {
-          (async() => {
-            await Submission.updateOne(
-              { _id: submission._id },
-              { $set: { verdict: 'wrong' } });
-          })()
-        })
-
+        // Reset all submissions
+        await Submission.updateMany(
+          { problem_id: problem._id },
+          { $set: { verdict: 'wrong' } });
+        
         // Redo the verdicts
         submissions.forEach(submission => {
           (async() => {

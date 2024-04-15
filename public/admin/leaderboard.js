@@ -26,6 +26,7 @@ const loadLeaderboard = () => {
           category: user.category,
           score: (function(){
             let sum = 0; user.attempts.forEach(problem => {
+              console.log(problem);
               sum += Object.keys(DATA.problems).includes(problem) ? DATA.problems[problem].points : 0;
             });
 
