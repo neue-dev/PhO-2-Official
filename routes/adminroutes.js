@@ -501,34 +501,25 @@ router.post('/recheckproblem', async(req, res) => {
 
         // Recheck pertinent submissions
         const submissions = await Submission.find({ problem_id: problem._id });
-        const users = await User.find({});
-        
+
         // Reset user verdicts first
-        users.forEach(user => {
-          (async() => {
-            if(user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length){
-              const count = await Submission.find({ problem_id: problem._id, username: user.username }).count();
-
-              await User.updateOne(
-                { username: user.username },
-                { $set: { 
-                  "attempts.$[attempt].verdict": false,
-                  "attempts.$[attempt].count": count,
-                }},
-                { arrayFilters: [
-                  { "attempt.problem_id": problem._id, }
-                ]}
-              );
-            }
-          })()
-        });
-
-        submissions.sort((a, b) => a.timestamp - b.timestamp );
-
+        await User.updateMany(
+          { attempts: { $exists: true } },
+          { $set: { 
+            "attempts.$[attempt].verdict": false,
+          }},
+          { arrayFilters: [
+            { "attempt.problem_id": problem._id, }
+          ]}
+        );
+        
         // Reset all submissions
         await Submission.updateMany(
           { problem_id: problem._id },
           { $set: { verdict: 'wrong' } });
+          
+        // Sort submissions
+        submissions.sort((a, b) => a.timestamp - b.timestamp );
         
         // Redo the verdicts
         submissions.forEach(submission => {
