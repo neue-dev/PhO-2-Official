@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>(PhO)&#178; - Problems</title>
+    <link rel="icon" type="image/x-icon" href="/pho-2-icon">
+
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Manrope|Staatliches|Lexend" rel="stylesheet">
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- General CSS styling -->
+    <link rel="stylesheet" href="/utils/css/main">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  </head>
+
+  <body>
+    <nav>
+      <div class="nav-wrapper">
+        <div class="nav-title">
+          <h3 class="nav-title-text">
+            <span id="navbar-title-team" class=""></span><br>
+            <span id="navbar-title-desktop" class="hide-on-med-and-down">philippine online physics olympiad</span>
+            <span id="navbar-title-mobile" class="pho-2-short-title hide-on-large-only">(PHO)</span>
+            <span id="navbar-title-cat" class=""></span>
+          </h3>
+        </div>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><a href="./dashboard" class="ui-text">Dashboard</a></li>
+          <li><a href="./problems" class="ui-text">Problems</a></li>
+          <li><a href="./finals" class="ui-text">Finals</a></li>
+          <li><a href="./leaderboard" class="ui-text">Leaderboard</a></li>
+          <li><a href="./forum" class="ui-text">Updates</a></li>
+          <li><a href="#" class="ui-text logout-button">Logout</a></li>
+        </ul>
+
+        <ul id="slide-out" class="sidenav">
+          <br>
+          <li><a class="subheader ui-text">MENU</a></li>
+          <li><a href="./dashboard" class="ui-text">Dashboard</a></li>
+          <li><a href="./problems" class="ui-text">Problems</a></li>
+          <li><a href="./finals" class="ui-text">Finals</a></li>
+          <li><a href="./leaderboard" class="ui-text">Leaderboard</a></li>
+          <li><a href="./forum" class="ui-text">Updates</a></li>
+          <li><div class="divider" ></div></li>
+          <li><a class="waves-effect ui-text logout-button" href="#">Logout</a></li>
+        </ul>
+        <a href="#" data-target="slide-out" class="sidenav-trigger nav-mobile-alt-trigger">
+          <h4 class="material-icons" style="margin-top: 15px;">&#x2630;</h4>
+        </a>
+      </div>
+    </nav>
+
+    <div class="darkmode-toggle center-align">  
+      <div class="switch">
+        <label>
+          Light
+          <input class="darkmode-toggle-switch" type="checkbox">
+          <span class="lever"></span>
+          Dark
+        </label>
+      </div>
+    </div>
+
+    <script src="./utils/js/xhr"></script>
+    <script src="./utils/js/header"></script>
+    <script src="./utils/js/config"></script>
+    <script src="./utils/js/logout"></script>
+    <script src="./navbar"></script>
+    <script src="/darkmode"></script>
+    <script src="/trademark"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        let elems = document.querySelectorAll('.sidenav');
+        let instances = M.Sidenav.init(elems, {});
+      });
+    </script>
+
+    <iframe class="main-content problems" width="100%" height="100vh" src="{{CONTEST_PROBLEMS_URL}}"></iframe>
+  </body>
+</html>

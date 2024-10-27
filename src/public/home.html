@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>(PhO)&#178;</title>
+    <link rel="icon" type="image/x-icon" href="/pho-2-icon">
+
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Manrope|Staatliches|Lexend" rel="stylesheet">
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- General CSS styling -->
+    <link rel="stylesheet" href="/utils/css/main">
+    <link rel="stylesheet" href="/utils/css/landing">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!-- Overrides -->
+    <style type="text/css">
+      .col.login-card {
+        min-height: 100vh;
+      }
+      
+      .col.content-card {
+        min-height: 100vh;
+        padding:0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="row home-login">
+      <div class="landing-title"></div>
+      
+      <div class="container fields-container">
+        <div class="input-field username-input">
+          <input placeholder="Enter Username" id="username" type="text" class="validate ui-text">
+          <label for="username">username</label>
+        </div>
+
+        <div class="input-field password-input">
+          <input placeholder="Enter Password" id="password" type="password" class="validate ui-text">
+          <label for="username">password</label>
+        </div>
+      </div>
+
+      <div class="field-buttons-container">          
+        <div class="login-button-container">
+          <a class="waves-effect btn white grey-text text-darken-3 ui-text login-button" href="#!">login</a>
+        </div>
+      </div>
+
+      <div id="login" class="modal login-modal">
+        <div class="modal-content">
+          <h4 class="title-text">Invalid Login Attempt</h4>
+          <p>Please make sure your username and password are correct.</p>
+        </div>
+        <div class="modal-footer">
+          <a href="#!" class="modal-close waves-effect waves-green btn-flat ui-text">Okay</a>
+        </div>
+      </div>
+    </div>
+      
+    <script src="/darkmode"></script>
+    <script src="/trademark"></script>
+    <script>
+      (function() {       
+        const loginButtonContainer = document.querySelectorAll('.login-button-container')[0];
+        const loginButton = document.querySelectorAll('.login-button')[0];
+        const loginModal = document.querySelectorAll('.login-modal')[0];
+
+        const username = document.querySelector('#username');
+        const password = document.querySelector('#password');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+          let elems = document.querySelectorAll('.modal');
+          let instances = M.Modal.init(elems, {});
+        });
+
+        // Login functionalities
+        function doLogin() {
+          if(!username.value || !password.value) {
+            return M.Modal.getInstance(loginModal).open();
+          }
+
+          let xhr = new XMLHttpRequest();
+          xhr.open('POST', './auth/login', true);
+          xhr.setRequestHeader('Accept', 'application/json');
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.send(JSON.stringify({
+            username: username.value,
+            password: password.value,
+          }));
+
+          xhr.onreadystatechange = function () {
+            if(this.readyState != 4) return;
+
+            if(this.status == 200) {
+              let data = JSON.parse(this.responseText);
+
+              if(data.message == 'Login success.'){
+                location.href = './dashboard';
+              } else {
+                return M.Modal.getInstance(loginModal).open();
+              }
+            }
+          };
+        }
+
+        loginButton.addEventListener('click', e => {
+          doLogin();
+        });
+
+        username.addEventListener('keydown', e => {
+          if(e.keyCode == 13) doLogin();
+        });
+
+        password.addEventListener('keydown', e => {
+          if(e.keyCode == 13) doLogin();
+        });
+      })();
+    </script>
+  </body>
+</html> 

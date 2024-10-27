@@ -1,0 +1,148 @@
+@font-face {
+  font-family: landingTitleFont;
+  src: url(/resources/fonts/Helvetica-Bold.ttf);
+}
+
+@keyframes intro-bg {
+  from { 
+    opacity: 0; 
+    background-position: 69% 69%;
+  }
+  
+  to { 
+    opacity: 1; 
+    background-position: center;
+  }
+}
+
+@keyframes intro-title {
+  from { 
+    opacity: 0; 
+  }
+  
+  to { 
+    opacity: 1; 
+  }
+}
+
+@keyframes intro-field {
+  from { 
+    opacity: 0;
+    transform: translate(-100%, 0); 
+  }
+  
+  to { 
+    opacity: 1; 
+    transform: translate(0, 0); 
+  }
+}
+
+* {
+  transition: width 0s, height 0s, font-size 0s !important;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+}
+
+body {
+  background-image: url("/pho-2-bg");
+  background-repeat: no-repeat;
+  background-position: center; 
+  background-size: cover; 
+  background-color: #ffffff;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  transition: 0s !important;
+  animation-name: intro-bg;
+  animation-duration: 0.5s;
+}
+
+.landing-title {
+  background-image: url("/pho-2-title");
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  position: fixed;
+  top: 16vh;
+  left: 12vw;
+  width: 58vw;
+  height: 16vw;
+  opacity: 0;
+
+  transition: 0s !important;
+  transition: 0s !important;
+  animation-name: intro-title;
+  animation-duration: 0.25s;
+  animation-delay: 0.25s;
+  animation-timing-function: ease-in-out;
+}
+
+.input-field {
+  margin-top: 2vh;
+}
+
+.username-input {
+  opacity: 0;
+  animation-name: intro-field;
+  animation-duration: 0.25s;
+  animation-delay: 0.3s;
+  animation-timing-function: ease-in-out;
+}
+
+.password-input {
+  opacity: 0;
+  animation-name: intro-field;
+  animation-duration: 0.25s;
+  animation-delay: 0.42s;
+  animation-timing-function: ease-in-out;
+}
+
+.field-buttons-container {
+  opacity: 0;
+  animation-name: intro-field;
+  animation-duration: 0.25s;
+  animation-delay: 0.54s;
+  animation-timing-function: ease-in-out;
+}
+
+input, input:focus, input:active {
+  -webkit-box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) inset !important;
+  -webkit-text-fill-color: #080808 !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: #080808 !important;
+  -webkit-box-shadow: 0 0 0 0 rgba(5, 3, 3, 0) inset !important;
+  box-shadow: inset 0 0 20px 20px rgba(0, 0, 0, 0);
+}
+
+.fields-container {
+  position: absolute;
+  width: 25vw;
+  top: 54vh;
+  left: 12vw;
+}
+
+.field-buttons-container {
+  position: absolute;
+  width: 25vw;
+  top: 78vh;
+  left: 12vw;
+}
+
+@media (max-width : 1024px) {
+  .landing-title {
+    top: 16vh;
+    left: 12vw;
+    width: 58vh;
+    height: 16vh;
+  }
+}
