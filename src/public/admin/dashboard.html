@@ -6,416 +6,127 @@
 
     <title>(PhO)&#178;</title>
 
-    <!--Import Google Icon Font-->
-    <link href="https://fonts.googleapis.com/icon?family=Manrope|Staatliches|Lexend" rel="stylesheet">
-
-    <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-
-    <!-- General CSS styling -->
-    <link rel="stylesheet" href="/utils/css/main">
-
-    <!-- Compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
     <!-- Overrides -->
     <style type="text/css">
-      .admin-table {
-        margin-top: 80px;
+      html, body, .container, .card {
+        padding: 2em;
+        letter-spacing: -0.025em;
       }
 
-      .admin-table-header-card {
-        margin-top: -30px;
-      }
-
-      .admin-table-card {
-        margin: 0;
-        padding: 0;
-        height: calc(100vh - 390px);
+      .header {
+        letter-spacing: -0.06em;
       }
     </style>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <!-- Semantic -->
+    <link href="./resources/semantic/semantic.css" rel="stylesheet">
+    <script src="./resources/semantic/semantic.js"></script>
+    
+    <!-- Pho2 Utils -->
+    <!-- <script src="/pho2"></script> -->
   </head>
 
   <body>
-    <nav>
-      <div class="nav-wrapper">
-        <div class="nav-title">
-          <h3 class="nav-title-text">
-            <span id="navbar-title-team" class=""></span><br>
-            <span id="navbar-title-desktop" class="hide-on-med-and-down">philippine online physics olympiad</span>
-            <span id="navbar-title-mobile" class="pho-2-short-title hide-on-large-only">(PHO)</span>
-            <span id="navbar-title-cat" class=""></span>
-          </h3>
-        </div>
-        <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li><a href="./dashboard" class="ui-text">Dashboard</a></li>
-          <li><a href="./problems" class="ui-text">Problems</a></li>
-          <li><a href="./finals" class="ui-text">Finals</a></li>
-          <li><a href="./leaderboard" class="ui-text">Leaderboard</a></li>
-          <li><a href="./forum" class="ui-text">Updates</a></li>
-          <li><a href="#" class="ui-text logout-button">Logout</a></li>
-        </ul>
-
-        <ul id="slide-out" class="sidenav">
-          <br>
-          <li><a class="subheader ui-text">MENU</a></li>
-          <li><a href="./dashboard" class="ui-text">Dashboard</a></li>
-          <li><a href="./problems" class="ui-text">Problems</a></li>
-          <li><a href="./finals" class="ui-text">Finals</a></li>
-          <li><a href="./leaderboard" class="ui-text">Leaderboard</a></li>
-          <li><a href="./forum" class="ui-text">Updates</a></li>
-          <li><div class="divider" ></div></li>
-          <li><a class="waves-effect ui-text logout-button" href="#">Logout</a></li>
-        </ul>
-        <a href="#" data-target="slide-out" class="sidenav-trigger nav-mobile-alt-trigger">
-          <h4 class="material-icons" style="margin-top: 15px;">&#x2630;</h4>
-        </a>
+    <div class="container">
+      <div class="ui content">
+        <span class=" ui header huge text">
+          Dashboard
+        </span>
       </div>
-    </nav>
-
-    <div class="main-content row ">
-      <div class="main-content-info col s0 m4 l3 card hide-on-small-only">
-        <div class="container">
-          <br>
-          <h3 class="title-text">
-            Dashboard
-          </h3>
-
-          <p class="info-text">
-            The navigation bar above will help you visit the different pages of the site. 
-            This dashboard displays all the things you need to manage the contest flow.
-          </p>
-
-          <div>
-            <div class="timer"></div>
-          </div>
-
-          <div class="container logo-container">
-            <img class="responsive-img pho2-icon" src="./pho-2-icon">
-          </div>
-          <br>
+      <br>
+      <div class="ui animated basic negative button" tabindex="0">
+        <div class="visible content">logout</div>
+        <div class="hidden content">
+          <i class="right arrow icon"></i>
         </div>
       </div>
+      <br>
+      <br>
 
-      <div class="admin-table col s12 m6 l7">
-        <img class="hide-on-small-only" src="../resources/icons/search-icon.png" width="25px" style="margin-left: 15px; margin-bottom: -5px; display: inline-block">
-        <div class="input-field inline filter-field ui-text" 
-          style="display: inline-block; padding: 0 10px 0 10px; border-radius: 2.5px; width: 90%;">
-          <input id="filter-text" type="text">
-          <label style="margin-left: 10px;" for="filter-text">Filter Entries</label>
-        </div>
-
-        <div class="admin-table-card z-depth-2">
-          <div class="row ">
-            <div class="col s12">
-              <ul class="tabs dashboard-tabs ">
-                <li class="tab col s4"><a class="active ui-text" href="#config">Config</a></li>
-                <li class="tab col s4"><a class="ui-text" href="#users">Users</a></li>
-                <li class="tab col s4"><a class="ui-text" href="#problems">Problems</a></li>
-              </ul>
-            </div>
-            <div id="config" class="table-card col s12">
-              <table class="bordered config-table"></table>
-            </div>
-            <div id="users" class="table-card col s12">
-              <table class="bordered user-table"></table>
-            </div>
-            <div id="problems" class="table-card col s12">
-              <table class="bordered problem-table"></table>
+      <div class="ui cards">
+        <div class="card">
+          <div class="content">
+            <h1 class="ui header">Config</h1>
+            <br>
+            Edit contest configuration values here, including the links to the problems and finals pdf files.
+          </div>
+          <div class="extra content">
+            <div class="ui animated button" tabindex="0">
+              <div class="visible content">open</div>
+              <div class="hidden content">
+                <i class="external link square alternate icon"></i>
+              </div>
             </div>
           </div>
         </div>
-
-        <br><br>
-        <div class="s6" style="margin-top: -32px; padding: 20px;">
-          <a class="waves-effect btn white grey-text text-darken-3 modal-trigger white ui-text" style="margin-right: 10px;" href="#new-user">New user</a>
-          <a class="waves-effect btn white grey-text text-darken-3 modal-trigger white ui-text" style="margin-right: 10px;" href="#new-problem">New problem</a>
-          <a class="waves-effect btn white grey-text text-darken-3 modal-trigger white ui-text" style="margin-right: 10px;" href="#enable-official">Enable official</a>
-          <a class="waves-effect btn white grey-text text-darken-3 modal-trigger white ui-text" style="margin-right: 10px;" href="#disable-official">Disable official</a>
-        </div>
-      </div>
-    </div>
-
-    <div id="edit-config" class="modal edit-config-modal">
-      <div class="modal-content">
-        <h4 class="title-text">Edit config</h4>
-        <p style="margin-bottom: 30px">Enter a new value for the following parameter.</p>
-
-        <div class="input-field new-value-input">
-          <input placeholder="Enter New Value" id="edit-config-value" type="text" class="validate ui-text">
-          <label for="edit-config-value">New value</label>
-        </div>
-
-        <br><br><br>
-      </div>
-
-      <div id="edit-config-key" hidden></div>
-
-      <div class="modal-footer">
-        <a href="#!" class="waves-effect waves-green btn-flat edit-config-button ui-text">Update</a>
-        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
-      </div>
-    </div>
-
-    <div id="new-user" class="modal register-user-modal">
-      <div class="modal-content">
-        <h4 class="title-text">New user</h4>
-        <p style="margin-bottom: 30px">Type in a username and password to register a new user.</p>
-
-        <div class="input-field new-username-input">
-          <input placeholder="Enter Username" id="username" type="text" class="validate ui-text">
-          <label for="username">username</label>
+        
+        <div class="card">
+          <div class="content">
+            <h1 class="ui header">Problems</h1>
+            <br>
+            Preview the embedded contest problems here.
+          </div>
+          <div class="extra content">
+            <div class="ui animated button" tabindex="0">
+              <div class="visible content">open</div>
+              <div class="hidden content">
+                <i class="external link square alternate icon"></i>
+              </div>
+            </div>
+          </div>
         </div>
   
-        <div class="input-field new-password-input">
-          <input placeholder="Enter Password" id="password" type="text" class="validate ui-text">
-          <label for="password">password</label>
-        </div>
-
-        <div class="input-field new-category-input">
-          <select id="category">
-            <option value="" selected>Select Category</option>
-            <option value="junior">Junior</option>
-            <option value="senior">Senior</option>
-          </select>
-          <label>Select User Category</label>
-        </div>
-      </div>
-
-      <br><br><br>
-
-      <div class="modal-footer">
-        <a href="#!" class="waves-effect waves-green btn-flat register-user-button ui-text">Register</a>
-        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
-      </div>
-    </div>
-
-    <div id="edit-user" class="modal edit-user-modal">
-      <div class="modal-content">
-        <h4 class="title-text">Edit user</h4>
-        <p style="margin-bottom: 30px">Leave the new password field blank if you do not want to change this.</p>
-  
-        <div class="input-field new-password-input">
-          <input placeholder="Enter New Password" id="edit-user-password" type="text" class="validate ui-text">
-          <label for="edit-user-password">New password</label>
-        </div>
-
-        <div class="input-field">
-          <select id="edit-user-status">
-            <option value="" selected>Select Status</option>
-            <option value="participating">Participating</option>
-            <option value="spectating">Spectating</option>
-            <option value="disqualified">Disqualified</option>
-          </select>
-          <label>Select User Status</label>
-        </div>
-
-        <div class="input-field">
-          <select id="edit-user-category">
-            <option value="" selected>Select Category</option>
-            <option value="junior">Junior</option>
-            <option value="senior">Senior</option>
-          </select>
-          <label>Select User Category</label>
-        </div>
-
-        <br><br><br>
-      </div>
-
-      <div id="edit-username" hidden></div>
-
-      <div class="modal-footer">
-        <a href="#!" class="waves-effect waves-green btn-flat edit-user-button ui-text">Update</a>
-        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
-      </div>
-    </div>
-
-    <div id="delete-user" class="modal delete-user-modal">
-      <div class="modal-content">
-        <h4 class="title-text">Delete user</h4>
-        <p style="margin-bottom: 30px">
-          <span class="red-text"><b>WARNING:</b></span> You are about to delete a user. This action cannot be undone.
-        </p>
-      </div>
-
-      <div id="delete-username" hidden></div>
-
-      <div class="modal-footer">
-        <a href="#!" class="waves-effect waves-green btn-flat delete-user-button ui-text">Confirm</a>
-        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
-      </div>
-    </div>
-
-    <div id="new-problem" class="modal register-problem-modal">
-      <div class="modal-content">
-        <h4 class="title-text">New problem</h4>
-        <p style="margin-bottom: 30px">Type in the problem details to register the problem in the database. To omit the tolerance, simply put 0. 
-          Otherwise, input a decimal value (for instance, 0.01 for 1% tolerance). The following are the valid answer formats: 314, 3.14, 3.14e2.</p>
-
-        <div class="input-field new-name-input">
-          <input placeholder="Enter Name" id="name" type="text" class="validate ui-text">
-          <label for="name">name</label>
+        <div class="ui card">
+          <div class="content">
+            <h1 class="ui header">Finals</h1>
+            <br>
+            Preview the embedded finals problems here.
+          </div>
+          <div class="extra content">
+            <div class="ui animated button" tabindex="0">
+              <div class="visible content">open</div>
+              <div class="hidden content">
+                <i class="external link square alternate icon"></i>
+              </div>
+            </div>
+          </div>
         </div>
   
-        <div class="input-field new-code-input">
-          <input placeholder="Enter Code" id="code" type="text" class="validate ui-text">
-          <label for="code">code</label>
+        <div class="card">
+          <div class="content">
+            <h1 class="ui header">Leaderboard</h1>
+            <br>
+            You can also adjust leaderboard visibility settings here.
+          </div>
+          <div class="extra content">
+            <div class="ui animated button" tabindex="0">
+              <div class="visible content">open</div>
+              <div class="hidden content">
+                <i class="external link square alternate icon"></i>
+              </div>
+            </div>
+          </div>
         </div>
   
-        <div class="input-field new-answer-input">
-          <input placeholder="Enter Answer" id="answer" type="text" class="validate ui-text">
-          <label for="answer">answer</label>
+        <div class="card">
+          <div class="content">
+            <h1 class="ui header">Forum</h1>
+            <br>
+            Make public announcements here and manage existing questions.
+          </div>
+          <div class="extra content">
+            <div class="ui animated button" tabindex="0">
+              <div class="visible content">open</div>
+              <div class="hidden content">
+                <i class="external link square alternate icon"></i>
+              </div>
+            </div>
+          </div>
         </div>
-  
-        <div class="input-field new-tolerance-input">
-          <input placeholder="Enter Tolerance" id="tolerance" type="text" class="validate ui-text">
-          <label for="tolerance">tolerance</label>
-        </div>  
-
-        <div class="input-field new-points-input">
-          <input placeholder="Enter Points" id="points" type="text" class="validate ui-text">
-          <label for="points">points</label>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <a href="#!" class="waves-effect waves-green btn-flat ui-text register-problem-button">Register</a>
-        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
       </div>
     </div>
-
-    <div id="enable-official" class="modal enable-official-modal">
-      <div class="modal-content">
-        <h4 class="title-text">Enable official</h4>
-        <p style="margin-bottom: 30px">Do you want to enable all problems of type official?.</p>
-      </div>
-
-      <div class="modal-footer">
-        <a href="#!" class="waves-effect waves-green btn-flat ui-text enable-official-button">Enable</a>
-        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
-      </div>
-    </div>
-
-    <div id="disable-official" class="modal disable-official-modal">
-      <div class="modal-content">
-        <h4 class="title-text">Disable official</h4>
-        <p style="margin-bottom: 30px">Do you want to disable all problems of type official?.</p>
-      </div>
-
-      <div class="modal-footer">
-        <a href="#!" class="waves-effect waves-green btn-flat ui-text disable-official-button">Disable</a>
-        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
-      </div>
-    </div>
-
-    <div id="edit-problem" class="modal edit-problem-modal">
-      <div class="modal-content">
-        <h4 class="title-text">Edit problem</h4>
-        <p style="margin-bottom: 30px">Leave any fields blank if you do not want to change them.</p>
-  
-        <div class="input-field">
-          <select id="edit-problem-type">
-            <option value="">Select Type</option>
-            <option value="official">Official</option>
-            <option value="debug">Debug</option>
-          </select>
-          <label>Select Problem Status</label>
-        </div>
-
-        <div class="input-field new-code-input">
-          <input placeholder="Enter New Code" id="edit-problem-code" type="text" class="validate ui-text">
-          <label for="edit-problem-code">New code</label>
-        </div>
-
-        <div class="input-field new-answer-input">
-          <input placeholder="Enter New Answer" id="edit-problem-answer" type="text" class="validate ui-text">
-          <label for="edit-problem-answer">New answer</label>
-        </div>
-
-        <div class="input-field new-tolerance-input">
-          <input placeholder="Enter New Tolerance" id="edit-problem-tolerance" type="text" class="validate ui-text">
-          <label for="edit-problem-tolerance">New tolerance</label>
-        </div>
-
-        <div class="input-field new-points-input">
-          <input placeholder="Enter Points" id="edit-problem-points" type="text" class="validate ui-text">
-          <label for="edit-problem-points">New points</label>
-        </div>
-
-        <div class="input-field">
-          <select id="edit-problem-status">
-            <option value="">Select Status</option>
-            <option value="active">Active</option>
-            <option value="disabled">Disabled</option>
-          </select>
-          <label>Select Problem Status</label>
-        </div>
-
-        <br><br>
-      </div>
-
-      <div id="edit-problem-name" hidden></div>
-
-      <div class="modal-footer">
-        <a href="#!" class="waves-effect waves-green btn-flat edit-problem-button ui-text">Update</a>
-        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
-      </div>
-    </div>
-
-    <div id="recheck-problem" class="modal recheck-problem-modal">
-      <div class="modal-content">
-        <h4 class="title-text">Recheck problem</h4>
-        <p style="margin-bottom: 30px">
-          You are about to recheck a problem. Are you sure you want to do this? Also, how many corrections do we have gdi -_-
-        </p>
-      </div>
-
-      <div id="recheck-problemname" hidden></div>
-
-      <div class="modal-footer">
-        <a href="#!" class="waves-effect waves-green btn-flat recheck-problem-button ui-text">Confirm</a>
-        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
-      </div>
-    </div>
-
-    <div id="delete-problem" class="modal delete-problem-modal">
-      <div class="modal-content">
-        <h4 class="title-text">Delete problem</h4>
-        <p style="margin-bottom: 30px">
-          <span class="red-text"><b>WARNING:</b></span> You are about to delete a problem. This action cannot be undone.
-        </p>
-      </div>
-
-      <div id="delete-problemname" hidden></div>
-
-      <div class="modal-footer">
-        <a href="#!" class="waves-effect waves-green btn-flat delete-problem-button ui-text">Confirm</a>
-        <a href="#!" class="modal-close waves-effect waves-red btn-flat ui-text red lighten-4 red-text">Cancel</a>
-      </div>
-    </div>
-
-    <div class="darkmode-toggle center-align">  
-      <div class="switch">
-        <label>
-          Light
-          <input class="darkmode-toggle-switch" type="checkbox">
-          <span class="lever"></span>
-          Dark
-        </label>
-      </div>
-    </div>
-
-    <script src="/utils/js/header"></script>
-    <script src="/utils/js/timer"></script>
-    <script src="./utils/js/filter"></script>
-    <script src="/utils/js/regex"></script>
-    <script src="/utils/js/answer"></script>
-    <script src="/utils/js/xhr"></script>
-    <script src="/utils/js/config"></script>
-    <script src="./utils/js/logout"></script>
-    <script src="/dashboard/js"></script>
-    <script src="/navbar"></script>
-    <script src="/darkmode"></script>
-<script src="/trademark"></script>
   </body>
 </html>

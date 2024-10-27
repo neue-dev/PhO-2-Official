@@ -55,6 +55,7 @@ const server = app.listen(server_port, () => {
 });
 
 // Middleware
+app.use(express.static('public'))
 app.use(express.json());
 app.use(cookieparser());
 app.use(express.static(__dirname + '/public', { maxAge: 3600000 }));  // One hour cache
