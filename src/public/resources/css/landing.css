@@ -18,10 +18,12 @@
 @keyframes intro-title {
   from { 
     opacity: 0; 
+    transform: translateX(150%);
   }
   
   to { 
     opacity: 1; 
+    transform: translateX(0%);
   }
 }
 
@@ -61,24 +63,45 @@ body {
   animation-duration: 0.5s;
 }
 
+.cards {
+  padding: 4rem;  
+}
+
+.card {
+  width: calc(50vw - 10rem) !important;
+}
+
+.content {
+  padding: 8em !important;
+  height: calc(100vh - 10rem) !important;
+}
+
 .landing-title {
-  background-image: url("/pho-2-title");
-  background-repeat: no-repeat;
-  background-size: cover;
-
-  position: fixed;
-  top: 16vh;
-  left: 12vw;
-  width: 58vw;
-  height: 16vw;
-  opacity: 0;
-
   transition: 0s !important;
   transition: 0s !important;
   animation-name: intro-title;
-  animation-duration: 0.25s;
+  animation-duration: 0.33s;
   animation-delay: 0.25s;
+  transition-timing-function: ease-out;
+}
+
+.landing-subtitle {
+  transition: 0s !important;
+  transition: 0s !important;
+  animation-name: intro-title;
+  animation-duration: 0.33s;
+  animation-delay: 0.5s;
   animation-timing-function: ease-in-out;
+}
+
+div.card.hide-on-mobile {
+  width: 50vw !important;
+}
+
+.bg-photo {
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 .input-field {
@@ -138,11 +161,30 @@ input:-webkit-autofill:active{
   left: 12vw;
 }
 
-@media (max-width : 1024px) {
-  .landing-title {
-    top: 16vh;
-    left: 12vw;
-    width: 58vh;
-    height: 16vh;
+@media screen and (max-width: 800px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+
+  .cards {
+    padding: 2rem;  
+  }
+
+  .card {
+    width: calc(100vw - 4rem) !important;
+  }
+
+  .content {
+    padding: 4rem !important;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .card {
+    width: calc(100vw - 4rem) !important;
+  }
+
+  .content {
+    padding: 4rem !important;
   }
 }

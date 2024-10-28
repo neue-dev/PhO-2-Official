@@ -9,6 +9,19 @@
   transition: 0.1s;
 }
 
+html, body, .container, .card {
+  padding: 2em;
+  letter-spacing: -0.025em;
+}
+
+span {
+  white-space: nowrap;
+}      
+
+.header {
+  letter-spacing: -0.06em;
+}
+
 .wont-load-warning {
   position: fixed;
   bottom: 0;

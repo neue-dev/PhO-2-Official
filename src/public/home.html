@@ -7,18 +7,9 @@
     <title>(PhO)&#178;</title>
     <link rel="icon" type="image/x-icon" href="/pho-2-icon">
 
-    <!--Import Google Icon Font-->
-    <link href="https://fonts.googleapis.com/icon?family=Manrope|Staatliches|Lexend" rel="stylesheet">
-
-    <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-
     <!-- General CSS styling -->
     <link rel="stylesheet" href="/utils/css/main">
     <link rel="stylesheet" href="/utils/css/landing">
-
-    <!-- Compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
     <!-- Overrides -->
     <style type="text/css">
@@ -29,46 +20,47 @@
       .col.content-card {
         min-height: 100vh;
         padding:0;
-      }
+      } 
     </style>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <!-- Semantic -->
+    <link href="./resources/semantic/semantic.css" rel="stylesheet">
+    <script src="./resources/semantic/semantic.js"></script>
   </head>
 
   <body>
-    <div class="row home-login">
-      <div class="landing-title"></div>
-      
-      <div class="container fields-container">
-        <div class="input-field username-input">
-          <input placeholder="Enter Username" id="username" type="text" class="validate ui-text">
-          <label for="username">username</label>
-        </div>
+    <img class="bg-photo" width="1000" src="/pho-2-icon">
+    <img class="bg-photo" src="/pho-2-bg">
+    <div class="ui cards">
+      <div class="card hide-on-mobile" style="visibility: hidden;"></div>
+      <div class="card">
+        <div class="ui content">
+          <span class=" ui header huge text">
+            login
+          </span>
+          <br>
+          Only registered participants can login.
+          <br><br><br><br>
 
-        <div class="input-field password-input">
-          <input placeholder="Enter Password" id="password" type="password" class="validate ui-text">
-          <label for="username">password</label>
-        </div>
-      </div>
-
-      <div class="field-buttons-container">          
-        <div class="login-button-container">
-          <a class="waves-effect btn white grey-text text-darken-3 ui-text login-button" href="#!">login</a>
-        </div>
-      </div>
-
-      <div id="login" class="modal login-modal">
-        <div class="modal-content">
-          <h4 class="title-text">Invalid Login Attempt</h4>
-          <p>Please make sure your username and password are correct.</p>
-        </div>
-        <div class="modal-footer">
-          <a href="#!" class="modal-close waves-effect waves-green btn-flat ui-text">Okay</a>
+          <div class="ui form">
+            <div class="field">
+              <label>Username</label>
+              <input type="text" name="username" placeholder="...">
+            </div>
+            <div class="field">
+              <label>Password</label>
+              <input type="password" name="password" placeholder="...">
+            </div>
+            <button class="ui button">Login</button>
         </div>
       </div>
     </div>
-      
-    <script src="/darkmode"></script>
+
     <script src="/trademark"></script>
-    <script>
+    <!-- <script>
       (function() {       
         const loginButtonContainer = document.querySelectorAll('.login-button-container')[0];
         const loginButton = document.querySelectorAll('.login-button')[0];
@@ -124,6 +116,6 @@
           if(e.keyCode == 13) doLogin();
         });
       })();
-    </script>
+    </script> -->
   </body>
 </html> 
