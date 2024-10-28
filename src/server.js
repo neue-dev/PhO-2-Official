@@ -378,6 +378,10 @@ app.get('/pho-2-title', (req, res) => {
   res.sendFile('./public/resources/images/pho-2-official-title.png', { root: __dirname });
 })
 
+app.get('/pho-2-subtitle', (req, res) => {
+  res.sendFile('./public/resources/images/pho-2-official-subtitle.png', { root: __dirname });
+})
+
 // Other resources
 app.get('/utils/css/main', (req, res) => {
   res.sendFile('./public/resources/css/main.css', { root: __dirname });
