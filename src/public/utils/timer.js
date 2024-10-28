@@ -1,57 +1,61 @@
+/**
+ * @ Author: Mo David
+ * @ Create Time: 2024-02-07 17:54:56
+ * @ Modified time: 2024-10-28 11:38:37
+ * @ Description:
+ * 
+ * Handles the displayed timer on the dashboard.
+ * 
+ * // ! todo: refactor this so it has less lines + doesn't pollute the global scope.
+ */
+
 const timer = document.getElementsByClassName('timer')[0];
 
-const displayTime = interval => {
-  return `
-    <pre style="display: inline-block"><b>${Math.floor(interval / 60 / 60 / 24 / 1000)} &Tab;</b></pre> 
-      <span style="font-size: 0.75em;">days</span><br>
-    <pre style="display: inline-block"><b>${(Math.floor(interval / 60 / 60 / 1000) % 24 < 10 ? '0' : '') + Math.floor(interval / 60 / 60 / 1000) % 24} &Tab;</b></pre> 
-      <span style="font-size: 0.75em">hrs</span><br>
-    <pre style="display: inline-block"><b>${(Math.floor(interval / 60 / 1000) % 60 < 10 ? '0': '') + Math.floor(interval / 60 / 1000) % 60} &Tab;</b></pre> 
-      <span style="font-size: 0.75em">mins</span><br>
-    <pre style="display: inline-block"><b>${(Math.floor(interval / 1000) % 60 < 10 ? '0' : '') + Math.floor(interval / 1000) % 60} &Tab;</b></pre> 
-      <span style="font-size: 0.75em">secs</span><br>`;
-}
+// Timer update
+setInterval(() => {
 
-const updateInterval = () => {
+  // Build the time
+  const t= PHO2.time();
+  const {
+    seconds, minutes, hours, days
+  } = t.time;
+  
+  // The styles for each tag
+  const text_style = {
+    display: 'inline-block',
+    fontFamily: 'monospace',
+    opacity: 1,
+  };
+  const label_style = {
+    display: 'inline-block',
+    fontSize: '0.5em',
+    opacity: 0.6,
+  };
+  const suffix_style = {
+    display: 'inline-block',
+    fontSize: '0.5em',
+    opacity: 1.0,
+  };
 
-  // Timer
-  let now = parseInt(Date.now());
-  let contest_elims_start = parseInt(localStorage.getItem('CONTEST_ELIMS_START'));
-  let contest_elims_end = parseInt(localStorage.getItem('CONTEST_ELIMS_END'));
-  let contest_finals_start = parseInt(localStorage.getItem('CONTEST_FINALS_START'));
-  let contest_finals_end = parseInt(localStorage.getItem('CONTEST_FINALS_END'));
+  // The different span tags
+  const s = PHO2.span(seconds, text_style);
+  const m = PHO2.span(minutes, text_style);
+  const h = PHO2.span(hours, text_style);
+  const d = PHO2.span(days, text_style);
 
-  // The contest hasn't begun
-  if(now < contest_elims_start) {
-    timer.innerHTML = `
-      <h4 style="margin-bottom: 24px; margin-top: 8px;">${displayTime(contest_elims_start - now)}</h4>
-      <p class="timer-label">BEFORE ELIMINATIONS BEGIN</p>`;
-  
-  // The eliminations are underway
-  } else if(contest_elims_start <= now && now < contest_elims_end) {
-    timer.innerHTML = `
-      <h4 style="margin-bottom: 24px; margin-top: 8px;">${displayTime(contest_elims_end - now)}</h4>
-      <p class="timer-label">BEFORE ELIMINATIONS END</p>`;
-  
-  // The elims are done, waiting for finals
-  } else if(contest_elims_end <= now && now < contest_finals_start) {
-    timer.innerHTML = `
-      <h4 style="margin-bottom: 24px; margin-top: 8px;">${displayTime(contest_finals_start - now)}</h4>
-      <p class="timer-label">BEFORE FINALS BEGIN</p>`;
-  
-  // The finals are underway
-  } else if(contest_finals_start <= now && now < contest_finals_end) {
-    timer.innerHTML = `
-      <h4 style="margin-bottom: 24px; margin-top: 8px;">${displayTime(contest_finals_end - now)}</h4>
-      <p class="timer-label">BEFORE FINALS END</p>`;
-  
-  // The contest is done
-  } else {
-    timer.innerHTML = `
-      <h4 style="margin-bottom: 24px; margin-top: 8px;">${displayTime(now - contest_finals_end)}</h4>
-      <p class="timer-label">SINCE THE CONTEST ENDED</p>`;
-  }
-}
+  // Labels
+  const sl = PHO2.span('secs', label_style)
+  const ml = PHO2.span('mins', label_style)
+  const hl = PHO2.span('hours', label_style)
+  const dl = PHO2.span('days', label_style)
 
-updateInterval();
-setInterval(updateInterval, 1000);
+  // Suffix
+  let suffix = PHO2.span(t.suffix, { ...suffix_style, fontStyle: 'italic', fontSize: '1em' });
+  suffix = PHO2.span(`—  ${suffix.outerHTML}`, { ...suffix_style, opacity: 0.25 });
+
+  // Update timer content
+  timer.innerHTML = 
+    `${d.outerHTML} ${dl.outerHTML} ${h.outerHTML} ${hl.outerHTML} ` +
+    `${m.outerHTML} ${ml.outerHTML} ${s.outerHTML} ${sl.outerHTML} ${suffix.outerHTML}`
+
+}, 1000)

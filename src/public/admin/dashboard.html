@@ -13,8 +13,18 @@
         letter-spacing: -0.025em;
       }
 
+      span {
+        white-space: nowrap;
+      }      
+
       .header {
         letter-spacing: -0.06em;
+      }
+
+      .timer {
+        opacity: 0.6;
+        line-height: 1.5;
+        font-size: 2.8rem !important;
       }
     </style>
 
@@ -26,7 +36,7 @@
     <script src="./resources/semantic/semantic.js"></script>
     
     <!-- Pho2 Utils -->
-    <!-- <script src="/pho2"></script> -->
+    <script src="/pho2"></script>
   </head>
 
   <body>
@@ -37,14 +47,14 @@
         </span>
       </div>
       <br>
-      <div class="ui animated basic negative button" tabindex="0">
-        <div class="visible content">logout</div>
-        <div class="hidden content">
-          <i class="right arrow icon"></i>
+
+      <!-- timer -->
+      <div class="ui timer">
+        <div class="ui placeholder">
+          <div class="line"></div>
         </div>
       </div>
-      <br>
-      <br>
+      <br><br><br><br>
 
       <div class="ui cards">
         <div class="card">
@@ -127,6 +137,17 @@
           </div>
         </div>
       </div>
+      <br><br>
+
+      <div class="ui animated basic negative button" tabindex="0">
+        <div class="visible content">logout</div>
+        <div class="hidden content">
+          <i class="right arrow icon"></i>
+        </div>
+      </div>
     </div>
+
+    <!-- Timer Script -->
+    <script src="/utils/js/timer"></script>
   </body>
 </html>
