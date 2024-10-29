@@ -160,3 +160,19 @@ input:-webkit-autofill:active{
   top: 78vh;
   left: 12vw;
 }
+
+@media screen and (max-width: 800px) {
+  .content {
+    padding: 4rem !important;
+  }
+
+  .cards {
+    padding: 2rem;  
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .content {
+    padding: 4rem !important;
+  }
+}
