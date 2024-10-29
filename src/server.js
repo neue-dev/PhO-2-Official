@@ -413,6 +413,10 @@ app.get('/utils/css/main', (req, res) => {
   res.sendFile('./public/resources/css/main.css', { root: __dirname });
 })
 
-app.get('/utils/css/landing', (req, res) => {
-  res.sendFile('./public/resources/css/landing.css', { root: __dirname });
+app.get('/utils/css/home', (req, res) => {
+  res.sendFile('./public/resources/css/home.css', { root: __dirname });
+})
+
+app.get('/utils/css/responsive', (req, res) => {
+  res.sendFile('./public/resources/css/responsive.css', { root: __dirname });
 })

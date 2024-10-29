@@ -1,0 +1,27 @@
+@media screen and (max-width: 800px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+
+  .cards {
+    padding: 2rem;  
+  }
+
+  .card {
+    width: calc(100vw - 4rem) !important;
+  }
+
+  .content {
+    padding: 4rem !important;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .card {
+    width: calc(100vw - 4rem) !important;
+  }
+
+  .content {
+    padding: 4rem !important;
+  }
+}
