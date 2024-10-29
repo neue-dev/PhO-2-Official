@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-29 18:31:13
+ * @ Modified time: 2024-10-29 19:26:46
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -54,6 +54,13 @@ const DOM = (() => {
 					: (element.style)
 			),
 
+			// Fluent get-setter for hrefs
+			ref: (href) => (
+				href != null
+					? (element.href = href, element)
+					: (element.href)
+			),
+
 			// Appends content
 			append: (...children) => (
 				children[0] instanceof Element || children[0] instanceof HTMLElement
@@ -88,8 +95,10 @@ const DOM = (() => {
 	
 	// Misc
 	_.b = () => element('b');
+	_.sup = () => element('sup');
 	_.span = () => element('span');
 	_.div = () => element('div');
+	_.link = () => element('a');
 
 	// Table-related
 	_.table = () => element('table')
@@ -102,6 +111,9 @@ const DOM = (() => {
 
 	// Form-related
 	_.input = () => element('input')
+ 	_.date = () => _.div()
+		.c('ui', 'input')
+		.append(_.input().a('type', 'date'))
 	_.button = () => element('button')
 		.c('ui', 'button');
 	_.buttons = () => _.div()
@@ -123,7 +135,9 @@ const DOM = (() => {
 	 * @param	selector	The selector to use.
 	 * @return					The element selected.
 	 */
-	_.select = (selector) => fluent(document.querySelector(selector));
+	_.select = (selector) => fluent(
+		document.querySelector(selector) ?? 
+		console.error('Element not found by selector.'));
 
 	return {
 		..._,
