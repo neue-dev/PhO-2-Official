@@ -32,8 +32,9 @@
     <script src="./resources/semantic/semantic.js"></script>
 
     <!-- Pho2 Utils -->
-    <script src="/pho2"></script>
+    <script src="/x"></script>
     <script src="/dom"></script>
+    <script src="/pho2"></script>
   </head>
 
   <body>
@@ -78,7 +79,7 @@
             // ! tell user no empty fields allowed
           }
 
-          PHO2.request('./auth/login', 'POST', { 
+          X.request('./auth/login', 'POST', { 
             username: username.value, 
             password: password.value 
           }).then(() => location.href = './dashboard')

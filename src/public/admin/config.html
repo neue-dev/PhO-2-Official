@@ -34,6 +34,7 @@
     <!-- Pho2 Utils -->
     <script src="/pho2"></script>
     <script src="/dom"></script>
+    <script src="/x"></script>
   </head>
 
   <body>
@@ -88,15 +89,16 @@
     </div>
 
     <script>
-      
-      // <!-- ! remove -->
-      const DATA = {}
-      PHO2
-        .request('./admin/problemlist', 'POST')
-        .then(data => DATA.problems = data.problems)
+
+      // Save the problems
+      X.request('./admin/problemlist', 'POST')
+        .then(({ problems }) => PHO2.problems(problems))
         .then(() => problems_table())
 
       function problems_table() {
+
+        // Data
+        const problems = PHO2.problems();
 
         // Table
         const table = DOM.select('.problems-table');
@@ -116,7 +118,7 @@
         thead.append(header)
         
         // Rows
-        for(problem of DATA.problems) {
+        for(problem of problems) {
           const code = problem.code.number + problem.code.alpha;
           const auto_width = { width: 0 };
           const full_width = { width: document.width };

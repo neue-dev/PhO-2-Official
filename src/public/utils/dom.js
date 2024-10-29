@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-29 17:36:05
+ * @ Modified time: 2024-10-29 18:31:13
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -27,14 +27,14 @@ const DOM = (() => {
 
 			// Fluent get-setter for attributes
 			a: (attribute, value) => (
-				value 
+				value != null
 					? (element.setAttribute(attribute, value), element)
 					: (element.getAttribute(attribute))
 			),
 			
 			// Fluent get-setter for content
 			t: (text) => (
-				text 
+				text != null
 					? (element.innerHTML = text, element) 
 					: (element.outerHTML)
 			),
@@ -49,7 +49,7 @@ const DOM = (() => {
 
 			// Fluent get-setter for styles
 			s: (styles) => (
-				styles
+				styles != null
 					? (Object.keys(styles).forEach(property => element.style[property] = styles[property]), element)
 					: (element.style)
 			),
