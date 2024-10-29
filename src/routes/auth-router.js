@@ -1,20 +1,23 @@
-require('dotenv').config();
+import 'dotenv/config'
 
-const express = require('express');
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { generate, refresh } = require('../middleware/auth');
-const router = express.Router();
+import express from 'express';
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
+import { generate, refresh } from '../middleware/auth.js';
+
+// The router to use
+export const auth_router = express.Router();
 
 //* Models
-const User = require('../models/user');
+import { User } from '../models/user.js';
 
 //* Refresh tokens
 let refreshTokens = [];
 
 //* Authentication Routes
-router.post('/login', async (req, res) => {
+auth_router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
   // Check if username and password is provided
@@ -78,7 +81,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.post('/token', (req, res) => {
+auth_router.post('/token', (req, res) => {
   if(!req.cookies['authorization'])
     return res.json({
       message: "No auth.",
@@ -121,7 +124,7 @@ router.post('/token', (req, res) => {
   });
 });
 
-router.post('/logout', (req, res) => {
+auth_router.post('/logout', (req, res) => {
   if(!req.cookies['authorization']) return;
   const { refreshToken } = req.cookies['authorization'];
 
@@ -140,4 +143,6 @@ router.post('/logout', (req, res) => {
   });
 });
 
-module.exports = router;
+export default {
+  auth_router
+}

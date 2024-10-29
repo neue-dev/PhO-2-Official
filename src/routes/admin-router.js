@@ -1,20 +1,22 @@
-require('dotenv').config();
+import 'dotenv/config'
 
-const express = require('express');
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const identify = require('../middleware/identify');
-const router = express.Router();
-const { auth } = require('../middleware/auth');
-const checkAnswer = require('../middleware/check');
+import express from 'express';
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
+
+// The router to use
+export const admin_router = express.Router();
+
+import { identify } from '../middleware/identify.js';
+import { auth } from '../middleware/auth.js';
+import { checkAnswer } from '../middleware/check.js';
 
 //* Models
-const User = require('../models/user');
-const Config = require('../models/config');
-const Problem = require('../models/problem');
-const Submission = require('../models/submission');
-const Message = require('../models/message');
-const Score = require('../models/score');
+import { User } from '../models/user.js';
+import { Config } from '../models/config.js';
+import { Problem } from '../models/problem.js';
+import { Submission } from '../models/submission.js';
+import { Message } from '../models/message.js';
 
 //* Constants
 const saltRounds = 10;
@@ -57,7 +59,7 @@ const admin = function(req, res, callback){
 }
 
 //* Admin Routes
-router.post('/newannouncement', (req, res) => {
+admin_router.post('/newannouncement', (req, res) => {
   admin(req, res, async userData => {
     const { title, content } = req.body;
     const user_id = userData._id;
@@ -87,7 +89,7 @@ router.post('/newannouncement', (req, res) => {
   })
 });
 
-router.post('/deleteannouncement', (req, res) => {
+admin_router.post('/deleteannouncement', (req, res) => {
   admin(req, res, async userData => {
     const { id } = req.body;
     const _id = mongoose.Types.ObjectId(id);
@@ -113,7 +115,7 @@ router.post('/deleteannouncement', (req, res) => {
   })
 });
 
-router.post('/registeruser', (req, res) => {
+admin_router.post('/registeruser', (req, res) => {
   admin(req, res, async userData => {
     const { username, password, category } = req.body;
     const isAdmin = req.body.isAdmin || false;
@@ -165,7 +167,7 @@ router.post('/registeruser', (req, res) => {
   });
 });
 
-router.post('/edituser', (req, res) => {
+admin_router.post('/edituser', (req, res) => {
   admin(req, res, async userData => {
     const { username, password, category, status } = req.body;
     const user = await User.findOne({ username: username });
@@ -222,7 +224,7 @@ router.post('/edituser', (req, res) => {
   })
 });
 
-router.post('/deleteuser', (req, res) => {
+admin_router.post('/deleteuser', (req, res) => {
   admin(req, res, async userData => {
     const { username } = req.body;
     const user = await User.findOne({ username: username });
@@ -247,7 +249,7 @@ router.post('/deleteuser', (req, res) => {
   })
 });
 
-router.post('/userlist', (req, res) => {
+admin_router.post('/userlist', (req, res) => {
   admin(req, res, async userData => {
     
     // Retrieve data from database and send to user
@@ -264,7 +266,7 @@ router.post('/userlist', (req, res) => {
   });
 });
 
-router.post('/configlist', (req, res) => {
+admin_router.post('/configlist', (req, res) => {
   admin(req, res, async userData => {
     
     // Retrieve data from database and send to user
@@ -281,7 +283,7 @@ router.post('/configlist', (req, res) => {
   });
 });
 
-router.post('/editconfig', (req, res) => {
+admin_router.post('/editconfig', (req, res) => {
   admin(req, res, async userData => {
     const { key, value } = req.body;
     const configParameter = await Config.findOne({ key: key });
@@ -313,7 +315,7 @@ router.post('/editconfig', (req, res) => {
   })
 });
 
-router.post('/registerproblem', (req, res) => {
+admin_router.post('/registerproblem', (req, res) => {
   admin(req, res, async userData => {
     const { name, code, answer, tolerance, points } = req.body;
     const problemCode = await Problem.findOne({ "code.number": code.number, "code.alpha": code.alpha });
@@ -353,7 +355,7 @@ router.post('/registerproblem', (req, res) => {
   })
 });
 
-router.post('/enableofficial', (req, res) => {
+admin_router.post('/enableofficial', (req, res) => {
   admin(req, res, async userData => {
 
     // Try to update problem statuses
@@ -384,7 +386,7 @@ router.post('/enableofficial', (req, res) => {
   })
 });
 
-router.post('/disableofficial', (req, res) => {
+admin_router.post('/disableofficial', (req, res) => {
   admin(req, res, async userData => {
     
     // Try to update problem statuses
@@ -415,7 +417,7 @@ router.post('/disableofficial', (req, res) => {
   })
 });
 
-router.post('/editproblem', (req, res) => {
+admin_router.post('/editproblem', (req, res) => {
   admin(req, res, async userData => {
     const { name, type, code, answer, tolerance, points, status } = req.body;
     const problemName = await Problem.findOne({ name: name });
@@ -465,7 +467,7 @@ router.post('/editproblem', (req, res) => {
   })
 });
 
-router.post('/deleteproblem', (req, res) => {
+admin_router.post('/deleteproblem', (req, res) => {
   admin(req, res, async userData => {
     const { name } = req.body;
     const problem = await Problem.findOne({ name: name });
@@ -490,7 +492,7 @@ router.post('/deleteproblem', (req, res) => {
   })
 });
 
-router.post('/recheckproblem', async(req, res) => {
+admin_router.post('/recheckproblem', async(req, res) => {
   admin(req, res, async userData => {
     const { name } = req.body;
     const problem = await Problem.findOne({ name: name });
@@ -560,7 +562,7 @@ router.post('/recheckproblem', async(req, res) => {
   })
 });
 
-router.post('/problemlist', (req, res) => {
+admin_router.post('/problemlist', (req, res) => {
   admin(req, res, async userData => {
     
     // Retrieve data from database and send to user
@@ -577,7 +579,7 @@ router.post('/problemlist', (req, res) => {
   });
 });
 
-router.post('/submissionlog', (req, res) => {
+admin_router.post('/submissionlog', (req, res) => {
   admin(req, res, async userData => {
     // Retrieve data from database and send to user
     const submissions = await Submission.find({});
@@ -594,7 +596,7 @@ router.post('/submissionlog', (req, res) => {
 });
 
 // Score related routes
-router.post('/updatescores', (req, res) => {
+admin_router.post('/updatescores', (req, res) => {
   admin(req, res, async userData => {
     const users = await User.find({});
     const problems = await Problem.find({});
@@ -679,4 +681,6 @@ router.post('/updatescores', (req, res) => {
   });
 })
 
-module.exports = router;
+export default {
+  admin_router
+}

@@ -1,17 +1,24 @@
-require('dotenv').config();
+import 'dotenv/config'
 
-const fs = require('fs');
-const express = require('express');
-const mongoose = require('mongoose');
-const mustache = require('mustache');
-const apiroutes = require('./routes/apiroutes');
-const authroutes = require('./routes/authroutes');
-const adminroutes = require('./routes/adminroutes');
-const userroutes = require('./routes/userroutes');
-const cookieparser = require('cookie-parser');
+import fs from 'fs';
+import express from 'express';
+import mongoose from 'mongoose';
+import mustache from 'mustache';
+import cookieparser from 'cookie-parser';
 
-const { auth } = require('./middleware/auth');
-const identify = require('./middleware/identify');
+import { api_router } from './routes/api-router.js';
+import { auth_router } from './routes/auth-router.js';
+import { admin_router } from './routes/admin-router.js';
+import { user_router } from './routes/user-router.js';
+
+import { auth } from './middleware/auth.js';
+import { identify } from './middleware/identify.js';
+
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 //
 //* Some other important constants
@@ -22,7 +29,7 @@ const server_port = process.env.SERVER_PORT
 //
 //* The config model
 //
-const Config = require('./models/config');
+import { Config } from './models/config.js';
 
 //
 //* Set up the database
@@ -61,10 +68,10 @@ app.use(cookieparser());
 app.use(express.static(__dirname + '/public', { maxAge: 3600000 }));  // One hour cache
 
 // The different routes
-app.use('/api', apiroutes);
-app.use('/auth', authroutes);
-app.use('/admin', adminroutes);
-app.use('/user', userroutes);
+app.use('/api', api_router);
+app.use('/auth', auth_router);
+app.use('/admin', admin_router);
+app.use('/user', user_router);
 
 app.get('/', (req, res) => {
   if(req.cookies['authorization']) 
@@ -134,7 +141,7 @@ app.get('/finals', (req, res) => {
 
         // If it's during the finals OR user is an admin
         if((Date.now() > process.env.CONTEST_FINALS_START && Date.now() < process.env.CONTEST_FINALS_END) || userData.isAdmin) {
-          
+
           // Parse the HTML file and replace the mustache tags.
           fs.readFile('./public/finals.html', 'utf-8', (err, data) => {
             res.write(mustache.render(data, { CONTEST_FINALS_URL: process.env.CONTEST_FINALS_URL }));

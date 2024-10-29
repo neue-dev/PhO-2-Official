@@ -1,5 +1,5 @@
 // Checks answer
-const checkAnswer = (answer, key, tolerance) => {
+export const checkAnswer = (answer, key, tolerance) => {
   let user_mantissa = answer.mantissa;
   let user_exponent = answer.exponent;
 
@@ -15,4 +15,6 @@ const checkAnswer = (answer, key, tolerance) => {
   return true;
 }
 
-module.exports = checkAnswer;
+export default {
+  checkAnswer
+}

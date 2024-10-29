@@ -1,12 +1,12 @@
-require('dotenv').config();
+import 'dotenv/config'
 
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 const access_token_secret = process.env.ACCESS_TOKEN_SECRET;
 const refresh_token_secret = process.env.REFRESH_TOKEN_SECRET;
 
 //* Token creation
-const generate = function(user){
+export const generate = function(user){
   return jwt.sign(
     { _id: user._id, }, 
     access_token_secret,
@@ -15,7 +15,7 @@ const generate = function(user){
 }
 
 //* Refresh token creation
-const refresh = function(user){
+export const refresh = function(user){
   return jwt.sign(
     { _id: user._id, }, 
     refresh_token_secret,
@@ -23,7 +23,7 @@ const refresh = function(user){
 }
 
 //* Token verification
-const auth = (req, res) => {
+export const auth = (req, res) => {
   if(!req) return false;
 
   // Not logged in yet
@@ -48,4 +48,4 @@ const auth = (req, res) => {
   }
 };
 
-module.exports = { generate, auth, refresh };
+export default { generate, auth, refresh };

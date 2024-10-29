@@ -1,19 +1,21 @@
-require('dotenv').config();
+import 'dotenv/config'
 
-const express = require('express');
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const identify = require('../middleware/identify');
-const router = express.Router();
-const { auth } = require('../middleware/auth');
-const checkAnswer = require('../middleware/check');
+import express from 'express';
+import mongoose from 'mongoose';
+
+import { identify } from '../middleware/identify.js';
+import { auth } from '../middleware/auth.js';
+import { checkAnswer } from '../middleware/check.js';
+
+// The router to use
+export const user_router = express.Router();
 
 //* Models and Constants
-const Config = require('../models/config');
-const User = require('../models/user');
-const Problem = require('../models/problem');
-const Submission = require('../models/submission');
-const Message = require('../models/message');
+import { User } from '../models/user.js';
+import { Config } from '../models/config.js';
+import { Problem } from '../models/problem.js';
+import { Submission } from '../models/submission.js';
+import { Message } from '../models/message.js';
 
 //* User Authentication
 const isuser = function(req, res, callback){
@@ -46,7 +48,7 @@ const isuser = function(req, res, callback){
   }
 }
 
-router.post('/data', (req, res) => {
+user_router.post('/data', (req, res) => {
   isuser(req, res, async data => {
     res.json({
       username: data.username,
@@ -57,7 +59,7 @@ router.post('/data', (req, res) => {
   });
 });
 
-router.post('/scorelist', (req, res) => {
+user_router.post('/scorelist', (req, res) => {
   isuser(req, res, async () => {
     
     // Retrieve data from database and send to user
@@ -84,7 +86,7 @@ router.post('/scorelist', (req, res) => {
   });
 });
 
-router.post('/configlist', (req, res) => {
+user_router.post('/configlist', (req, res) => {
   isuser(req, res, async () => {
   
     // Retrieve data from database and send to user
@@ -103,7 +105,7 @@ router.post('/configlist', (req, res) => {
   });
 });
 
-router.post('/announcementlist', (req, res) => {
+user_router.post('/announcementlist', (req, res) => {
   isuser(req, res, async () => {
   
     // Retrieve data from database and send to user
@@ -123,7 +125,7 @@ router.post('/announcementlist', (req, res) => {
   });
 });
 
-router.post('/problemlist', (req, res) => {
+user_router.post('/problemlist', (req, res) => {
   isuser(req, res, async () => {
     
     // Retrieve data from database and send to user
@@ -144,7 +146,7 @@ router.post('/problemlist', (req, res) => {
   });
 });
 
-router.post('/submissionlist', (req, res) => {
+user_router.post('/submissionlist', (req, res) => {
   isuser(req, res, async userData => {
     
     // Retrieve data from database and send to user
@@ -155,7 +157,7 @@ router.post('/submissionlist', (req, res) => {
   });
 });
 
-router.post('/submit', (req, res) => {
+user_router.post('/submit', (req, res) => {
   isuser(req, res, async userData => {
     const { code, answer } = req.body;
     const username = userData.username;
@@ -283,7 +285,7 @@ router.post('/submit', (req, res) => {
   });
 });
 
-router.post('/message', (req, res) => {
+user_router.post('/message', (req, res) => {
   isuser(req, res, async userData => {
     
     //! Save the message into the messages database
@@ -293,11 +295,13 @@ router.post('/message', (req, res) => {
   })
 });
 
-router.post('/messages', (req, res) => {
+user_router.post('/messages', (req, res) => {
   isuser(req, res, async userData => {
     //! retrieve the user's messages
 
   })
 });
 
-module.exports = router;
+export default {
+  user_router
+}

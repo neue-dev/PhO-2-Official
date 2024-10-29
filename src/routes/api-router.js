@@ -1,15 +1,17 @@
-require('dotenv').config();
+import 'dotenv/config'
 
-const express = require('express');
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const router = express.Router();
+import express from 'express';
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
+
+// The router to use
+export const api_router = express.Router();
 
 //* Models
-const Submission = require('../models/submission');
+import { Submission } from '../models/submission.js';
 
 //* API Routes
-router.post('/submissionlog', async (req, res) => {
+api_router.post('/submissionlog', async (req, res) => {
   const { api_key } = req.body;
   const master_api_key = process.env.MASTER_API_KEY;
   
@@ -38,4 +40,6 @@ router.post('/submissionlog', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default { 
+  api_router
+}

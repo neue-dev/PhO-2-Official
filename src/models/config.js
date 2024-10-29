@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const configSchema = new mongoose.Schema({
   key: {
@@ -33,4 +33,6 @@ const configSchema = new mongoose.Schema({
   }
 }, { collection: 'config' });
 
-module.exports = mongoose.model('Config', configSchema)
+export const Config = mongoose.model('Config', configSchema);
+
+export default { Config }

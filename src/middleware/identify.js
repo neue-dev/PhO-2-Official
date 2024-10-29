@@ -1,7 +1,7 @@
-const User = require('../models/user');
+import { User } from '../models/user.js';
 
 //* User identification
-const identify = async (_id) => {
+export const identify = async (_id) => {
   const user = await User.findOne({ _id: _id });
 
   if(user)
@@ -9,4 +9,6 @@ const identify = async (_id) => {
   return false;
 }
 
-module.exports = identify;
+export default {
+  identify,
+}

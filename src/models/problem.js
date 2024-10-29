@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose'
 
 const codeSchema = new mongoose.Schema({
   number: {
@@ -97,4 +97,6 @@ const problemSchema = new mongoose.Schema({
   }
 }, { collection: 'problems' });
 
-module.exports = mongoose.model('Problem', problemSchema);
+export const Problem = mongoose.model('Problem', problemSchema);
+
+export default { Problem }

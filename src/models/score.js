@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose'
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const scoreSchema = new mongoose.Schema({
@@ -21,4 +21,6 @@ const scoreSchema = new mongoose.Schema({
   }
 }, { collection: 'scores' });
 
-module.exports = mongoose.model('Score', scoreSchema);
+export const Score = mongoose.model('Score', scoreSchema);
+
+export default { Score }

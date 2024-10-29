@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose'
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const answerSchema = new mongoose.Schema({
@@ -64,4 +64,6 @@ const submissionSchema = new mongoose.Schema({
   }
 }, { collection: 'submissions' });
 
-module.exports = mongoose.model('Submission', submissionSchema);
+export const Submission = mongoose.model('Submission', submissionSchema);
+
+export default { Submission }
