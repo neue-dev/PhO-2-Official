@@ -29,6 +29,9 @@
     <!-- Semantic -->
     <link href="./resources/semantic/semantic.css" rel="stylesheet">
     <script src="./resources/semantic/semantic.js"></script>
+
+    <!-- Pho2 Utils -->
+    <script src="/pho2"></script>
   </head>
 
   <body>
@@ -48,63 +51,39 @@
           <div class="ui form">
             <div class="field">
               <label>Username</label>
-              <input type="text" name="username" placeholder="...">
+              <input type="text" class="username" name="username" placeholder="...">
             </div>
             <div class="field">
               <label>Password</label>
-              <input type="password" name="password" placeholder="...">
+              <input type="password" class="password" name="password" placeholder="...">
             </div>
-            <button class="ui button">Login</button>
+            <button class="ui button login-button">Login</button>
         </div>
       </div>
     </div>
 
     <script src="/trademark"></script>
-    <!-- <script>
-      (function() {       
-        const loginButtonContainer = document.querySelectorAll('.login-button-container')[0];
-        const loginButton = document.querySelectorAll('.login-button')[0];
-        const loginModal = document.querySelectorAll('.login-modal')[0];
+    <script>
+      (function() {
 
-        const username = document.querySelector('#username');
-        const password = document.querySelector('#password');
-        
-        document.addEventListener('DOMContentLoaded', function() {
-          let elems = document.querySelectorAll('.modal');
-          let instances = M.Modal.init(elems, {});
-        });
+        const username = document.getElementsByClassName('username')[0];
+        const password = document.getElementsByClassName('password')[0];
+        const login_button = document.getElementsByClassName('login-button')[0];
 
         // Login functionalities
         function doLogin() {
           if(!username.value || !password.value) {
-            return M.Modal.getInstance(loginModal).open();
+            // ! tell user no empty fields allowed
           }
 
-          let xhr = new XMLHttpRequest();
-          xhr.open('POST', './auth/login', true);
-          xhr.setRequestHeader('Accept', 'application/json');
-          xhr.setRequestHeader('Content-Type', 'application/json');
-          xhr.send(JSON.stringify({
-            username: username.value,
-            password: password.value,
-          }));
-
-          xhr.onreadystatechange = function () {
-            if(this.readyState != 4) return;
-
-            if(this.status == 200) {
-              let data = JSON.parse(this.responseText);
-
-              if(data.message == 'Login success.'){
-                location.href = './dashboard';
-              } else {
-                return M.Modal.getInstance(loginModal).open();
-              }
-            }
-          };
+          PHO2.request('./auth/login', 'POST', { 
+            username: username.value, 
+            password: password.value 
+          }).then(() => location.href = './dashboard')
+          
         }
 
-        loginButton.addEventListener('click', e => {
+        login_button.addEventListener('click', e => {
           doLogin();
         });
 
@@ -116,6 +95,6 @@
           if(e.keyCode == 13) doLogin();
         });
       })();
-    </script> -->
+    </script>
   </body>
 </html> 

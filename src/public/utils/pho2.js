@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 06:26:15
- * @ Modified time: 2024-10-28 08:02:19
+ * @ Modified time: 2024-10-29 12:39:15
  * @ Description:
  * 
  * Utilities for managing the front-end of the website.
@@ -216,7 +216,7 @@ PHO2
 
 	// Catch any errors
 	.catch((err) => (
-		console.error(err)
+		console.warn(err)
 	));
 	
 })()
