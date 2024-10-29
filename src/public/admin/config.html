@@ -71,12 +71,12 @@
           </div>
         </div>
       </div>
-      <div class="ui top attached tab segment" data-tab="one1">
-        <table class="ui celled striped table contest-parameters-table">
+      <div class="ui top attached tab segment active" data-tab="one1">
+        <table class="ui celled striped table config-table">
 
         </table>
       </div>
-      <div class="ui top attached tab segment active" data-tab="two1">
+      <div class="ui top attached tab segment" data-tab="two1">
         <table class="ui celled striped table users-table">
 
         </table>      
@@ -93,7 +93,7 @@
       // Save the config
       X.request('./admin/configlist', 'POST')
         .then(({ config }) => PHO2.config(config))
-        .then(console.log)
+        .then(() => config_table())
 
       // Save the users
       X.request('./admin/userlist', 'POST')
@@ -105,6 +105,21 @@
         .then(({ problems }) => PHO2.problems(problems))
         .then(() => problems_table())
         
+
+      
+      const date = (timestamp) => {
+        
+        const date = new Date(timestamp * 1)
+        const date_options = {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        };
+
+        return `${date.toISOString().substring(11, 16)} 
+          ${date.toLocaleDateString(undefined, date_options)}`;
+      }
 
       function problems_table() {
 
@@ -146,7 +161,9 @@
               DOM.td().s(auto_width).t(problem.name),
 
               // Answer
-              DOM.td().s(auto_width).t(problem.answer.mantissa + 'e' + problem.answer.exponent),
+              DOM.td().s(auto_width).t(problem.answer.mantissa + ' &times; 10').append(
+                DOM.sup().t(problem.answer.exponent)
+              ),
 
               // Tolerance
               DOM.td().s(auto_width).t(problem.tolerance),
@@ -211,8 +228,8 @@
                 DOM.label().t(user.status)
                   .c(user.status == 'spectating' 
                     ? 'blue' : user.status == 'disqualified' 
-                      ? 'orange'
-                      : 'default')
+                    ? 'orange'
+                    : 'default')
                   .c(user.status == 'participating' 
                     ? 'default' 
                     : 'basic')),
@@ -227,6 +244,61 @@
           tbody.append(row)
         }
       }      
+
+      function config_table() {
+
+        // Data
+        const config = PHO2.config();
+
+        // Table
+        const table = DOM.select('.config-table');
+        const thead = DOM.thead();
+        const tbody = DOM.tbody();
+
+        table.s({ border: 'none' });
+        table.append(thead, tbody);
+
+        // Header
+        const header = DOM.tr()
+          .append(
+            DOM.th().t('Parameter'),
+            DOM.th().t('Value'),
+            DOM.th().t(''),
+            DOM.th().t(''))
+        thead.append(header)
+
+        // Rows
+        for(parameter of config) {
+
+          console.log(parameter)
+
+          const auto_width = { width: 0 };
+          const full_width = { width: document.width };
+          const row = 
+            DOM.tr().append(
+
+              // Name
+              DOM.td().s(auto_width).t(parameter.key),
+
+              // Value
+              DOM.td().s(auto_width).append(
+                parameter.type == 'url'
+                  ? DOM.link().t(parameter.value).ref(parameter.value) : parameter.type == 'date'
+                  ? DOM.span().t(date(parameter.value)) : parameter.type == 'duration'
+                  ? DOM.span().t(parameter.value) 
+                  : DOM.span().t(parameter.value) 
+              ),
+
+              // Edit button
+              DOM.td().s(auto_width).c('right', 'aligned').append(
+                DOM.buttons().append(
+                  DOM.button().t('Edit'),
+                  DOM.or(),
+                  DOM.button().t('Delete').c('negative'))))
+
+          tbody.append(row)
+        }
+      }
     </script>
   </body>
 </html>
