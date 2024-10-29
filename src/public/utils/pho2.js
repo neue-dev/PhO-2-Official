@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 06:26:15
- * @ Modified time: 2024-10-29 12:39:15
+ * @ Modified time: 2024-10-29 15:09:26
  * @ Description:
  * 
  * Utilities for managing the front-end of the website.
@@ -21,27 +21,6 @@ const PHO2 = (() => {
 	const ELIMS_END = 'CONTEST_ELIMS_END'
 	const FINALS_START = 'CONTEST_FINALS_START'
 	const FINALS_END = 'CONTEST_FINALS_END'
-
-	/**
-	 * Creates a new element with the given tag name.
-	 * Styles it with the optionally provided styles object.
-	 * 
-	 * @param	tag			The tag of the element.
-	 * @param	styles	The styling for the element.
-	 * @return				A new HTML element of the given tag with the applied styles.
-	 */
-	const element = (tag, styles={}) => {
-
-		// Create the element
-		const e = document.createElement(tag);
-
-		// Apply the styles
-		for(property in styles)
-			e.style[property] = styles[property]
-
-		// Return the element
-		return e;
-	}
 
 	/**
 	 * Converts millis into a proper breakdown of secs, mins, hours, days.
@@ -118,24 +97,6 @@ const PHO2 = (() => {
 			case 'ended': default: 
 				return { suffix: 'since contest end',			time: time(now - finals_end) }
 		}
-	}
-
-	/**
-	 * Creates a new span tag, with the given optional styles and attributes.
-	 * 
-	 * @param	text		The text content of the span tag.
-	 * @param	styles	The style for the span tag.
-	 * @return				A new span tag with the given styling.
-	 */
-	_.span = (text, styles={}) => {
-		
-		// Create the tag
-		const span = element('span', styles);
-
-		// Set the content
-		span.innerHTML = text;
-
-		return span;
 	}
 
 	/**

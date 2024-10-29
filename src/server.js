@@ -383,6 +383,10 @@ app.get('/pho2', (req, res) => {
   res.sendFile('./public/utils/pho2.js', { root: __dirname });
 })
 
+app.get('/dom', (req, res) => {
+  res.sendFile('./public/utils/dom.js', { root: __dirname });
+})
+
 // The official logos
 app.get('/pho-2-logo', (req, res) => {
   res.sendFile('./public/resources/images/pho-2-official-logo.png', { root: __dirname });
