@@ -20,12 +20,6 @@
       .header {
         letter-spacing: -0.06em;
       }
-
-      .timer {
-        opacity: 0.6;
-        line-height: 1.5;
-        font-size: 2.8rem !important;
-      }
     </style>
 
     <!-- jQuery -->
@@ -45,98 +39,36 @@
         <span class=" ui header huge text">
           Config
         </span>
+				<br><br>
+				<div class="ui breadcrumb">
+					<a class="section" href="/dashboard">Dashboard</a>
+					<i class="right arrow icon divider"></i>
+					<div class="active section">Config</div>
+				</div>
       </div>
-      <br>
+      <br><br>
 
-      <!-- timer -->
-      <div class="ui timer">
-        <div class="ui placeholder">
-          <div class="line"></div>
-        </div>
-      </div>
-      <br><br><br><br>
+			<div class="ui top attached tabular menu">
+				<a class="active item">
+					Bio
+				</a>
+				<a class="item">
+					Photos
+				</a>
+				<div class="right menu">
+					<div class="item">
+						<div class="ui transparent icon input">
+							<input type="text" placeholder="Search users...">
+							<i class="search link icon"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="ui bottom attached segment">
+				<p></p>
+			</div>
 
-      <div class="ui cards">
-        <div class="card">
-          <div class="content">
-            <h1 class="ui header">Config</h1>
-            <br>
-            Edit contest configuration values here, including the links to the problems and finals pdf files.
-          </div>
-          <div class="extra content">
-            <div class="ui animated button" tabindex="0">
-              <div class="visible content">open</div>
-              <div class="hidden content">
-                <i class="external link square alternate icon"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="card">
-          <div class="content">
-            <h1 class="ui header">Problems</h1>
-            <br>
-            Preview the embedded contest problems here.
-          </div>
-          <div class="extra content">
-            <div class="ui animated button" tabindex="0">
-              <div class="visible content">open</div>
-              <div class="hidden content">
-                <i class="external link square alternate icon"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-  
-        <div class="ui card">
-          <div class="content">
-            <h1 class="ui header">Finals</h1>
-            <br>
-            Preview the embedded finals problems here.
-          </div>
-          <div class="extra content">
-            <div class="ui animated button" tabindex="0">
-              <div class="visible content">open</div>
-              <div class="hidden content">
-                <i class="external link square alternate icon"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-  
-        <div class="card">
-          <div class="content">
-            <h1 class="ui header">Leaderboard</h1>
-            <br>
-            You can also adjust leaderboard visibility settings here.
-          </div>
-          <div class="extra content">
-            <div class="ui animated button" tabindex="0">
-              <div class="visible content">open</div>
-              <div class="hidden content">
-                <i class="external link square alternate icon"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-  
-        <div class="card">
-          <div class="content">
-            <h1 class="ui header">Forum</h1>
-            <br>
-            Make public announcements here and manage existing questions.
-          </div>
-          <div class="extra content">
-            <div class="ui animated button" tabindex="0">
-              <div class="visible content">open</div>
-              <div class="hidden content">
-                <i class="external link square alternate icon"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+			
       <div class="ui inverted cards">
         <div class="card">
           <div class="content">
@@ -153,8 +85,5 @@
       <br><br>
       
     </div>
-
-    <!-- Timer Script -->
-    <script src="/utils/js/timer"></script>
   </body>
 </html>
