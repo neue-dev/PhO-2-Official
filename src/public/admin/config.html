@@ -6,6 +6,8 @@
 
     <title>(PhO)&#178;</title>
 
+    <link href="./utils/css/responsive" rel="stylesheet">
+
     <!-- Overrides -->
     <style type="text/css">
       html, body, .container, .card {
@@ -31,6 +33,7 @@
     
     <!-- Pho2 Utils -->
     <script src="/pho2"></script>
+    <script src="/dom"></script>
   </head>
 
   <body>
@@ -48,42 +51,104 @@
       </div>
       <br><br>
 
-			<div class="ui top attached tabular menu">
-				<a class="active item">
-					Bio
-				</a>
-				<a class="item">
-					Photos
-				</a>
-				<div class="right menu">
-					<div class="item">
-						<div class="ui transparent icon input">
-							<input type="text" placeholder="Search users...">
-							<i class="search link icon"></i>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="ui bottom attached segment">
-				<p></p>
-			</div>
-
-			
-      <div class="ui inverted cards">
-        <div class="card">
-          <div class="content">
-            <img class="ui centered medium image" width="200" src="/pho-2-icon-dark">
-            <div class="ui animated negative button" tabindex="0">
-              <div class="visible content">logout</div>
-              <div class="hidden content">
-                <i class="right arrow icon"></i>
-              </div>
+      <div class="ui pointing menu">
+        <a class="active item">
+          Contest Parameters
+        </a>
+        <a class="item">
+          Users
+        </a>
+        <a class="item">
+          Problems
+        </a>
+        <div class="right menu">
+          <div class="item">
+            <div class="ui transparent icon input">
+              <input type="text" placeholder="Search...">
+              <i class="search link icon"></i>
             </div>
           </div>
         </div>
       </div>
-      <br><br>
-      
+      <div class="ui top attached tab segment" data-tab="one1">
+        <table class="ui celled striped table contest-parameters-table">
+
+        </table>
+      </div>
+      <div class="ui top attached tab segment" data-tab="two1">
+        <table class="ui celled striped table users-table">
+
+        </table>      
+      </div>
+      <div class="ui top attached tab segment active" data-tab="three1">
+        <table class="ui single line table problems-table">
+
+        </table>
+      </div>
     </div>
+
+    <script>
+      
+      // <!-- ! remove -->
+      const DATA = {}
+      PHO2
+        .request('./admin/problemlist', 'POST')
+        .then(data => DATA.problems = data.problems)
+        .then(() => problems_table())
+
+      function problems_table() {
+
+        // Table
+        const table = DOM.select('.problems-table');
+        const thead = DOM.thead();
+        const tbody = DOM.tbody();
+
+        table.s({ border: 'none' });
+        table.append(thead, tbody);
+
+        // Header
+        const header = DOM.tr()
+          .append(DOM.th().t('Problem').a('colspan', 2))
+          .append(DOM.th().t('Answer'))
+          .append(DOM.th().t('Tolerance'))
+          .append(DOM.th().t(''))
+          .append(DOM.th().t(''))
+        thead.append(header)
+        
+        // Rows
+        for(problem of DATA.problems) {
+          const code = problem.code.number + problem.code.alpha;
+          const auto_width = { width: 0 };
+          const full_width = { width: document.width };
+
+          const row = 
+            DOM.tr().append(
+
+              // Problem code
+              DOM.td().s(auto_width).append(
+                DOM.label().t(code)),
+
+              // Name
+              DOM.td().s(auto_width).t(problem.name),
+
+              // Answer
+              DOM.td().s(auto_width).t(problem.answer.mantissa + 'e' + problem.answer.exponent),
+
+              // Tolerance
+              DOM.td().s(auto_width).t(problem.tolerance),
+
+              // Edit button
+              DOM.td().s(auto_width).c('right', 'aligned').append(
+                DOM.buttons().append(
+                  DOM.button().t('Edit'),
+                  DOM.or(),
+                  DOM.button().t('Delete').c('negative'))))
+
+          tbody.append(row)
+        }
+      }
+
+      
+    </script>
   </body>
 </html>
