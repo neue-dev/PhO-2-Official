@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-29 16:01:25
+ * @ Modified time: 2024-10-29 17:36:05
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -24,6 +24,13 @@ const DOM = (() => {
 		
 		// Add the methods to the object
 		Object.assign(element, {
+
+			// Fluent get-setter for attributes
+			a: (attribute, value) => (
+				value 
+					? (element.setAttribute(attribute, value), element)
+					: (element.getAttribute(attribute))
+			),
 			
 			// Fluent get-setter for content
 			t: (text) => (
@@ -33,10 +40,11 @@ const DOM = (() => {
 			),
 
 			// Fluent get-setter for class names
-			c: (classes='') => (
-				Array.isArray(classes)
-					? (element.classList.add(...classes), element)
-					: (element.classList.add(classes), element)
+			c: (...classes) => (
+				classes.length 
+					? element.classList.add(...classes)
+					: true,
+				element
 			),
 
 			// Fluent get-setter for styles
@@ -47,10 +55,10 @@ const DOM = (() => {
 			),
 
 			// Appends content
-			append: (child) => (
-				child instanceof Element || child instanceof HTMLElement
-					? element.appendChild(child)
-					: element.innerHTML += child,
+			append: (...children) => (
+				children[0] instanceof Element || children[0] instanceof HTMLElement
+					? children.map(child => element.appendChild(child))
+					: children.map(child => element.innerHTML += child),
 				element
 			)
 		})
@@ -77,12 +85,36 @@ const DOM = (() => {
 	/**
 	 * Element factory methods.
 	 */
+	
+	// Misc
+	_.b = () => element('b');
 	_.span = () => element('span');
 	_.div = () => element('div');
-	_.table = () => element('table');
+
+	// Table-related
+	_.table = () => element('table')
+		.c('ui', 'table');
+	_.thead = () => element('thead');
+	_.tbody = () => element('tbody');
 	_.tr = () => element('tr');
 	_.td = () => element('td');
-	_.b = () => element('b');
+	_.th = () => element('th');
+
+	// Form-related
+	_.input = () => element('input')
+	_.button = () => element('button')
+		.c('ui', 'button');
+	_.buttons = () => _.div()
+		.c('ui', 'buttons');
+
+	// Custom components
+	_.accordion = () => _.div()
+		.c('ui', 'accordion')
+	_.grid = () => _.div()
+		.c('ui', 'grid')
+	_.label = () => element('kbd')
+		.c('ui', 'label')
+	_.or = () => _.div().c('or')
 
 	/**
 	 * Selects an element from the dom using the selector.
