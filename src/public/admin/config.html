@@ -32,9 +32,9 @@
     <script src="./resources/semantic/semantic.js"></script>
     
     <!-- Pho2 Utils -->
-    <script src="/pho2"></script>
-    <script src="/dom"></script>
     <script src="/x"></script>
+    <script src="/dom"></script>
+    <script src="/pho2"></script>
   </head>
 
   <body>
@@ -76,12 +76,12 @@
 
         </table>
       </div>
-      <div class="ui top attached tab segment" data-tab="two1">
+      <div class="ui top attached tab segment active" data-tab="two1">
         <table class="ui celled striped table users-table">
 
         </table>      
       </div>
-      <div class="ui top attached tab segment active" data-tab="three1">
+      <div class="ui top attached tab segment" data-tab="three1">
         <table class="ui single line table problems-table">
 
         </table>
@@ -90,10 +90,21 @@
 
     <script>
 
+      // Save the config
+      X.request('./admin/configlist', 'POST')
+        .then(({ config }) => PHO2.config(config))
+        .then(console.log)
+
+      // Save the users
+      X.request('./admin/userlist', 'POST')
+        .then(({ users }) => PHO2.users(users))
+        .then(() => users_table())
+
       // Save the problems
       X.request('./admin/problemlist', 'POST')
         .then(({ problems }) => PHO2.problems(problems))
         .then(() => problems_table())
+        
 
       function problems_table() {
 
@@ -110,11 +121,12 @@
 
         // Header
         const header = DOM.tr()
-          .append(DOM.th().t('Problem').a('colspan', 2))
-          .append(DOM.th().t('Answer'))
-          .append(DOM.th().t('Tolerance'))
-          .append(DOM.th().t(''))
-          .append(DOM.th().t(''))
+          .append(
+            DOM.th().t('Problem').a('colspan', 2),
+            DOM.th().t('Answer'),
+            DOM.th().t('Tolerance'),
+            DOM.th().t(''),
+            DOM.th().t(''))
         thead.append(header)
         
         // Rows
@@ -150,7 +162,71 @@
         }
       }
 
-      
+      function users_table() {
+
+        // Data
+        const users = PHO2.users();
+
+        // Table
+        const table = DOM.select('.users-table');
+        const thead = DOM.thead();
+        const tbody = DOM.tbody();
+
+        table.s({ border: 'none' });
+        table.append(thead, tbody);
+
+        // Header
+        const header = DOM.tr()
+          .append(
+            DOM.th().t('User'),
+            DOM.th().t('Category'),
+            DOM.th().t('Status'),
+            DOM.th().t(''),
+            DOM.th().t(''))
+        thead.append(header)
+
+        // Rows
+        for(user of users) {
+
+          const auto_width = { width: 0 };
+          const full_width = { width: document.width };
+          const row = 
+            DOM.tr().append(
+
+              // Name
+              DOM.td().s(auto_width).t(user.username),
+
+              // Category / admin
+              DOM.td().s(auto_width).append(
+                user.isAdmin 
+                  ? DOM.label().c('red').t('admin')
+                  : DOM.label().t(user.category).c(
+                    user.category == 'junior' 
+                      ? 'default'
+                      : 'black'
+                  )),
+
+              // Status
+              DOM.td().s(auto_width).append(
+                DOM.label().t(user.status)
+                  .c(user.status == 'spectating' 
+                    ? 'blue' : user.status == 'disqualified' 
+                      ? 'orange'
+                      : 'default')
+                  .c(user.status == 'participating' 
+                    ? 'default' 
+                    : 'basic')),
+
+              // Edit button
+              DOM.td().s(auto_width).c('right', 'aligned').append(
+                DOM.buttons().append(
+                  DOM.button().t('Edit'),
+                  DOM.or(),
+                  DOM.button().t('Delete').c('negative'))))
+
+          tbody.append(row)
+        }
+      }      
     </script>
   </body>
 </html>
