@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-30 08:07:17
+ * @ Modified time: 2024-10-30 08:30:42
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -147,10 +147,6 @@ const DOM = (() => {
 		.c('ui', 'buttons');
 
 	// Custom components
-	_.accordion = () => _.div()
-		.c('ui', 'accordion')
-	_.grid = () => _.div()
-		.c('ui', 'grid')
 	_.label = () => element('kbd')
 		.c('ui', 'label')
 	_.or = () => _.div().c('or')
@@ -169,6 +165,20 @@ const DOM = (() => {
 				: document.querySelector(selector) ?? console.error('Element not found by selector.')
 		);
 
+	/**
+	 * Get-setter for local storage.
+	 * Queries the *store*.
+	 * 
+	 * @param	name		The name of the property to set.
+	 * @param	value		The value to set it to (optional).
+	 * @return				The value of the property.
+	 */
+	_.store = (name, value) => (
+		value != null
+			? (localStorage.setItem(name, value), _)
+			: (localStorage.getItem(name))
+	)
+	
 	return {
 		..._,
 	}

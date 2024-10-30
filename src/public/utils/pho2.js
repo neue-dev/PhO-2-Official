@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 06:26:15
- * @ Modified time: 2024-10-29 18:08:40
+ * @ Modified time: 2024-10-30 08:27:20
  * @ Description:
  * 
  * Utilities for managing the front-end of the website.
@@ -38,26 +38,6 @@ const PHO2 = (() => {
 	}
 
 	/**
-	 * Retrieves an item from local storage.
-	 * 
-	 * @param	name	The name of the item to get.
-	 * @return			The current value of the item.
-	 */
-	_.get = (name) => {
-		return localStorage.getItem(name);
-	}
-
-	/**
-	 * Sets an item in local storage.
-	 * 
-	 * @param	name	The name of the item to set.
-	 * @param	value	The new value of the item.
-	 */
-	_.set = (name, value) => {
-		return localStorage.setItem(name, value);
-	}
-
-	/**
 	 * Saves or retrieves the problems.
 	 * 
 	 * @param	problems	The problems to save.
@@ -65,8 +45,8 @@ const PHO2 = (() => {
 	 */
 	_.problems = (problems) => (
 		problems
-			? _.set('problems', JSON.stringify(problems))
-			: JSON.parse(_.get('problems'))
+			? DOM.store('problems', JSON.stringify(problems))
+			: JSON.parse(DOM.store('problems'))
 	)
 
 	/**
@@ -79,10 +59,10 @@ const PHO2 = (() => {
 	 */
 	_.users = (users, sort_by='username') => (
 		users
-			? _.set('users', JSON.stringify(
+			? DOM.store('users', JSON.stringify(
 				users.sort((a, b) => 
 					a[sort_by].localeCompare(b[sort_by]))))
-			: JSON.parse(_.get('users'))
+			: JSON.parse(DOM.store('users'))
 	)
 
 	/**
@@ -93,8 +73,8 @@ const PHO2 = (() => {
 	 */
 	_.config = (config) => (
 		config
-			? _.set('config', JSON.stringify(config))
-			: JSON.parse(_.get('config'))
+			? DOM.store('config', JSON.stringify(config))
+			: JSON.parse(DOM.store('config'))
 	)
 
 	/**
@@ -105,10 +85,10 @@ const PHO2 = (() => {
 	_.time = () => {
 
 		// Grab the contest details previously obtained from server
-		const elims_start		= parseInt(_.get(ELIMS_START));
-		const elims_end 		= parseInt(_.get(ELIMS_END));
-		const finals_start 	= parseInt(_.get(FINALS_START));
-		const finals_end 		= parseInt(_.get(FINALS_END));
+		const elims_start		= parseInt(DOM.store(ELIMS_START));
+		const elims_end 		= parseInt(DOM.store(ELIMS_END));
+		const finals_start 	= parseInt(DOM.store(FINALS_START));
+		const finals_end 		= parseInt(DOM.store(FINALS_END));
 		const now 					= parseInt(Date.now())
 
 		// Determine relative time
@@ -145,27 +125,18 @@ const PHO2 = (() => {
 
 })();
 
-/**
- * Encapsulated init.
- * 
- * // ! move this elsewhere??
- */
+// Inits the timer and the local store
 (() => {
 
-X
+  // Grab the config list
+  X.request('./user/configlist', 'POST')
+    
+    // Then update localStorage with the returned config
+    .then((data) => (
+      data['config'].forEach((parameter) => 
+        DOM.store(parameter.key, parameter.value))
+    ))
 
-	// Grab the config list
-	.request('./user/configlist', 'POST')
-	
-	// Then update localStorage with the returned config
-	.then((data) => (
-		data['config'].forEach((parameter) => 
-			PHO2.set(parameter.key, parameter.value))
-	))
-
-	// Catch any errors
-	.catch((err) => (
-		console.warn(err)
-	));
-	
+    // Catch any errors
+    .catch((err) => console.warn(err));
 })()
