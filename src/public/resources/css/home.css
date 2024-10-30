@@ -175,4 +175,8 @@ input:-webkit-autofill:active{
   .content {
     padding: 4rem !important;
   }
+
+  .card {
+    width: calc(100vw - 4rem) !important;
+  }
 }
