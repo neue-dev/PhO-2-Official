@@ -112,31 +112,24 @@
       const users_label = DOM.select('.users-label');
       const problems_label = DOM.select('.problems-label');
 
-      // Save the config
-      X.request('./admin/configlist', 'POST')
-        .then(({ config }) => PHO2.config(config))
-        .then(() => config_label.t(PHO2.config().length))
-        .then(() => config_table(PHO2.config()))
+      // Table elements
+      const config_table = DOM.stateful_table('config-table', DOM.select('.config-table'));
+      const users_table = DOM.stateful_table('users-table', DOM.select('.users-table'));
+      const problems_table = DOM.stateful_table('problems-table', DOM.select('.problems-table'));
 
-      // Save the users
-      X.request('./admin/userlist', 'POST')
-        .then(({ users }) => PHO2.users(users))
-        .then(() => users_label.t(PHO2.users().length))
-        .then(() => users_table(PHO2.users()))
+      config_table.table_header('Parameter', 'Value', '');
+      users_table.table_header('User', 'Category', 'Status', '');
+      problems_table.table_header('Code', 'Problem', 'Answer', 'Tolerance', '');
 
-      // Save the problems
-      X.request('./admin/problemlist', 'POST')
-        .then(({ problems }) => PHO2.problems(problems))
-        .then(() => problems_label.t(PHO2.problems().length))
-        .then(() => problems_table(PHO2.problems()))
-      
       // Tab handling
       const tabs = DOM.select('.tabs');
       const tabs_menu = DOM.select('.tabs-menu');
+
       DOM.stateful_tabs('config-tabs', tabs)
       DOM.stateful_menu('config-menu', tabs_menu)
-      tabs_menu.on_selected(c => tabs.active_tab(c))
-      
+      tabs_menu.menu_on_selected(c => tabs.tabs_active_tab(c))
+
+      // ! <!-- ! move elsewhere  -->
       const date = (timestamp) => {
         
         const date = new Date(timestamp * 1)
@@ -150,171 +143,105 @@
         return `${date.toISOString().substring(11, 16)} 
           ${date.toLocaleDateString(undefined, date_options)}`;
       }
+      
+      /**
+       *  Reusable components and styles
+       */
 
-      function problems_table(problems) {
+      // Some convenience styles
+      const auto_width = { width: 0 };
+      const full_width = { width: document.width };
 
-        // Table
-        const table = DOM.select('.problems-table');
-        const thead = DOM.thead();
-        const tbody = DOM.tbody();
+      // Row and data
+      const tr = () => DOM.tr();
+      const td = () => DOM.td().s(auto_width);
 
-        table.s({ border: 'none' });
-        table.append(thead, tbody);
-
-        // Header
-        const header = DOM.tr()
-          .append(
-            DOM.th().t('Problem').a('colspan', 2),
-            DOM.th().t('Answer'),
-            DOM.th().t('Tolerance'),
-            DOM.th().t(''))
-        thead.append(header)
+      // Label
+      const td_label = () =>
+        DOM.td().s(auto_width).append(
+          DOM.label())
         
-        // Rows
-        for(const problem of problems) {
-          const code = problem.code.number + problem.code.alpha;
-          const auto_width = { width: 0 };
-          const full_width = { width: document.width };
+      // Edit button
+      const edit_button = () => 
+        DOM.td().s(auto_width).c('right', 'aligned').append(
+          DOM.buttons().append(DOM.button().t('Edit')))
 
-          const row = 
-            DOM.tr().append(
+      // Edit delete button
+      const edit_delete_button = () => 
+        DOM.td().s(auto_width).c('right', 'aligned').append(
+          DOM.buttons().append(
+            DOM.button().t('Edit'),
+            DOM.or(),
+            DOM.button().t('Delete').c('negative')))
 
-              // Problem code
-              DOM.td().s(auto_width).append(
-                DOM.label().t(code)),
+      // Config table mapper
+      const config_table_mapper = (parameter) => (
+        tr().append(
+          td_label().select(0).t(parameter.key).parent(),
+          td().append(
+            parameter.type == 'url'
+              ? DOM.link().t(parameter.value).ref(parameter.value) : parameter.type == 'date'
+              ? DOM.span().t(date(parameter.value)) : parameter.type == 'duration'
+              ? DOM.span().t(parameter.value) 
+              : DOM.span().t(parameter.value)),
+          edit_button())
+      )
 
-              // Name
-              DOM.td().s(auto_width).t(problem.name),
+      // Problem table mapper
+      const problems_table_mapper = (problem) => (
+        tr().append(
+          td_label().select(0).t(problem.code.number + problem.code.alpha).parent(),
+          td().t(problem.name),
+          td().t(problem.answer.mantissa + ' &times; 10').append(
+            DOM.sup().t(problem.answer.exponent)),
+          td().t(problem.tolerance),
+          edit_delete_button())
+      )
 
-              // Answer
-              DOM.td().s(auto_width).t(problem.answer.mantissa + ' &times; 10').append(
-                DOM.sup().t(problem.answer.exponent)
-              ),
+      // User table mapper
+      const users_table_mapper = (user) => (
+        tr().append(
+          td().s(auto_width).t(user.username),
+          td().s(auto_width).append(
+            user.isAdmin 
+              ? DOM.label().c('red').t('admin')
+              : DOM.label().t(user.category).c(
+                user.category == 'junior' 
+                  ? 'default'
+                  : 'black'
+              )),
+          td_label().select(0).t(user.status)
+            .c(user.status == 'spectating' 
+              ? 'blue' : user.status == 'disqualified' 
+              ? 'orange'
+              : 'default')
+            .c(user.status == 'participating' 
+              ? 'default' 
+              : 'basic').parent(),
+          edit_delete_button())
+      )
 
-              // Tolerance
-              DOM.td().s(auto_width).t(problem.tolerance),
+      // Save the config
+      X.request('./admin/configlist', 'POST')
+        .then(({ config }) => PHO2.config(config))
+        .then(() => config_label.t(PHO2.config().length))
+        .then(() => config_table.table_data(PHO2.config()))
+        .then(() => config_table.table_map(config_table_mapper))
 
-              // Edit button
-              DOM.td().s(auto_width).c('right', 'aligned').append(
-                DOM.buttons().append(
-                  DOM.button().t('Edit'),
-                  DOM.or(),
-                  DOM.button().t('Delete').c('negative'))))
+      // Save the users
+      X.request('./admin/userlist', 'POST')
+        .then(({ users }) => PHO2.users(users))
+        .then(() => users_label.t(PHO2.users().length))
+        .then(() => users_table.table_data(PHO2.users()))
+        .then(() => users_table.table_map(users_table_mapper))
 
-          tbody.append(row)
-        }
-      }
+      // Save the problems
+      X.request('./admin/problemlist', 'POST')
+        .then(({ problems }) => PHO2.problems(problems))
+        .then(() => problems_label.t(PHO2.problems().length))
+        .then(() => problems_table.table_data(PHO2.problems()))
+        .then(() => problems_table.table_map(problems_table_mapper))
 
-      function users_table(users) {
-
-        // Table
-        const table = DOM.select('.users-table');
-        const thead = DOM.thead();
-        const tbody = DOM.tbody();
-
-        table.s({ border: 'none' });
-        table.append(thead, tbody);
-
-        // Header
-        const header = DOM.tr()
-          .append(
-            DOM.th().t('User'),
-            DOM.th().t('Category'),
-            DOM.th().t('Status'),
-            DOM.th().t(''))
-        thead.append(header)
-
-        // Rows
-        for(const user of users) {
-
-          const auto_width = { width: 0 };
-          const full_width = { width: document.width };
-          const row = 
-            DOM.tr().append(
-
-              // Name
-              DOM.td().s(auto_width).t(user.username),
-
-              // Category / admin
-              DOM.td().s(auto_width).append(
-                user.isAdmin 
-                  ? DOM.label().c('red').t('admin')
-                  : DOM.label().t(user.category).c(
-                    user.category == 'junior' 
-                      ? 'default'
-                      : 'black'
-                  )),
-
-              // Status
-              DOM.td().s(auto_width).append(
-                DOM.label().t(user.status)
-                  .c(user.status == 'spectating' 
-                    ? 'blue' : user.status == 'disqualified' 
-                    ? 'orange'
-                    : 'default')
-                  .c(user.status == 'participating' 
-                    ? 'default' 
-                    : 'basic')),
-
-              // Edit button
-              DOM.td().s(auto_width).c('right', 'aligned').append(
-                DOM.buttons().append(
-                  DOM.button().t('Edit'),
-                  DOM.or(),
-                  DOM.button().t('Delete').c('negative'))))
-
-          tbody.append(row)
-        }
-      }      
-
-      function config_table(config) {
-
-        // Table
-        const table = DOM.select('.config-table');
-        const thead = DOM.thead();
-        const tbody = DOM.tbody();
-
-        table.s({ border: 'none' });
-        table.append(thead, tbody);
-
-        // Header
-        const header = DOM.tr()
-          .append(
-            DOM.th().t('Parameter'),
-            DOM.th().t('Value'),
-            DOM.th().t(''))
-        thead.append(header)
-
-        // Rows
-        for(parameter of config) {
-
-          const auto_width = { width: 0 };
-          const full_width = { width: document.width };
-          const row = 
-            DOM.tr().append(
-
-              // Name
-              DOM.td().s(auto_width).append(
-                DOM.label().t(parameter.key)),
-
-              // Value
-              DOM.td().s(auto_width).append(
-                parameter.type == 'url'
-                  ? DOM.link().t(parameter.value).ref(parameter.value) : parameter.type == 'date'
-                  ? DOM.span().t(date(parameter.value)) : parameter.type == 'duration'
-                  ? DOM.span().t(parameter.value) 
-                  : DOM.span().t(parameter.value) 
-              ),
-
-              // Edit button
-              DOM.td().s(auto_width).c('right', 'aligned').append(
-                DOM.buttons().append(DOM.button().t('Edit'))))
-
-              
-
-          tbody.append(row)
-        }
-      }
     </script>
 
     <!-- Trademark -->
