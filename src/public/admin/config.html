@@ -52,60 +52,109 @@
       </div>
       <br><br>
 
-      <div class="ui pointing menu">
-        <a class="active item">
-          Contest Parameters
-        </a>
-        <a class="item">
-          Users
-        </a>
-        <a class="item">
-          Problems
-        </a>
-        <div class="right menu">
+      <div class="ui basic cards">
+        <div class="ui vertical menu" style="margin: 0 2rem 2rem 0;">
           <div class="item">
             <div class="ui transparent icon input">
-              <input type="text" placeholder="Search...">
-              <i class="search link icon"></i>
+              <input type="text" placeholder="Search current table...">
+              <i class="search icon"></i>
             </div>
           </div>
+          <div class="tabs-menu">
+            <a class="item blue active" href="config">
+              Contest Parameters
+              <div class="ui blue label config-label">1</div>
+            </a>
+            <a class="item" href="users">
+              Users
+              <div class="ui label users-label">51</div>
+            </a>
+            <a class="item" href="problems">
+              Problems
+              <div class="ui label problems-label">1</div>
+            </a>
+          </div>
+        </div>  
+        <div class="tabs">
+          <div class="ui tab segment config active" style="margin-top: 0;" data-tab="config">
+            <table class="ui single line table config-table">
+  
+            </table>
+          </div>
+          <div class="ui tab segment users" style="margin-top: 0;" data-tab="users">
+            <table class="ui single line table users-table">
+  
+            </table>      
+          </div>
+          <div class="ui tab segment problems" style="margin-top: 0;" data-tab="problems">
+            <table class="ui single line table problems-table">
+  
+            </table>
+          </div>
         </div>
-      </div>
-      <div class="ui top attached tab segment active" data-tab="one1">
-        <table class="ui celled striped table config-table">
-
-        </table>
-      </div>
-      <div class="ui top attached tab segment" data-tab="two1">
-        <table class="ui celled striped table users-table">
-
-        </table>      
-      </div>
-      <div class="ui top attached tab segment" data-tab="three1">
-        <table class="ui single line table problems-table">
-
-        </table>
       </div>
     </div>
 
     <script>
+      
+      // Grab labels
+      const config_label = DOM.select('.config-label');
+      const users_label = DOM.select('.users-label');
+      const problems_label = DOM.select('.problems-label');
 
       // Save the config
       X.request('./admin/configlist', 'POST')
         .then(({ config }) => PHO2.config(config))
+        .then(() => config_label.t(PHO2.config().length))
         .then(() => config_table())
 
       // Save the users
       X.request('./admin/userlist', 'POST')
         .then(({ users }) => PHO2.users(users))
+        .then(() => users_label.t(PHO2.users().length))
         .then(() => users_table())
 
       // Save the problems
       X.request('./admin/problemlist', 'POST')
         .then(({ problems }) => PHO2.problems(problems))
+        .then(() => problems_label.t(PHO2.problems().length))
         .then(() => problems_table())
         
+      const tabs = DOM.select('.tabs');
+      const tabs_menu = DOM.select('.tabs-menu');
 
+      const register_tabs = () => {
+        for(const item of tabs_menu.children)
+          DOM.select(item).listen('click', select_tab);
+      }
+
+      const select_tab = (e) => {
+
+        // Don't relocate page
+        e.preventDefault();
+
+        // For each tab, unset active
+        for(const tab of tabs.children)
+          DOM.select(tab).uc('active')
+
+        // For each tab menu item, unset active
+        for(const item of tabs_menu.children) {
+          DOM.select(item).uc('blue', 'active')
+          item.select(0).uc('blue', 'active');
+        }
+
+        // Grab the target and its properties
+        const target = DOM.select(e.target)
+        const href = target.ref().split('/')
+        const c = `.${href[href.length - 1]}`;
+
+        // Make the target active, and its associated tab
+        target.c('blue', 'active');
+        target.select(0).c('blue', 'active');
+        tabs.select(c).c('active')
+      }
+
+      register_tabs();
       
       const date = (timestamp) => {
         
@@ -140,12 +189,11 @@
             DOM.th().t('Problem').a('colspan', 2),
             DOM.th().t('Answer'),
             DOM.th().t('Tolerance'),
-            DOM.th().t(''),
             DOM.th().t(''))
         thead.append(header)
         
         // Rows
-        for(problem of problems) {
+        for(const problem of problems) {
           const code = problem.code.number + problem.code.alpha;
           const auto_width = { width: 0 };
           const full_width = { width: document.width };
@@ -198,12 +246,11 @@
             DOM.th().t('User'),
             DOM.th().t('Category'),
             DOM.th().t('Status'),
-            DOM.th().t(''),
             DOM.th().t(''))
         thead.append(header)
 
         // Rows
-        for(user of users) {
+        for(const user of users) {
 
           const auto_width = { width: 0 };
           const full_width = { width: document.width };
@@ -263,7 +310,6 @@
           .append(
             DOM.th().t('Parameter'),
             DOM.th().t('Value'),
-            DOM.th().t(''),
             DOM.th().t(''))
         thead.append(header)
 
@@ -291,10 +337,9 @@
 
               // Edit button
               DOM.td().s(auto_width).c('right', 'aligned').append(
-                DOM.buttons().append(
-                  DOM.button().t('Edit'),
-                  DOM.or(),
-                  DOM.button().t('Delete').c('negative'))))
+                DOM.buttons().append(DOM.button().t('Edit'))))
+
+              
 
           tbody.append(row)
         }
