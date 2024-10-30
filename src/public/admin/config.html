@@ -100,11 +100,8 @@
     </div>
 
     <script>
-
-      const search_bar = DOM.select('.search-bar')
-      //search_bar.listen('keydown', (e) => (
-        
-      //));
+      
+      // Keybinds 
       DOM.keybind({ ctrlKey: true, keyCode: 'f' }, () => search_bar.focus())
       
       // Grab labels
@@ -117,17 +114,37 @@
       const users_table = DOM.stateful_table('users-table', DOM.select('.users-table'));
       const problems_table = DOM.stateful_table('problems-table', DOM.select('.problems-table'));
 
-      config_table.table_header('Parameter', 'Value', '');
-      users_table.table_header('User', 'Category', 'Status', '');
-      problems_table.table_header('Code', 'Problem', 'Answer', 'Tolerance', '');
-
       // Tab handling
       const tabs = DOM.select('.tabs');
       const tabs_menu = DOM.select('.tabs-menu');
 
       DOM.stateful_tabs('config-tabs', tabs)
       DOM.stateful_menu('config-menu', tabs_menu)
+
       tabs_menu.menu_on_selected(c => tabs.tabs_active_tab(c))
+      tabs_menu.menu_selected_item('.config');
+
+      // Search bar
+      const search_bar = DOM.select('.search-bar')
+      
+      // Filter feature
+      search_bar.listen('input', (e) => {
+
+        // Grab the table
+        const tab_name = tabs.tabs_active_tab();
+        const tab = tabs.select(tab_name);
+        const table = tab.select('table')
+        const value = e.target.value.toUpperCase();
+
+        // Filter it
+        table.table_filter((data, text) =>  
+          text
+            .toUpperCase()
+            .includes(value))
+
+        // Re-render it
+        table.table_map(table.mapper);
+      });
 
       // ! <!-- ! move elsewhere  -->
       const date = (timestamp) => {
@@ -221,26 +238,39 @@
           edit_delete_button())
       )
 
+      // Set up the tables
+      config_table
+        .table_header('Parameter', 'Value', '')
+        .mapper = config_table_mapper;
+
+      users_table
+        .table_header('User', 'Category', 'Status', '')
+        .mapper = users_table_mapper;
+
+      problems_table
+        .table_header('Code', 'Problem', 'Answer', 'Tolerance', '')
+        .mapper = problems_table_mapper;
+
       // Save the config
       X.request('./admin/configlist', 'POST')
         .then(({ config }) => PHO2.config(config))
         .then(() => config_label.t(PHO2.config().length))
         .then(() => config_table.table_data(PHO2.config()))
-        .then(() => config_table.table_map(config_table_mapper))
+        .then(() => config_table.table_map(config_table.mapper))
 
       // Save the users
       X.request('./admin/userlist', 'POST')
         .then(({ users }) => PHO2.users(users))
         .then(() => users_label.t(PHO2.users().length))
         .then(() => users_table.table_data(PHO2.users()))
-        .then(() => users_table.table_map(users_table_mapper))
+        .then(() => users_table.table_map(users_table.mapper))
 
       // Save the problems
       X.request('./admin/problemlist', 'POST')
         .then(({ problems }) => PHO2.problems(problems))
         .then(() => problems_label.t(PHO2.problems().length))
         .then(() => problems_table.table_data(PHO2.problems()))
-        .then(() => problems_table.table_map(problems_table_mapper))
+        .then(() => problems_table.table_map(problems_table.mapper))
 
     </script>
 
