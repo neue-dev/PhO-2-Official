@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-30 09:08:11
+ * @ Modified time: 2024-10-30 11:20:05
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -20,7 +20,7 @@ const DOM = (() => {
 	 * @param element		The element to decorate. 
 	 * @return 					The decorated element.
 	 */
-	const fluent = (element) => {
+	const fluent = (element) => (
 		
 		// Add the methods to the object
 		Object.assign(element, {
@@ -60,6 +60,21 @@ const DOM = (() => {
 					: 0
 			),
 
+			// Returns whether or not the element belongs to the specified classes
+			is: (...classes) => (
+				classes.every(c => element.contains(c)
+					? true
+					: false)
+			),
+
+			// Applies a function to each child
+			foreach: (f) => (
+				Array.from(element.children)
+					.map(e => fluent(e))
+					.forEach(e => f(e)),
+				element
+			),
+
 			// Retrieves child by index or selector
 			select: (selector) => (
 				typeof selector == 'number'
@@ -95,35 +110,26 @@ const DOM = (() => {
 					: children.map(child => element.innerHTML += child),
 				element
 			)
-		})
+		}),
 
-		return element;
-	}
+		// Return element
+		element
+	)
 
 	/**
 	 * Adds state management methods to the element.
 	 * If an identifier is not provided, the function is curried until one is.
+	 * Adds the method 'state()', which is a get-setter for state associated with the element
 	 * 
 	 * @param element		The element to decorate.
 	 * @param	id				An identifier for accessing the store.
 	 * @return					The decorated element.
 	 */
-	const stateful = (element, id) => {
-		
-		// Defer the call
-		if(id == null)
-			return (pending_id) => stateful(element, pending_id);
-
-		// Decorate the element
-		Object.assign(element, {
-			
-			// Get-setter for the state of the element
-			state: (name, value) => _.store(name, value),
-		})
-
-		// Return it
-		return element;
-	}
+	const stateful = (element, id) => (
+		id != null
+			? (Object.assign(element, { state: (name, value) => _.store(`${id}.${name}`, value), }), element)
+			: (pending_id) => stateful(element, pending_id)
+	)
 
 	/**
 	 * A private helper function.
@@ -134,14 +140,7 @@ const DOM = (() => {
 	 * @param	tag			The tag of the element.
 	 * @return				A new HTML element of the given tag with the applied styles.
 	 */
-	const element = (tag) => {
-
-		// Create the element
-		const e = document.createElement(tag);
-
-		// Make fluent
-		return fluent(e);
-	}
+	const element = (tag) => fluent(document.createElement(tag))
 
 	/**
 	 * Basic element factory methods.
@@ -154,6 +153,7 @@ const DOM = (() => {
 	_.span = () => element('span');
 	_.div = () => element('div');
 	_.link = () => element('a');
+	_.pre = () => element('pre');
 
 	// Table-related
 	_.table = () => element('table').c('ui', 'table');
@@ -177,13 +177,89 @@ const DOM = (() => {
 	/**
 	 * Stateful element factory methods.
 	 * These produce stateful and fluent elements.
+	 * This part has more documentation, and I think that's justified.
 	 */
 
-	// Tabs
+	/**
+	 * Creates a stateful set of tabs with the given id.
+	 * Methods are:
+	 * 
+	 * 	active_tab()	Get-setter for active tab.
+	 * 
+	 * @param id		Identifier for the element and its store in localStorage. 
+	 * @param tabs	The element (probably a div containing the tabs) to decorate. 
+	 * @return			The decorated element.
+	 */
 	_.stateful_tabs = (id, tabs) => (
-		tabs
-			? stateful(tabs, id)
-			: stateful(element('div').c('tabs'), id)
+		
+		// Extends the tabs object
+		((tabs) => (
+
+			// Additional tabs methods
+			Object.assign(tabs, {
+
+				// Get-setter for the active tab
+				active_tab: (tab) => (
+					tab 
+						? (tabs.state('active', tab), 
+							tabs.foreach(child => child.uc('active')),
+							tabs.select(tab).c('active'))
+						: (tabs.state('active'))
+				),
+			}),
+
+			// Return it
+			tabs
+
+		// Pass in the element
+		))(
+			tabs
+				? stateful(tabs, id)
+				: stateful(element('div').c('tabs'), id)
+		)
+	)
+
+	/**
+	 * Creates a stateful menu with the given id.
+	 * Methods are:
+	 * 
+	 * 	selected_item()		Get-setter for selected item.
+	 * 
+	 * @param id		Identifier for the element and its store in localStorage. 
+	 * @param menu	The element (probably a div containing the items) to decorate. 
+	 * @return			The decorated element.
+	 */
+	_.stateful_menu = (id, menu) => (
+		
+		// Extends the menu
+		((menu) => (
+
+			// Make sure each tab gets a class equal to its ref
+			menu.foreach(e => e.c(e.ref().split('/').at(-1))),
+			
+			// Additional menu methods
+			Object.assign(menu, {
+
+				// Get-setter for selected item
+				selected_item: (item) => (
+					item 
+						? (menu.state('selected', item),
+							menu.foreach(e => e.uc('active')),
+							menu.select(item).c('active'))
+						: (menu.state('selected'))
+				),
+
+			}),
+
+			// Return it
+			menu
+
+		// Pass in the element
+		))(
+			menu
+				? stateful(menu, id)
+				: stateful(element('div').c('menu'), id)
+		)
 	)
 
 	/**
@@ -210,30 +286,18 @@ const DOM = (() => {
 	_.keybind = (keys, callback) => (
 
 		// Add event listener
-		document.addEventListener('keydown', (e) => {
+		document.addEventListener('keydown', (e) => (
 			
-			// Check if at least one doesn't match
-			for(key in keys) {
+			// Check if every provided key is pressed
+			Object.keys(keys).every(key => 
+				keys[key].charCodeAt 
+					? e[key] === keys[key].toUpperCase().charCodeAt(0)
+					: e[key])
 
-				// If it's not a special key
-				if(keys[key].charCodeAt) {
-
-					// Doesn't match
-					// Note that our check is case-insensitive
-					if(e[key] !== keys[key].toUpperCase().charCodeAt(0))
-						return;
-
-				// If it's a special key, but it also doesn't match
-				} else if(!e[key]) {
-					return;
-				}
-			}
-
-			// Only if all checks pass do we call the callback
-			// ...and prevent default behavior
-			e.preventDefault();
-			callback(e);
-		}),
+				// If so, evxecute callback and prevent default
+				? (e.preventDefault(), callback(e))
+				: (null)
+		)),
 
 		// Return api
 		_
