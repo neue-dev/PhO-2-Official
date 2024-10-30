@@ -29,7 +29,7 @@
         left: 0;
       }
 
-      .problems-container {
+      .finals-container {
         position: fixed;
       }
     </style>
@@ -48,18 +48,39 @@
   </head>
 
   <body>
-    <iframe class="main-content problems" width="100%" height="100%" frameBorder="0" src="{{CONTEST_PROBLEMS_URL}}"></iframe>
-    <div class="container problems-container hide-on-mobile">
+    <div class="container finals-container">
       <div style="z-index: 1;" class="ui content">
         <span class=" ui header huge text">
-          Problems
+          Finals
         </span>
 				<br><br>
 				<div class="ui breadcrumb">
 					<a class="section" href="/dashboard">Dashboard</a>
 					<i class="right arrow icon divider"></i>
-					<div class="active section">Problems</div>
+					<div class="active section">Finals</div>
 				</div>
+      </div>
+      <br>
+
+      <div class="ui warning message">
+        <i class="warning icon"></i>
+        The finals are currently not available.
+      </div><br><br>
+
+      <div class="ui inverted cards">
+        <div class="card">
+          <div class="content">
+            <img class="ui centered medium image" width="200" src="/pho-2-icon-dark">
+            <a href="/dashboard" onclick="window.close()">
+              <div onclick="() => alert('a')" class="ui animated blue button" tabindex="0">
+                <div class="visible content">return</div>
+                <div class="hidden content">
+                  <i class="left arrow icon"></i>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </body>
