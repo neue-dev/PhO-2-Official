@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 06:26:15
- * @ Modified time: 2024-10-30 08:27:20
+ * @ Modified time: 2024-10-30 10:10:00
  * @ Description:
  * 
  * Utilities for managing the front-end of the website.
@@ -117,6 +117,14 @@ const PHO2 = (() => {
 			case 'ended': default: 
 				return { suffix: 'since contest end',			time: time(now - finals_end) }
 		}
+	}
+
+	/**
+	 * Logs out the user.
+	 */
+	_.logout = () => {
+		X.request('./auth/logout', 'POST')
+			.then(() => { location.href = '/' });
 	}
 
 	return {

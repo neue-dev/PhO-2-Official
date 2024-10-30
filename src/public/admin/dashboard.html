@@ -36,8 +36,9 @@
     <script src="./resources/semantic/semantic.js"></script>
     
     <!-- Pho2 Utils -->
-    <script src="/pho2"></script>
+    <script src="/x"></script>
     <script src="/dom"></script>
+    <script src="/pho2"></script>
   </head>
 
   <body>
@@ -152,12 +153,14 @@
         <div class="card">
           <div class="content">
             <img class="ui centered medium image" width="200" src="/pho-2-icon-dark">
-            <div class="ui animated negative button" tabindex="0">
-              <div class="visible content">logout</div>
-              <div class="hidden content">
-                <i class="right arrow icon"></i>
+            <a href="" onclick="PHO2.logout()">
+              <div class="ui animated negative button" tabindex="0">
+                <div class="visible content">logout</div>
+                <div class="hidden content">
+                  <i class="right arrow icon"></i>
+                </div>
               </div>
-            </div>
+            </a>
           </div>
         </div>
       </div>
