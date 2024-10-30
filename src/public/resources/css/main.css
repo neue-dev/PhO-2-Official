@@ -35,8 +35,8 @@ span {
 
 /* Scrollbar things */
 ::-webkit-scrollbar {
-  width: 16px;
-  margin-left: -16px;
+  width: 0px;
+  margin-left: -0px;
 }
 
 ::-webkit-scrollbar-track {
@@ -62,6 +62,21 @@ span {
 .timer-label {
   opacity: 0.4;
   font-weight: bold;
+}
+
+/* Modals */
+.dimmer {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  padding-left: 50vw !important;
+  padding-top: 30vh !important;
+}
+
+.ui.modal.visible.active {
+  transform: translate(-50%, -50%);
 }
 
 /* Menu */

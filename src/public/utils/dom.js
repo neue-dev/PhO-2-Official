@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-30 16:06:49
+ * @ Modified time: 2024-10-30 17:26:43
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -343,6 +343,7 @@ const DOM = (() => {
 	 * Methods are:
 	 * 
 	 * 	table_data()			Get-setter for the data associated with the table.
+	 * 	table_header()		Setter for the table header.
 	 * 	table_map()				Sets how the data maps to rows.
 	 * 	table_filter()		Applies a filter to the table.		
 	 * 
@@ -432,6 +433,109 @@ const DOM = (() => {
 			table 
 				? stateful(table, id)
 				: stateful(element('table').c('table'), id)
+		)
+	)
+	
+	/**
+	 * Creates a stateful modal with the given id.
+	 * Methods are:
+	 * 
+	 * 	modal_open()			Launches the modal.
+	 * 	modal_close()			Deactivates the modal.
+	 * 	modal_on_yes()		Affirmative callback.
+	 * 	modal_on_no()			Negative callback.
+	 * 	modal_header()		Set the header of the modal.
+	 * 	modal_append()		Append content to the body of the modal.
+	 * 
+	 * @param id 			An id for the modal.
+	 * @param modal 	The element to use.
+	 * @return				Returns a new modal. 
+	 */
+	_.stateful_modal = (id, modal) => (
+		
+		// Extend the modal
+		((modal) => (
+
+			// Replace modal with parent in the current DOM tree
+			((dimmer) => (
+				modal.parent().insertBefore(dimmer, modal),
+				modal.parent().removeChild(modal),
+				dimmer.appendChild(modal)
+
+			// The dimmer parent
+			))(
+				element('div').c('ui', 'dimmer', 'modals', 'page', 'transition')
+			),
+
+			// Build the structure of the modal
+			modal.append(
+
+				// Close icon
+				element('i').c('close', 'icon')
+					.listen('click', () => modal.modal_close()),
+
+				// Header
+				element('div').c('ui', 'header', 'huge', 'text'),
+
+				// Content
+				element('div').c('ui', 'content'),
+
+				// Actions
+				element('div').c('actions').append(
+					element('div').c('ui', 'negative', 'deny', 'button', 'no').t('cancel')
+						.listen('click', () => modal.modal_close()),
+					element('div').c('ui', 'positive', 'right', 'labeled', 'icon', 'button', 'yes').t('confirm')
+						.listen('click', () => modal.modal_close())
+						.append(element('i').c('checkmark', 'icon')))),
+				
+			// Add methods to it
+			decorate(modal, {
+				
+				// Activates the modal (parent must be the dimmer)
+				modal_open: () => (
+					modal.parent().c('visible', 'active'),
+					modal.c('visible', 'active'),
+					modal
+				),
+
+				// Hides it (parent must be the dimmer)
+				modal_close: () => (
+					modal.parent().uc('visible', 'active'),
+					modal.uc('visible', 'active'),
+					modal
+				),
+
+				// Adds callback for when the positive action is selected
+				modal_on_yes: (f) => (
+					modal.select('.yes.button').listen('click', f),
+					modal					
+				),
+
+				// Adds callback for when the negative action is selected
+				modal_on_no: (f) => (
+					modal.select('.no.button').listen('click', f),
+					modal					
+				),
+
+				// Set the header of the modal
+				modal_header: (header) => (
+					modal.select('.header').clear(),
+					modal.select('.header').append(header),
+					modal
+				),
+
+				// Add elements to the body of the modal
+				modal_append: (...elements) => (
+					modal.select('.content').append(...elements),
+					modal
+				)
+			})
+			
+		// Pass the element
+		))(
+			modal 
+				? stateful(modal, id)
+				: stateful(element('div').c('modal'), id)
 		)
 	)
 

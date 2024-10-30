@@ -99,6 +99,10 @@
       </div>
     </div>
 
+    <div class="ui modal config-modal"></div>
+    <div class="ui modal users-modal"></div>
+    <div class="ui modal problems-modal"></div>
+
     <script>
       
       // Keybinds 
@@ -113,6 +117,16 @@
       const config_table = DOM.stateful_table('config-table', DOM.select('.config-table'));
       const users_table = DOM.stateful_table('users-table', DOM.select('.users-table'));
       const problems_table = DOM.stateful_table('problems-table', DOM.select('.problems-table'));
+
+      // Modals
+      const config_modal = DOM.stateful_modal('config-modal', DOM.select('.config-modal'))
+      const users_modal = DOM.stateful_modal('users-modal', DOM.select('.users-modal'))
+      const problems_modal = DOM.stateful_modal('problems-modal', DOM.select('.problems-modal'))
+      
+      // Set up the modals
+      config_modal.modal_header('Edit Config');
+      users_modal.modal_header('Edit User');
+      problems_modal.modal_header('Edit Problem');
 
       // Tab handling
       const tabs = DOM.select('.tabs');
@@ -201,7 +215,8 @@
               ? DOM.span().t(date(parameter.value)) : parameter.type == 'duration'
               ? DOM.span().t(parameter.value) 
               : DOM.span().t(parameter.value)),
-          edit_button())
+          edit_button()
+            .listen('click', (e) => config_modal.modal_open()))
       )
 
       // Problem table mapper
@@ -212,7 +227,8 @@
           td().t(problem.answer.mantissa + ' &times; 10').append(
             DOM.sup().t(problem.answer.exponent)),
           td().t(problem.tolerance),
-          edit_delete_button())
+          edit_delete_button()
+            .listen('click', (e) => problems_modal.modal_open()))
       )
 
       // User table mapper
@@ -235,7 +251,8 @@
             .c(user.status == 'participating' 
               ? 'default' 
               : 'basic').parent(),
-          edit_delete_button())
+          edit_delete_button()
+            .listen('click', (e) => users_modal.modal_open()))
       )
 
       // Set up the tables
