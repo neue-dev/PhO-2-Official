@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-29 19:26:46
+ * @ Modified time: 2024-10-30 08:07:17
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -45,6 +45,33 @@ const DOM = (() => {
 					? element.classList.add(...classes)
 					: true,
 				element
+			),
+
+			// Unassigns classes
+			uc: (...classes) => (
+				element.classList.remove(...classes),
+				element
+			),
+
+			// Returns the index within the parent
+			i: () => (
+				element.parentNode
+					? Array.prototype.indexOf.call(element.parentNode.childNodes, element)
+					: 0
+			),
+
+			// Retrieves child by index or selector
+			select: (selector) => (
+				typeof selector == 'number'
+					? selector < element.children.length
+						?	fluent(element.children[selector])
+						: null
+					: fluent(element.querySelector(selector))
+			),
+
+			// Adds an event listener to the object
+			listen: (event, listener) => (
+				element.addEventListener(event, listener)
 			),
 
 			// Fluent get-setter for styles
@@ -135,9 +162,12 @@ const DOM = (() => {
 	 * @param	selector	The selector to use.
 	 * @return					The element selected.
 	 */
-	_.select = (selector) => fluent(
-		document.querySelector(selector) ?? 
-		console.error('Element not found by selector.'));
+	_.select = (selector) => 
+		fluent(
+			selector instanceof Element || selector instanceof HTMLElement
+				? selector
+				: document.querySelector(selector) ?? console.error('Element not found by selector.')
+		);
 
 	return {
 		..._,
