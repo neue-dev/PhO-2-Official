@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-30 11:57:08
+ * @ Modified time: 2024-10-30 13:36:55
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -15,6 +15,18 @@ const DOM = (() => {
 	const _ = {};
 
 	/**
+	 * A conciser and more expressive syntax for decorating elements.
+	 * 
+	 * @param element				The element to decorate. 
+	 * @param decorations 	The decorations to put on the element.
+	 * @return							The decorated element. 
+	 */
+	const decorate = (element, decorations) => (
+		Object.assign(element, decorations),
+		element
+	)
+
+	/**
 	 * Decorates a DOM element with fluent helper methods.
 	 * 
 	 * @param element		The element to decorate. 
@@ -23,7 +35,7 @@ const DOM = (() => {
 	const fluent = (element) => (
 		
 		// Add the methods to the object
-		Object.assign(element, {
+		decorate(element, {
 
 			// Fluent get-setter for attributes
 			a: (attribute, value) => (
@@ -82,6 +94,13 @@ const DOM = (() => {
 				element
 			),
 
+			// Removes all children of the element
+			clear: () => (
+				element.foreach(child => 
+					element.removeChild(child)),
+				element
+			),
+
 			// Retrieves child by index or selector
 			select: (selector) => (
 				typeof selector == 'number'
@@ -89,6 +108,11 @@ const DOM = (() => {
 						?	fluent(element.children[selector])
 						: null
 					: fluent(element.querySelector(selector))
+			),
+
+			// The parent of the element
+			parent: () => (
+				element.parentElement
 			),
 
 			// Adds an event listener to the object
@@ -122,10 +146,7 @@ const DOM = (() => {
 					: children.map(child => element.innerHTML += child),
 				element
 			)
-		}),
-
-		// Return element
-		element
+		})
 	)
 
 	/**
@@ -139,8 +160,8 @@ const DOM = (() => {
 	 */
 	const stateful = (element, id) => (
 		id != null
-			? (Object.assign(element, { state: (name, value) => _.store(`${id}.${name}`, value), }), element)
-			: (pending_id) => stateful(element, pending_id)
+			? (decorate(element, { state: (name, value) => _.store(`${id}.${name}`, value), }), element)
+			: (pending_id) => stateful(element, pending_id).c(id).d(id)
 	)
 
 	/**
@@ -196,7 +217,7 @@ const DOM = (() => {
 	 * Creates a stateful set of tabs with the given id.
 	 * Methods are:
 	 * 
-	 * 	active_tab()	Get-setter for active tab.
+	 * 	tabs_active_tab()		Get-setter for active tab.
 	 * 
 	 * @param id		Identifier for the element and its store in localStorage. 
 	 * @param tabs	The element (probably a div containing the tabs) to decorate. 
@@ -208,20 +229,17 @@ const DOM = (() => {
 		((tabs) => (
 
 			// Additional tabs methods
-			Object.assign(tabs, {
+			decorate(tabs, {
 
 				// Get-setter for the active tab
-				active_tab: (tab) => (
+				tabs_active_tab: (tab) => (
 					tab 
 						? (tabs.state('active', tab), 
 							tabs.foreach(child => child.uc('active')),
 							tabs.select(tab).c('active'))
 						: (tabs.state('active'))
 				),
-			}),
-
-			// Return it
-			tabs
+			})
 
 		// Pass in the element
 		))(
@@ -235,8 +253,8 @@ const DOM = (() => {
 	 * Creates a stateful menu with the given id.
 	 * Methods are:
 	 * 
-	 * 	selected_item()		Get-setter for selected item.
-	 * 	on_selected()			Sets what to do after an item gets selected.
+	 * 	menu_selected_item()		Get-setter for selected item.
+	 * 	menu_on_selected()			Sets what to do after an item gets selected.
 	 * 
 	 * @param id		Identifier for the element and its store in localStorage. 
 	 * @param menu	The element (probably a div containing the items) to decorate. 
@@ -262,14 +280,14 @@ const DOM = (() => {
 				e.preventDefault(),
 
 				// Select the right item
-				menu.selected_item(`.${DOM.select(e.target).d()}`)
+				menu.menu_selected_item(`.${DOM.select(e.target).d()}`)
 			))),
 			
 			// Additional menu methods
-			Object.assign(menu, {
+			decorate(menu, {
 
 				// Get-setter for selected item
-				selected_item: (item) => (
+				menu_selected_item: (item) => (
 					item 
 						? (menu.state('selected', item),
 							menu.foreach(e => e.uc('active')),
@@ -279,20 +297,76 @@ const DOM = (() => {
 				),
 
 				// Passes a callback to execute when an item gets selected 
-				on_selected: (f) => (
-					menu.listen('select', (e) => f(menu.selected_item(), e))
+				menu_on_selected: (f) => (
+					menu.listen('select', (e) => f(menu.menu_selected_item(), e))
 				)
 
-			}),
-
-			// Return it
-			menu
+			})
 
 		// Pass in the element
 		))(
 			menu
 				? stateful(menu, id)
 				: stateful(element('div').c('menu'), id)
+		)
+	)
+
+	/**
+	 * Creates a stateful table with the given id.
+	 * Methods are:
+	 * 
+	 * 	table_data()			Get-setter for the data associated with the table.
+	 * 	table_map()				Sets how the data maps to rows.
+	 * 	table_filter()		Applies a filter to the table.		
+	 * 
+	 * @param id			Identifier for the element and its store in localStorage. 
+	 * @param table		The element (probably a table element of sorts) to decorate. 
+	 * @return				The decorated element.
+	 */
+	_.stateful_table = (id, table) => (
+
+		// Extends the table
+		((table) => (
+
+			// Set up the structure
+			table.append(
+				element('thead').c('thead'),
+				element('tbody').c('tbody')
+			),
+
+			// Add methods
+			decorate(table, {
+				
+				// Get-setter for the table data
+				table_data: (data) => (
+					table.state('data', data),
+					table.state('view', data)
+				),
+
+				// Setter for the table header
+				table_header: (...headers) => (
+					table.select('thead').clear(),
+					table.select('thead').append(element('tr')),
+					headers.forEach(header =>
+						table.select('thead').select('tr').append(element('th').t(header)))
+				),
+
+				// Setter for the mapping of the table
+				table_map: (mapper) => (
+					table.select('tbody').clear(),
+					table.state('view').forEach(data => 
+						table.select('tbody').append(mapper(data)))
+				),
+				
+				// Applies a filter to the table data
+				table_filter: (filter) => data.state('view', filter(data.state('data')))
+			})
+
+		// Pass the element
+		))(
+			table 
+				? stateful(table, id)
+				: stateful(element('table').c('table'), id)
 		)
 	)
 
@@ -347,8 +421,8 @@ const DOM = (() => {
 	 */
 	_.store = (name, value) => (
 		value != null
-			? (localStorage.setItem(name, value), _)
-			: (localStorage.getItem(name))
+			? (localStorage.setItem(name, JSON.stringify(value)), _)
+			: (JSON.parse(localStorage.getItem(name)))
 	)
 	
 	return {

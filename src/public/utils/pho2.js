@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 06:26:15
- * @ Modified time: 2024-10-30 10:10:00
+ * @ Modified time: 2024-10-30 12:48:58
  * @ Description:
  * 
  * Utilities for managing the front-end of the website.
@@ -43,11 +43,7 @@ const PHO2 = (() => {
 	 * @param	problems	The problems to save.
 	 * @return					The saved problems.
 	 */
-	_.problems = (problems) => (
-		problems
-			? DOM.store('problems', JSON.stringify(problems))
-			: JSON.parse(DOM.store('problems'))
-	)
+	_.problems = (problems) => DOM.store('problems', problems)
 
 	/**
 	 * Saves or retrieves the users.
@@ -57,13 +53,7 @@ const PHO2 = (() => {
 	 * @param	sort_by		What to use to sort the users.
 	 * @return					The saved users.
 	 */
-	_.users = (users, sort_by='username') => (
-		users
-			? DOM.store('users', JSON.stringify(
-				users.sort((a, b) => 
-					a[sort_by].localeCompare(b[sort_by]))))
-			: JSON.parse(DOM.store('users'))
-	)
+	_.users = (users, sort_by='username') => DOM.store('users', users)
 
 	/**
 	 * Saves or retrieves the config.
@@ -71,11 +61,7 @@ const PHO2 = (() => {
 	 * @param	config		The config to save.
 	 * @return					The saved config.
 	 */
-	_.config = (config) => (
-		config
-			? DOM.store('config', JSON.stringify(config))
-			: JSON.parse(DOM.store('config'))
-	)
+	_.config = (config) => DOM.store('config', config)
 
 	/**
 	 * Returns details about the contest time.
