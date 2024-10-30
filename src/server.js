@@ -355,10 +355,6 @@ app.get('/utils/js/header', (req, res) => {
   res.sendFile('./public/utils/header.js', { root: __dirname });
 })
 
-app.get('/utils/js/config', (req, res) => {
-  res.sendFile('./public/utils/config.js', { root: __dirname });
-})
-
 app.get('/utils/js/timer', (req, res) => {
   res.sendFile('./public/utils/timer.js', { root: __dirname });
 })
