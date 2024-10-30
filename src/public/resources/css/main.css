@@ -1,8 +1,9 @@
-The main css file for general stylings
+/* The main css file for general stylings */
 
 :root {
   --black: #212121;
   --white: #f0f0f0;
+  --blue: #2185d0;
 }
 
 * {
@@ -61,6 +62,15 @@ span {
 .timer-label {
   opacity: 0.4;
   font-weight: bold;
+}
+
+/* Menu */
+.item.active {
+  color: var(--blue) !important;
+}
+
+.item.active>.ui.label {
+  background-color: var(--blue) !important;
 }
 
 /* Dark mode toggler */

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-30 11:20:05
+ * @ Modified time: 2024-10-30 11:57:08
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -60,6 +60,13 @@ const DOM = (() => {
 					: 0
 			),
 
+			// Get-setter for id
+			d: (id) => (
+				id != null
+					? (element.id = id, element)
+					: (element.id)
+			),
+
 			// Returns whether or not the element belongs to the specified classes
 			is: (...classes) => (
 				classes.every(c => element.contains(c)
@@ -87,6 +94,11 @@ const DOM = (() => {
 			// Adds an event listener to the object
 			listen: (event, listener) => (
 				element.addEventListener(event, listener)
+			),
+
+			// Disptches an event to the element
+			dispatch: (event) => (
+				element.dispatchEvent(new Event(event))
 			),
 
 			// Fluent get-setter for styles
@@ -224,6 +236,7 @@ const DOM = (() => {
 	 * Methods are:
 	 * 
 	 * 	selected_item()		Get-setter for selected item.
+	 * 	on_selected()			Sets what to do after an item gets selected.
 	 * 
 	 * @param id		Identifier for the element and its store in localStorage. 
 	 * @param menu	The element (probably a div containing the items) to decorate. 
@@ -234,8 +247,23 @@ const DOM = (() => {
 		// Extends the menu
 		((menu) => (
 
-			// Make sure each tab gets a class equal to its ref
-			menu.foreach(e => e.c(e.ref().split('/').at(-1))),
+			// Make sure each tab gets a class and id equal to its ref
+			menu.foreach(e => ((c) => (
+				e.c(c),
+				e.d(c)
+
+			// Pass in the value
+			))(e.ref().split('/').at(-1))),
+
+			// Add event listeners for tab selection
+			menu.foreach(e => e.listen('click', (e) => (
+				
+				// Avoid relocating page
+				e.preventDefault(),
+
+				// Select the right item
+				menu.selected_item(`.${DOM.select(e.target).d()}`)
+			))),
 			
 			// Additional menu methods
 			Object.assign(menu, {
@@ -245,9 +273,15 @@ const DOM = (() => {
 					item 
 						? (menu.state('selected', item),
 							menu.foreach(e => e.uc('active')),
-							menu.select(item).c('active'))
+							menu.select(item).c('active'),
+							menu.dispatch('select'))
 						: (menu.state('selected'))
 				),
+
+				// Passes a callback to execute when an item gets selected 
+				on_selected: (f) => (
+					menu.listen('select', (e) => f(menu.selected_item(), e))
+				)
 
 			}),
 
