@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-30 17:26:43
+ * @ Modified time: 2024-10-31 11:26:04
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -80,8 +80,8 @@ const DOM = (() => {
 			),
 
 			// Returns whether or not the element belongs to the specified classes
-			is: (...classes) => (
-				classes.every(c => element.contains(c)
+			cis: (...classes) => (
+				classes.every(c => element.classList.contains(c)
 					? true
 					: false)
 			),
@@ -145,9 +145,25 @@ const DOM = (() => {
 
 			// Appends content
 			append: (...children) => (
-				children[0] instanceof Element || children[0] instanceof HTMLElement
-					? children.map(child => element.appendChild(child))
-					: children.map(child => element.innerHTML += child),
+				children.forEach(
+					child =>
+						child instanceof Element || child instanceof HTMLElement
+							? element.appendChild(child)
+							: element.innerHTML += child
+				),
+				element
+			),
+
+			// Removes elements
+			remove: (...children) => (
+				children.forEach(
+					child =>
+						child instanceof Element || child instanceof HTMLElement
+							? element.removeChild(child)
+							: element.select(child) 
+								? element.removeChild(element.select(child))
+								: null 		
+				),
 				element
 			)
 		})
@@ -540,6 +556,104 @@ const DOM = (() => {
 	)
 
 	/**
+	 * Creates a form with state.
+	 * 
+	 * @param id 		The id of the form.
+	 * @param form 	The form element.
+	 * @return			The stateful form.
+	 */
+	_.stateful_form = (id, form) => (
+
+		// Extend the form
+		((form) => (
+
+			// Add methods
+			decorate(form, {
+
+				// Adds new fields
+				form_field: (name, attributes={}, check=(() => Promise.resolve(true))) => (
+
+					((name, label, field, container) => (
+
+						// Set field attributes and properties
+						Object.keys(attributes).map(attribute => 
+							field.a(attribute, attributes[attribute])),
+							
+						// Append stuff to container
+						field.c(name),
+						container.c(name),
+						container.append(label, field),
+
+						// Append the element
+						form.append(container),
+						form.state(name, field.value),
+						
+						// Input field event listener
+						field.listen('input', (e) => (
+							
+							// Check for invalid input
+							check(field.value)
+								.then(() => (
+									container.remove('.warning'),
+									form.state(name, field.value)))
+								.catch((err) => (
+									container.select('.warning')
+										? null
+										: container.append(element('div').t(err).c('warning')),
+									form.state(name, null)))
+						)), 
+						
+						// Return form
+						form
+
+					// Pass in the elements
+					))(
+						name.toLowerCase(),
+						element('label').t(name),
+						element('input').c('input').d(name.toLowerCase()),
+						element('div').c('field')
+					)
+				),
+
+				// Submits the form
+				form_submit: (target) => (
+
+					// Check that all fields are valid
+					Array.from(form.children).every(child => 
+						child.cis('field') 
+							? form.state(child.select('input').d()) != null
+							: true)
+
+						// Remove warning if it exists, make request
+						? (form.remove('.form.warning'), X.request(target, 'POST', 
+								
+								// Create payload for request
+								Array.from(form.children).reduce((accumulator, child) => (
+									{ ...accumulator, [child.select('input').d()]: form.state(child.select('input').d()) }
+								), {})
+							))
+
+						// Reject submission action
+						: (
+							form.select('.form.warning')
+								? null
+								: form.append(element('div').c('form', 'warning').t('Some fields are invalid.')), 
+							Promise.reject(false))
+				),
+				
+				// Return form
+				form
+			})
+
+		// Pass in the element
+		))(
+			form 
+				? stateful(form, id)
+				: stateful(element('form').c('form'), id)
+		)
+	)
+
+	/**
 	 * Selects an element from the dom using the selector.
 	 * Decorates the element with fluent helpers.
 	 * 
@@ -589,7 +703,7 @@ const DOM = (() => {
 	 * @return				The value of the property.
 	 */
 	_.store = (name, value) => (
-		value != null
+		value !== undefined
 			? (localStorage.setItem(name, JSON.stringify(value)), _)
 			: (JSON.parse(localStorage.getItem(name)))
 	)
