@@ -1,6 +1,21 @@
 
 const CONFIG = (() => {
 
+  // ! <!-- ! move elsewhere  -->
+  const date = (timestamp) => {
+    
+    const date = new Date(timestamp * 1)
+    const date_options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    };
+
+    return `${date.toISOString().substring(11, 16)} 
+      ${date.toLocaleDateString(undefined, date_options)}`;
+  }
+
   // Tabs and tab menu
   const tabs = 
     DOM.stateful_tabs('config-tabs', DOM.select('.tabs'));
@@ -53,21 +68,6 @@ const CONFIG = (() => {
   // Keybinds 
   DOM.keybind({ ctrlKey: true, keyCode: 'f' }, () => search_bar.focus())
 
-  // ! <!-- ! move elsewhere  -->
-  const date = (timestamp) => {
-    
-    const date = new Date(timestamp * 1)
-    const date_options = {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    };
-
-    return `${date.toISOString().substring(11, 16)} 
-      ${date.toLocaleDateString(undefined, date_options)}`;
-  }
-
   /**
    *  Reusable components and styles
    */
@@ -76,81 +76,89 @@ const CONFIG = (() => {
   const auto_width = { width: 0 };
   const full_width = { width: document.width };
 
-  // Row and data
-  const tr = () => DOM.tr();
-  const td = () => DOM.td().s(auto_width);
+  // Built in components
+  const { tr, or, td, label, link, div, span, button, buttons, sup } = C.LIB;
 
-  // Label
-  const td_label = () =>
-    DOM.td().s(auto_width).append(
-      DOM.label())
-    
-  // Edit button
-  const edit_button = () => 
-    DOM.td().s(auto_width).c('right', 'aligned').append(
-      DOM.buttons().append(DOM.button().c('edit-button').t('Edit')))
+  // Extended components
+  const td_auto = 
+    C.new(() => td().s(auto_width));
+  const td_auto_right = 
+    C.new(() => td_auto().c('right', 'aligned'))
+  const td_auto_label = 
+    C.new(() => td_auto().append(label()))
 
-  // Edit delete button
-  const edit_delete_button = () => 
-    DOM.td().s(auto_width).c('right', 'aligned').append(
-      DOM.buttons().append(
-        DOM.button().t('Edit').c('edit-button'),
-        DOM.or(),
-        DOM.button().t('Delete').c('delete-button', 'negative')))
+  // Edit and delete buttons
+  const edit_button = 
+    C.new(() => button().c('edit-button').t('Edit')) 
+  const delete_button = 
+    C.new(() => button().c('delete-button', 'negative').t('Delete'))
+
+  // Table edit and delete buttons
+  const td_edit_button = 
+    C.new(() => td_auto_right().append(buttons().append(edit_button())))
+  const td_edit_delete_button = 
+    C.new(() => td_auto_right().append(buttons().append(edit_button(), or(), delete_button())))
 
   // Config table mapper
   const config_table_mapper = (parameter) => (
     tr().append(
-      td_label().select(0).t(parameter.key).parent(),
-      td().append(
+      td_auto_label({ '.label': { t: parameter.key }}),
+      td_auto().append(
         parameter.type === 'url'
-          ? DOM.link().t(parameter.value).ref(parameter.value) : parameter.type === 'date'
-          ? DOM.span().t(date(parameter.value)) : parameter.type === 'duration'
-          ? DOM.span().t(parameter.value) 
-          : DOM.span().t(parameter.value)),
-      edit_button()
-        .listen('click', (e) => config_modal.modal_open()))
+          ? link().t(parameter.value).ref(parameter.value) : parameter.type === 'date'
+          ? span().t(date(parameter.value)) : parameter.type === 'duration'
+          ? span().t(parameter.value) 
+          : span().t(parameter.value)),
+      td_edit_button().listen('click', (e) => config_modal.modal_open()))
   )
 
   // Problem table mapper
   const problems_table_mapper = (problem) => (
     tr().append(
-      td_label().select(0).t(problem.code.number + problem.code.alpha).parent(),
-      td().t(problem.name),
-      td_label().select(0).t(problem.status)
-        .c(problem.status === 'active' ? 'default' : 'orange')
-        .c(problem.status === 'active' ? 'default' : 'basic').parent(),
-      td().t(problem.answer.mantissa + ' &times; 10').append(
-        DOM.sup().t(problem.answer.exponent)),
-      td().t(problem.tolerance),
-      edit_delete_button()
-        .select('.edit-button').listen('click', (e) => problems_modal.modal_open()).parent()
-        .select('.delete-button').listen('click', (e) => problems_modal.modal_open()).parent().parent())
+      td_auto_label({ '.label': { t: problem.code.number + problem.code.alpha }}),
+      td_auto().t(problem.name),
+      td_auto_label({ 
+        '.label': { 
+          t: problem.status, 
+          c: [ 
+            problem.status === 'active' ? 'default' : 'orange', 
+            problem.status === 'active' ? 'default' : 'basic' 
+          ]
+        }
+      }),
+      td_auto().t(problem.answer.mantissa + ' &times; 10').append(sup().t(problem.answer.exponent)),
+      td_auto().t(problem.tolerance),
+      td_edit_delete_button({
+        '.edit-button': { listen: [ 'click', (e) => problems_modal.modal_open() ] },
+        '.delete-button': { listen: [ 'click', (e) => problems_modal.modal_open() ] }
+      })
+    )
   )
 
   // User table mapper
   const users_table_mapper = (user) => (
     tr().append(
-      td().s(auto_width).t(user.username),
-      td().s(auto_width).append(
-        user.isAdmin 
-          ? DOM.label().c('red').t('admin')
-          : DOM.label().t(user.category).c(
-            user.category === 'junior' 
-              ? 'default'
-              : 'black'
-          )),
-      td_label().select(0).t(user.status)
-        .c(user.status === 'spectating' 
-          ? 'blue' : user.status === 'disqualified' 
-          ? 'orange'
-          : 'default')
-        .c(user.status === 'participating' 
-          ? 'default' 
-          : 'basic').parent(),
-      edit_delete_button()
-        .select('.edit-button').listen('click', (e) => users_modal.modal_open()).parent()
-        .select('.delete-button').listen('click', (e) => users_modal.modal_open()).parent().parent())
+      td_auto().s(auto_width).t(user.username),
+      td_auto_label({
+        '.label': {
+          t: user.isAdmin ? 'admin' : user.category,
+          c: user.isAdmin ? 'red' : user.category === 'junior' ? 'default': 'black'
+        }
+      }),
+      td_auto_label({
+        '.label': {
+          t: user.status,
+          c: [
+            user.status === 'spectating' ? 'blue' : user.status === 'disqualified' ? 'orange' : 'default',
+            user.status === 'participating' ? 'default' : 'basic'
+          ]
+        }
+      }),
+      td_edit_delete_button({
+        '.edit-button': { listen: [ 'click', (e) => users_modal.modal_open() ] },
+        '.delete-button': { listen: [ 'click', (e) => users_modal.modal_open() ] }
+      })
+    )
   )
 
   // Set up the tables
@@ -163,7 +171,7 @@ const CONFIG = (() => {
     .mapper = users_table_mapper;
 
   problems_table
-    .table_header('Code', 'Problem', 'Answer', 'Tolerance', '')
+    .table_header('Problem', '', 'Answer', 'Tolerance', '')
     .mapper = problems_table_mapper;
 
   // Save the config
