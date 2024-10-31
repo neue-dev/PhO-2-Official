@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-01 00:07:04
+ * @ Modified time: 2024-11-01 06:36:47
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -258,7 +258,8 @@ const DOM = (() => {
 
 	// Custom components
 	_.label = () => element('kbd').c('ui', 'label')
-	_.or = () => element('div').c('or')
+	_.or = () => element('div').c('or'),
+	_.icon = () => element('i').c('icon')
 
 	/**
 	 * Stateful element factory methods.

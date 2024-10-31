@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-31 13:11:51
- * @ Modified time: 2024-11-01 00:09:02
+ * @ Modified time: 2024-11-01 06:42:34
  * @ Description:
  * 
  * The component interface defines a means for us to create reusable DOM elements.
@@ -98,6 +98,7 @@ const C = (() => {
 		// Table components
 		tr: _.new(() => DOM.tr().c('tr')),
 		td: _.new(() => DOM.td().c('td')),
+		th: _.new(() => DOM.th().c('th')),
 
 		// Generic tags
 		div: _.new(() => DOM.div()),
@@ -106,6 +107,7 @@ const C = (() => {
 		
 		// UI components
 		or: _.new(() => DOM.or()),
+		icon: _.new(() => DOM.icon().c('ui', 'icon')),
 		label: _.new(() => DOM.label().c('ui', 'label')),
 		button: _.new(() => DOM.button().c('ui', 'button')),
 		buttons: _.new(() => DOM.buttons().c('buttons')),

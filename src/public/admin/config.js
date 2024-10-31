@@ -15,6 +15,34 @@ const CONFIG = (() => {
     return `${date.toString().substring(15, 21)} - ${date.toString().substring(4, 15)}`;
   }
 
+  /**
+   *  Reusable components and styles
+   */
+
+  // Some convenience styles
+  const auto_width = { width: 0 };
+  const full_width = { width: document.width };
+
+  // Built in components
+  const { tr, td, th, label, link, span, button, icon } = C.LIB;
+
+  // Extended components
+  const tr_hoverable = 
+    C.new(() => tr().c('hoverable-row'));
+  const td_auto = 
+    C.new(() => td().s(auto_width));
+  const td_auto_right = 
+    C.new(() => td_auto().c('right', 'aligned'))
+  const td_auto_label = 
+    C.new(() => td_auto().append(label()))
+
+  // Edit and delete buttons
+  const edit_button = 
+    C.new(() => button().c('edit-button').t('Edit')) 
+  const new_button = 
+    C.new(() => button().c('new-button', 'blue', 'right', 'labeled', 'icon').t('new')
+      .append(icon().c('plus')))
+
   // Tabs and tab menu
   const tabs = 
     DOM.stateful_tabs('config-tabs', DOM.select('.tabs'));
@@ -31,11 +59,15 @@ const CONFIG = (() => {
 
   const users_label = DOM.select('.users-label');
   const users_table = DOM.stateful_table('users-table', DOM.select('.users-table'));
-  const users_modal = DOM.stateful_modal('users-modal', DOM.select('.users-modal'))
+  const users_modal = DOM.stateful_modal('users-modal', DOM.select('.users-modal'));
   
   const problems_label = DOM.select('.problems-label');
   const problems_table = DOM.stateful_table('problems-table', DOM.select('.problems-table'));
   const problems_modal = DOM.stateful_modal('problems-modal', DOM.select('.problems-modal'));
+
+  // Global buttons
+  const users_new = new_button();
+  const problems_new = new_button();
 
   // Problem mappers
   const code_mapper = (code) => ({ number: code.match(/^[0-9]*/)[0], alpha: code.match(/[a-zA-Z]*$/)[0] })
@@ -146,39 +178,6 @@ const CONFIG = (() => {
   // Keybinds 
   DOM.keybind({ ctrlKey: true, keyCode: 'f' }, () => search_bar.focus())
 
-  /**
-   *  Reusable components and styles
-   */
-
-  // Some convenience styles
-  const auto_width = { width: 0 };
-  const full_width = { width: document.width };
-
-  // Built in components
-  const { tr, or, td, label, link, div, span, button, buttons, sup } = C.LIB;
-
-  // Extended components
-  const tr_hoverable = 
-    C.new(() => tr().c('hoverable-row'));
-  const td_auto = 
-    C.new(() => td().s(auto_width));
-  const td_auto_right = 
-    C.new(() => td_auto().c('right', 'aligned'))
-  const td_auto_label = 
-    C.new(() => td_auto().append(label()))
-
-  // Edit and delete buttons
-  const edit_button = 
-    C.new(() => button().c('edit-button').t('Edit')) 
-  const recheck_button = 
-    C.new(() => button().c('recheck-button').t('Recheck'))
-  const delete_button = 
-    C.new(() => button().c('delete-button', 'negative').t('Delete'))
-
-  // Table edit and delete buttons
-  const td_edit_button = 
-    C.new(() => td_auto_right().append(buttons().append(edit_button())))
-
   // Handles clicks of config table rows
   const config_table_handler = (parameter) => (
     config_form.form_field_value('_id', parameter._id),
@@ -252,7 +251,8 @@ const CONFIG = (() => {
             t: problem.status, 
             c: problem.status === 'active' ? [ 'default' ] : [ 'basic', 'orange' ], 
           }
-        })
+        }),
+        td_auto(),
       )
   )
 
@@ -274,22 +274,38 @@ const CONFIG = (() => {
             t: user.isAdmin ? 'admin' : user.category,
             c: user.isAdmin ? 'red' : user.category === 'junior' ? 'default': 'black'
           }
-        })
+        }),
+        td_auto()
       )
   )
+
+  // Set up the global buttons
+  users_new.listen('click', () => (
+    users_modal.modal_header('create new user'),
+    users_modal.modal_open()
+  ))
+
+  problems_new.listen('click', () => (
+    problems_modal.modal_header('create new problem'),
+    problems_modal.modal_open()
+  ))
 
   // Set up the tables
   config_table
     .table_header('Parameter', 'Value')
-    .mapper = config_table_mapper;
 
   users_table
     .table_header('User', '', '')
-    .mapper = users_table_mapper;
+      .select('thead').select(0).append(th().append(users_new)).parent()
 
   problems_table
     .table_header('Problem', '', '', '')
-    .mapper = problems_table_mapper;
+      .select('thead').select(0).append(th().append(problems_new)).parent()
+
+  // Mappers
+  config_table.mapper = config_table_mapper
+  users_table.mapper = users_table_mapper
+  problems_table.mapper = problems_table_mapper
 
   // Save the config
   function load_config() {
