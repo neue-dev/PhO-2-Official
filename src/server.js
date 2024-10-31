@@ -1,3 +1,12 @@
+/**
+ * @ Author: Mo David
+ * @ Create Time: 2024-10-28 08:26:47
+ * @ Modified time: 2024-11-01 03:21:20
+ * @ Description:
+ * 
+ * The main thread on the server.
+ */
+
 import 'dotenv/config'
 
 import fs from 'fs';
@@ -5,448 +14,331 @@ import express from 'express';
 import mongoose from 'mongoose';
 import mustache from 'mustache';
 import cookieparser from 'cookie-parser';
-
-import { api_router } from './routes/api-router.js';
-import { auth_router } from './routes/auth-router.js';
-import { admin_router } from './routes/admin-router.js';
-import { user_router } from './routes/user-router.js';
-
-import { auth } from './middleware/auth.js';
-import { identify } from './middleware/identify.js';
+import jwt from 'jsonwebtoken';
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { api_router } from './routers/api-router.js';
+import { auth_router } from './routers/auth-router.js';
+import { admin_router } from './routers/admin-router.js';
+import { user_router } from './routers/user-router.js';
 
-//
-//* Some other important constants
-//
-const database_url = process.env.DATABASE_URL
-const server_port = process.env.SERVER_PORT
-
-//
-//* The config model
-//
 import { Config } from './models/config.js';
+import { User } from './models/user.js';
 
-//
-//* Set up the database
-//
-mongoose.connect(database_url);
-mongoose.set('strictQuery', false);
-const database = mongoose.connection;
+const SERVER = (() => {
 
-database.on('error', (error) => {
-  console.log(error)
-});
+  // Interface
+  const _ = {};
 
-database.once('connected', async () => {
-  console.log('Database connected.');
+  // Utils
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
 
-  // Set up the environment variables
-  const db = database;
+  // Server config
+  const DATABASE_URL = process.env.DATABASE_URL
+  const SERVER_PORT = process.env.SERVER_PORT
+  const SERVER_HOME_URL = '/public/home.html'
+  const SERVER_PUBLIC_URL = __dirname + '/public/resources'
 
-  const config = await Config.find();
-  config.forEach(configParameter => 
-    process.env[configParameter.key] = configParameter.value)
-});
+  // Middleware
+  const MIDDLEWARE = [
+    express.static(SERVER_PUBLIC_URL, { maxAge: 9000000 }),
+    express.json(),
+    cookieparser(),
+  ]
 
-//
-//* Set up the server
-//
-const app = express();
-const server = app.listen(server_port, () => { 
-  console.log(`Server opened on port ${server_port}.`)
-});
+  // Routers
+  const ROUTERS = [
+    [ '/api', api_router ],
+    [ '/admin', admin_router ],
+    [ '/auth', auth_router ],
+    [ '/user', user_router ]
+  ]
 
-// Middleware
-app.use(express.static('public'))
-app.use(express.json());
-app.use(cookieparser());
-app.use(express.static(__dirname + '/public', { maxAge: 3600000 }));  // One hour cache
+  // Shortcuts to resources
+  const RESOURCES = [
+    
+    // CSS files
+    '/css/responsive.css',
+    '/css/main.css',
+    '/css/home.css',
 
-// The different routes
-app.use('/api', api_router);
-app.use('/auth', auth_router);
-app.use('/admin', admin_router);
-app.use('/user', user_router);
+    // Core js files
+    '/core/dom.js',
+    '/core/component.js',
+    '/core/x.js',
 
-app.get('/', (req, res) => {
-  if(req.cookies['authorization']) 
-    if(req.cookies['authorization'].accessToken != '')
-      return res.redirect('/dashboard');
+    // Pho2 js files
+    '/pho2/pho2.js',
+    '/pho2/darkmode.js',
+    '/pho2/timer.js',
+    '/pho2/trademark.js',
+  ]
 
-  return res.sendFile('./public/home.html', { root: __dirname });
-});
+  // Pho2 Images
+  const IMAGES = [
+    '/pho-2-official-bg',
+    '/pho-2-official-title',
+    '/pho-2-official-subtitle',
+    '/pho-2-official-icon',
+    '/pho-2-official-icon-dark',
+    '/pho-2-official-logo',
+  ]
 
-app.get('/problems', (req, res) => {
-  const user = auth(req, res);
-  if(user){
+  // Resources that depend on whether or not someone is admin
+  const PERMISSIONED_RESOURCES = [
+    
+  ]
 
-    // Look for user
-    identify(user._id)
-      .then(userData => {
-        if(!userData)
-          return res.sendFile('./public/home-redirect.html', { root: __dirname });
+  /**
+   * Sends a file to the client.
+   * Default root is set.
+   * 
+   * @param res   The response api. 
+   * @param file  The file to send. 
+   */
+  const send_file = (res, file=SERVER_HOME_URL) => res.sendFile(file, { root: __dirname })
 
-        // If it's during the elims OR if the user is an admin
-        if((Date.now() > process.env.CONTEST_ELIMS_START && Date.now() < process.env.CONTEST_ELIMS_END) || userData.isAdmin) {
+  /**
+   * Reads a file, promisified.
+   * 
+   * @param file  The file to read. 
+   * @return      A promise for the data.
+   */
+  const read_file = (file) => Promise.resolve(fs.readFileSync(file, 'utf-8'))
 
-          // Parse the HTML file and replace the mustache tags.
-          fs.readFile('./public/problems.html', 'utf-8', (err, data) => {
-            res.write(mustache.render(data, { CONTEST_PROBLEMS_URL: process.env.CONTEST_PROBLEMS_URL }));
-          });
+  /**
+   * Writes a file to the output stream.
+   * Replaces mustache templates with the given options too.
+   * 
+   * @param res         The response api. 
+   * @param file        The file to write.
+   * @param mustaches   The stuff to replace.  
+   */
+  const write_file = (res, file, mustaches) => 
+    read_file(file)
+      .then(data => res.write(mustache.render(data, mustaches)))
 
-          return;
-        }
+  /**
+   * Redirects the client to the given path.
+   * 
+   * @param res   The response api. 
+   * @param path  The path to go to.
+   */
+  const redirect = (res, path) => res.redirect(path)
 
-        return res.sendFile('./public/error/unavailable-problems.html', { root: __dirname });
-      });
-  } else {
-    // Isnt logged in
-    return res.sendFile('./public/home-redirect.html', { root: __dirname });
-  }
-});
+  /**
+   * Wraps a function around an authorization check.
+   * 
+   * @param func  The function to wrap.
+   * @return      The wrapped function.
+   */
+  const authorized = (func) => (
 
-app.get([ '/config', '/progress' ], (req, res) => {
-  const user = auth(req, res);
-  if(user){
+    // The wrapped function
+    (req, res) => {
 
-    // Look for user
-    identify(user._id)
-      .then(userData => {
-        if(!userData || !userData.isAdmin)
-          return res.sendFile('./public/user/progress.html', { root: __dirname });
+      // Check for authorization first
+      if(!req) 
+        return send_file(res, SERVER_HOME_URL)
+      
+      if(!req.cookies)
+        return send_file(res, SERVER_HOME_URL)
 
-        // Parse the HTML file and replace the mustache tags.
-        return res.sendFile('./public/admin/config.html', { root: __dirname });
-      });
-  } else {
-    // Isnt logged in
-    return res.sendFile('./public/home-redirect.html', { root: __dirname });
-  }
-});
-
-app.get('/finals', (req, res) => {
-  const user = auth(req, res);
-  if(user){
-
-    // Look for user
-    identify(user._id)
-      .then(userData => {
-        if(!userData)
-          return res.sendFile('./public/home-redirect.html', { root: __dirname });
-
-        // If it's during the finals OR user is an admin
-        if((Date.now() > process.env.CONTEST_FINALS_START && Date.now() < process.env.CONTEST_FINALS_END) || userData.isAdmin) {
-
-          // Parse the HTML file and replace the mustache tags.
-          fs.readFile('./public/finals.html', 'utf-8', (err, data) => {
-            res.write(mustache.render(data, { CONTEST_FINALS_URL: process.env.CONTEST_FINALS_URL }));
-          });
-
-          return;
-        }
-
-        return res.sendFile('./public/error/unavailable-finals.html', { root: __dirname });
-      });
-  } else {
-    // Isnt logged in
-    return res.sendFile('./public/home-redirect.html', { root: __dirname });
-  }
-});
-
-app.get('/dashboard', (req, res) => {
-  const user = auth(req, res);
-  if(user){
-
-    // Look for user
-    if(user._id) {
-      identify(user._id)
-        .then(userData => {
-          if(!userData)
-            // User not found
-            return res.sendFile('./public/home-redirect.html', { root: __dirname });
-
-          // Provide right page given user rights
-          if(userData.isAdmin)
-            return res.sendFile('./public/admin/dashboard.html', { root: __dirname });
-          return res.sendFile('./public/user/dashboard.html', { root: __dirname });
-        });
-    } else {
-      return res.sendFile('./public/home-redirect.html', { root: __dirname });
+      if(!req.cookies.authorization) 
+        return send_file(res, SERVER_HOME_URL)
+      
+      // Call func
+      return func(req, res)
     }
-  } else {
-    // Isnt logged in
-    return res.sendFile('./public/home-redirect.html', { root: __dirname });
+  ) 
+
+  /**
+   * Makes sure the user is authorized...
+   * AND passes the user to the wrapped function.
+   * 
+   * @param func  The function to decorate.
+   * @return      The decorated function. 
+   */
+  const authorized_user = (func) => (
+    
+    // Wrapped func
+    authorized((req, res) => {
+      
+      // Grab tokens
+      const { 
+        accessToken, 
+        refreshToken 
+      } = req.cookies.authorization;
+
+      // If no token is present, redirect to home page
+      if (!accessToken) 
+        return send_file(res);
+
+      // Token verification
+      try {
+
+        // We retrieve the access token dynamically for possibility of hot-swapping
+        req.user = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+
+        // Look for user in database and execute appropriate action
+        User.findOne({ _id: req.user._id })
+          .then(user => user ? func(req, res, user) : send_file(res))
+        
+      // Token is probably invalid
+      } catch (error) {
+        console.error(error);
+        return send_file(res);
+      }
+    })
+  )
+
+  /**
+   * @return  Whether or not we're durin the elims.
+   */
+  const during_elims = () => (
+    ((now) => (now > process.env.CONTEST_ELIMS_START && now < process.env.CONTEST_ELIMS_END))(Date.now())
+  )
+
+  /**
+   * @return  Whether or not we're during the finals.
+   */
+  const during_finals = () => (
+    ((now) => (now > process.env.CONTEST_FINALS_START && now < process.env.CONTEST_FINALS_START))(Date.now())
+  )
+
+  /**
+   * Initializes the database.
+   * We're using mongodb in this case.
+   * I don't remember why I chose that...
+   */
+  _.init_database = () => {
+
+    // Database init
+    mongoose.connect(DATABASE_URL);
+    mongoose.set('strictQuery', false);
+
+    // Get the connection
+    const database = mongoose.connection;
+
+    // If an error occurs
+    database.on('error', (error) => {
+      console.error(error)
+    });
+
+    // When db connected
+    database.once('connected', async () => {
+
+      // Log
+      console.log('Database connected.');
+
+      // Grab the config params 
+      const config = await Config.find();
+
+      // Update the environment variables accordingly
+      config.map(parameter => process.env[parameter.key] = parameter.value)
+    }); 
   }
-});
 
-app.get('/dashboard/js', (req, res) => {
-  const user = auth(req, res);
-  if(user){
+  /**
+   * Sets up the server.
+   */
+  _.init_server = () => {
+    
+    // Create the app and the server
+    const app = express();
+    const server = app.listen(SERVER_PORT, () => { 
+      console.log(`Server opened on port ${SERVER_PORT}.`)
+    });
 
-    // Look for user
-    if(user._id) {
-      identify(user._id)
-        .then(userData => {
-          if(!userData)
-            // User not found
-            return res.status(401);
+    // Init middleware
+    for(const middleware of MIDDLEWARE) 
+      app.use(middleware)
 
-          // Provide right page given user rights
-          if(userData.isAdmin)
-            return res.sendFile('./public/admin/dashboard.js', { root: __dirname });
-          return res.sendFile('./public/user/dashboard.js', { root: __dirname });
-        });
-    } else {
-      return res.status(403);
-    }
-  } else {
-    // Isnt logged in
-    return res.status(403);
+    // Init routers
+    for(const router of ROUTERS)
+      app.use(router[0], router[1])
+
+    // Home Page
+    app.get('/', authorized((req, res) => redirect(res, '/dashboard')));
+
+    // Dashboard
+    app.get('/dashboard', authorized_user((req, res, user) => (
+      user.isAdmin
+        ? send_file(res, './public/admin/dashboard.html')
+        : send_file(res, './public/user/dashboard.html')
+    )))
+
+    // Config and progress pages
+    app.get([ '/config', '/progress' ], authorized_user((req, res, user) => (
+      user.isAdmin
+        ? send_file(res, './public/admin/config.html')
+        : send_file(res, './public/user/progress.html')
+    )));
+
+    // Problems
+    app.get('/problems', authorized_user((req, res, user) => (
+      during_elims() || user.isAdmin
+        ? write_file(res, './public/problems.html', { CONTEST_PROBLEMS_URL: process.env.CONTEST_PROBLEMS_URL })
+        : send_file(res, './public/error/unavailable-problems.html')
+    )));
+
+    // Finals
+    app.get('/finals', authorized_user((req, res, user) => (
+      during_finals() || user.isAdmin
+        ? write_file(res, './public/finals.html', { CONTEST_FINALS_URL: process.env.CONTEST_FINALS_URL })
+        : send_file(res, './public/error/unavailable-finals.html')
+    )));
+
+    // Forum
+    app.get('/forum', authorized_user((req, res, user) => (
+      user.isAdmin
+        ? send_file(res, './public/admin/forum.html')
+        : send_file(res, './public/user/forum.html')
+    )));
+
+    // Leaderboard
+    app.get('/leaderboard', authorized_user((req, res, user) => (
+      user.isAdmin
+        ? send_file(res, './public/admin/leaderboard.html')
+        : send_file(res, './public/user/leaderboard.html')
+    )));
+
+    // Config and progress resources
+    app.get([ '/config.js', '/progress.js' ], authorized_user((req, res, user) => (
+      user.isAdmin
+        ? send_file(res, './public/admin/config.js')
+        : send_file(res, './public/user/progress.js')
+    )))
+
+    // Leaderboard resources
+    app.get('/leaderboard.js', authorized_user((req, res, user) => (
+      user.isAdmin
+        ? send_file(res, './public/admin/leaderboard.js')
+        : send_file(res, './public/user/leaderboard.js')
+    )))
+
+    // Forum resources
+    app.get('/forum.js', authorized_user((req, res, user) => (
+      user.isAdmin
+        ? send_file(res, './public/admin/forum.js')
+        : send_file(res, './public/user/forum.js')
+    )))
+    
+    // Common resources
+    for(const resource of RESOURCES)
+      app.get(resource, (req, res) => send_file(res, `./public/resources${resource}`))
+
+    // We have a different policy for images for the sake of convenience
+    // Also because they tend to be more resource intensive, so we might outsource them eventually
+    for(const image of IMAGES)
+      app.get(image, (req, res) => send_file(res, `/public/resources/images${image}.png`))
   }
-})
 
-app.get([ '/config/js', '/progress/js' ], (req, res) => {
-  const user = auth(req, res);
-  if(user){
+  // Init the db and server
+  _.init_database();
+  _.init_server();
 
-    // Look for user
-    if(user._id) {
-      identify(user._id)
-        .then(userData => {
-          if(!userData)
-            // User not found
-            return res.status(401);
-
-          // Provide right page given user rights
-          if(userData.isAdmin)
-            return res.sendFile('./public/admin/config.js', { root: __dirname });
-          return res.sendFile('./public/user/progress.js', { root: __dirname });
-        });
-    } else {
-      return res.status(403);
-    }
-  } else {
-    // Isnt logged in
-    return res.status(403);
-  }
-})
-
-app.get('/leaderboard/js', (req, res) => {
-  const user = auth(req, res);
-  if(user){
-
-    // Look for user
-    if(user._id) {
-      identify(user._id)
-        .then(userData => {
-          if(!userData)
-            // User not found
-            return res.status(401);
-
-          // Provide right page given user rights
-          if(userData.isAdmin)
-            return res.sendFile('./public/admin/leaderboard.js', { root: __dirname });
-          return res.sendFile('./public/user/leaderboard.js', { root: __dirname });
-        });
-    } else {
-      return res.status(403);
-    }
-  } else {
-    // Isnt logged in
-    return res.status(403);
-  }
-})
-
-app.get('/forum/js', (req, res) => {
-  const user = auth(req, res);
-  if(user){
-
-    // Look for user
-    if(user._id) {
-      identify(user._id)
-        .then(userData => {
-          if(!userData)
-            // User not found
-            return res.status(401);
-
-          // Provide right page given user rights
-          if(userData.isAdmin)
-            return res.sendFile('./public/admin/forum.js', { root: __dirname });
-          return res.sendFile('./public/user/forum.js', { root: __dirname });
-        });
-    } else {
-      return res.status(403);
-    }
-  } else {
-    // Isnt logged in
-    return res.status(403);
-  }
-})
-
-app.get('/leaderboard', (req, res) => {
-  const user = auth(req, res);
-  if(user){
-
-    // Look for user
-    if(user._id) {
-      identify(user._id)
-        .then(userData => {
-          if(!userData)
-            return res.sendFile('./public/home-redirect.html', { root: __dirname });
-          
-          // Provide right page given user rights
-          if(userData.isAdmin)
-            return res.sendFile('./public/admin/leaderboard.html', { root: __dirname });
-          return res.sendFile('./public/user/leaderboard.html', { root: __dirname });
-        });
-    } else {
-      return res.sendFile('./public/home-redirect.html', { root: __dirname });
-    }
-  } else {
-    // Isnt logged in
-    return res.sendFile('./public/home-redirect.html', { root: __dirname });
-  }
-});
-
-app.get('/forum', (req, res) => {
-  const user = auth(req, res);
-  if(user){
-
-    // Look for user
-    if(user._id) {
-      identify(user._id)
-        .then(userData => {
-          if(!userData)
-            return res.sendFile('./public/home-redirect.html', { root: __dirname });
-          
-          // Provide right page given user rights
-          if(userData.isAdmin)
-            return res.sendFile('./public/admin/forum.html', { root: __dirname });
-          return res.sendFile('./public/user/forum.html', { root: __dirname });
-        });
-    } else {
-      return res.sendFile('./public/home-redirect.html', { root: __dirname });
-    }
-  } else {
-    // Isnt logged in
-    return res.sendFile('./public/home-redirect.html', { root: __dirname });
-  }
-});
-
-app.get('/navbar', (req, res) => {
-  const user = auth(req, res);
-  if(user){
-
-    // Look for user
-    if(user._id) {
-      identify(user._id)
-        .then(userData => {
-          if(!userData)
-            // User not found
-            return res.status(401);
-
-          // Provide right page given user rights
-          if(userData.isAdmin)
-            return res.sendFile('./public/admin/navbar.js', { root: __dirname });
-          return res.sendFile('./public/user/navbar.js', { root: __dirname });
-        });
-    } else {
-      return res.status(403);
-    }
-  } else {
-    // Isnt logged in
-    return res.status(403);
-  }
-})
-
-// Some redirects for the javascript files
-app.get('/utils/js/xhr', (req, res) => {
-  res.sendFile('./public/utils/xhr.js', { root: __dirname });
-})
-
-app.get('/utils/js/answer', (req, res) => {
-  res.sendFile('./public/utils/answer.js', { root: __dirname });
-})
-
-app.get('/utils/js/regex', (req, res) => {
-  res.sendFile('./public/utils/regex.js', { root: __dirname });
-})
-
-app.get('/utils/js/header', (req, res) => {
-  res.sendFile('./public/utils/header.js', { root: __dirname });
-})
-
-app.get('/utils/js/timer', (req, res) => {
-  res.sendFile('./public/utils/timer.js', { root: __dirname });
-})
-
-app.get('/utils/js/filter', (req, res) => {
-  res.sendFile('./public/utils/filter.js', { root: __dirname });
-})
-
-app.get('/darkmode', (req, res) => {
-  res.sendFile('./public/utils/darkmode.js', { root: __dirname });
-})
-
-app.get('/trademark', (req, res) => {
-  res.sendFile('./public/utils/trademark.js', { root: __dirname });
-})
-
-app.get('/pho2', (req, res) => {
-  res.sendFile('./public/utils/pho2.js', { root: __dirname });
-})
-
-app.get('/dom', (req, res) => {
-  res.sendFile('./public/utils/dom.js', { root: __dirname });
-})
-
-app.get('/component', (req, res) => {
-  res.sendFile('./public/utils/component.js', { root: __dirname });
-})
-
-app.get('/x', (req, res) => {
-  res.sendFile('./public/utils/x.js', { root: __dirname });
-})
-
-// The official logos
-app.get('/pho-2-logo', (req, res) => {
-  res.sendFile('./public/resources/images/pho-2-official-logo.png', { root: __dirname });
-})
-
-app.get('/pho-2-icon', (req, res) => {
-  res.sendFile('./public/resources/images/pho-2-official-icon.png', { root: __dirname });
-})
-
-app.get('/pho-2-icon-dark', (req, res) => {
-  res.sendFile('./public/resources/images/pho-2-official-icon-dark.png', { root: __dirname });
-})
-
-app.get('/pho-2-bg', (req, res) => {
-  res.sendFile('./public/resources/images/pho-2-official-bg.png', { root: __dirname });
-})
-
-app.get('/pho-2-title', (req, res) => {
-  res.sendFile('./public/resources/images/pho-2-official-title.png', { root: __dirname });
-})
-
-app.get('/pho-2-subtitle', (req, res) => {
-  res.sendFile('./public/resources/images/pho-2-official-subtitle.png', { root: __dirname });
-})
-
-// Other resources
-app.get('/utils/css/main', (req, res) => {
-  res.sendFile('./public/resources/css/main.css', { root: __dirname });
-})
-
-app.get('/utils/css/home', (req, res) => {
-  res.sendFile('./public/resources/css/home.css', { root: __dirname });
-})
-
-app.get('/utils/css/responsive', (req, res) => {
-  res.sendFile('./public/resources/css/responsive.css', { root: __dirname });
-})
+})()

@@ -7,9 +7,9 @@ import bcrypt from 'bcrypt';
 // The router to use
 export const admin_router = express.Router();
 
-import { identify } from '../middleware/identify.js';
-import { auth } from '../middleware/auth.js';
-import { checkAnswer } from '../middleware/check.js';
+import { identify } from '../server/identify.js';
+import { auth } from '../server/auth.js';
+import { checkAnswer } from '../server/check.js';
 
 //* Models
 import { User } from '../models/user.js';

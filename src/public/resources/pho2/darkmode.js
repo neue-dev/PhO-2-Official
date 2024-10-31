@@ -67,7 +67,7 @@
     let icons = document.getElementsByClassName('pho2-icon');
     
     for(let i = 0; i < icons.length; i++)
-      icons[i].src = './pho-2-icon';
+      icons[i].src = './pho-2-official-icon';
     
     for(let i = 0; i < props.length; i++) {
       ROOT.style.setProperty(props[i], DEFAULT_MODE[props[i]]);
@@ -81,7 +81,7 @@
     let icons = document.getElementsByClassName('pho2-icon');
     
     for(let i = 0; i < icons.length; i++)
-      icons[i].src = './pho-2-icon-dark';
+      icons[i].src = './pho-2-official-icon-dark';
 
     for(let i = 0; i < props.length; i++)
       ROOT.style.setProperty(props[i], DARK_MODE[props[i]]);

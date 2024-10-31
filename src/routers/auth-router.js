@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-import { generate, refresh } from '../middleware/auth.js';
+import { generate, refresh } from '../server/auth.js';
 
 // The router to use
 export const auth_router = express.Router();

@@ -3,9 +3,9 @@ import 'dotenv/config'
 import express from 'express';
 import mongoose from 'mongoose';
 
-import { identify } from '../middleware/identify.js';
-import { auth } from '../middleware/auth.js';
-import { checkAnswer } from '../middleware/check.js';
+import { identify } from '../server/identify.js';
+import { auth } from '../server/auth.js';
+import { checkAnswer } from '../server/check.js';
 
 // The router to use
 export const user_router = express.Router();

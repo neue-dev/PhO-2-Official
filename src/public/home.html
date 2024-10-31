@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>(PhO)&#178;</title>
-    <link rel="icon" type="image/x-icon" href="/pho-2-icon">
+    <link rel="icon" type="image/x-icon" href="/pho-2-official-icon">
 
     <!-- General CSS styling -->
-    <link rel="stylesheet" href="/utils/css/main">
-    <link rel="stylesheet" href="/utils/css/home">
-    <link rel="stylesheet" href="/utils/css/responsive">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/responsive.css">
 
     <!-- Overrides -->
     <style type="text/css">
@@ -28,18 +28,18 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
     <!-- Semantic -->
-    <link href="./resources/semantic/semantic.css" rel="stylesheet">
-    <script src="./resources/semantic/semantic.js"></script>
+    <link href="./semantic/semantic.css" rel="stylesheet">
+    <script src="./semantic/semantic.js"></script>
 
     <!-- Pho2 Utils -->
-    <script src="/x"></script>
-    <script src="/dom"></script>
-    <script src="/pho2"></script>
+    <script src="/core/x.js"></script>
+    <script src="/core/dom.js"></script>
+    <script src="/pho2/pho2.js"></script>
   </head>
 
   <body>
-    <img class="bg-photo" width="1000" src="/pho-2-icon">
-    <img class="bg-photo" src="/pho-2-bg">
+    <img class="bg-photo" width="1000" src="/pho-2-official-icon">
+    <img class="bg-photo" src="/pho-2-official-bg">
     <div class="ui cards">
       <div class="card hide-on-mobile" style="visibility: hidden;"></div>
       <div class="card">
@@ -58,7 +58,7 @@
       </div>
     </div>
 
-    <script src="/trademark"></script>
+    <script src="/pho2/trademark.js"></script>
     <script>
 
       const login_form = DOM.stateful_form('login-form', DOM.select('.login-form'));

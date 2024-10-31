@@ -28,6 +28,7 @@ const PROGRESS = (() => {
   const problems_label = DOM.select('.problems-label');
   const problems_table = DOM.stateful_table('problems-table', DOM.select('.problems-table'));
   const problems_modal = DOM.stateful_modal('problems-modal', DOM.select('.problems-modal'));
+  const problems_form = DOM.stateful_form('problems-form');
 
   const submissions_label = DOM.select('.submissions-label');
   const submissions_table = DOM.stateful_table('submissions-table', DOM.select('.submissions-table'));
@@ -36,6 +37,12 @@ const PROGRESS = (() => {
   // Set up the modals
   problems_modal.modal_header('Problem Details');
   submissions_modal.modal_header('Submission Details');
+
+  // Forms
+  problems_form.form_field('_id', { type: 'text' });
+  problems_form.form_field('answer', { type: 'text' }, 
+    { checker: () => Promise.resolve(true), mapper: (value) => (value) });
+  problems_form.select('.field._id').s({ display: 'none' })
 
   // Search bar
   const search_bar = DOM.select('.search-bar')
@@ -106,6 +113,7 @@ const PROGRESS = (() => {
     problems_modal.modal_header(problem.name),
     problems_modal.modal_clear(),
     problems_modal.modal_append(
+      problems_form, br(),
       label().t(`${problem_submissions_count(problem)} submissions`),
       label().t(`${problem_submissions_verdict(problem) ? 'correct' : 'wrong'}`)
         .c(problem_submissions_verdict(problem) ? 'green' : 'red')
@@ -119,8 +127,7 @@ const PROGRESS = (() => {
     submissions_modal.modal_append(
       br(),
       span().t(submission.answer.mantissa + ' &times; 10').append(sup().t(submission.answer.exponent))
-        .c('ui', 'header', 'huge', 'text'),
-      br(), br(), br(),
+        .c('ui', 'header', 'huge', 'text'), br(), br(), br(),
       label().t(date(submission.timestamp)),
       label().t(submission.verdict)
         .c(submission.verdict === 'correct' ? 'green' : 'red' )
@@ -154,12 +161,18 @@ const PROGRESS = (() => {
       )
   )
 
+  const action_submit = (modal) => (
+    modal.modal_action('submit', () => modal.modal_close()),
+    modal.select('.action.submit').c('blue')
+  )
+
   const action_close = (modal) => (
     modal.modal_action('close', () => modal.modal_close()),
     modal.select('.action.close').c('black')
   )
 
   // Modal buttons
+  action_submit(problems_modal)
   action_close(problems_modal)
   action_close(submissions_modal)
   
