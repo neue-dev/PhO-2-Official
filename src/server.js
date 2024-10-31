@@ -102,7 +102,7 @@ app.get('/problems', (req, res) => {
           return;
         }
 
-        return res.sendFile('./public/err-pages/unavailable-problems.html', { root: __dirname });
+        return res.sendFile('./public/error/unavailable-problems.html', { root: __dirname });
       });
   } else {
     // Isnt logged in
@@ -150,7 +150,7 @@ app.get('/finals', (req, res) => {
           return;
         }
 
-        return res.sendFile('./public/err-pages/unavailable-finals.html', { root: __dirname });
+        return res.sendFile('./public/error/unavailable-finals.html', { root: __dirname });
       });
   } else {
     // Isnt logged in
