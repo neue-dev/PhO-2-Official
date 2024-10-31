@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-31 15:37:18
+ * @ Modified time: 2024-10-31 16:41:58
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -94,10 +94,9 @@ const DOM = (() => {
 				element
 			),
 
-			// Removes all children of the element
+			// Removes all content of the element
 			clear: () => (
-				element.foreach(child => 
-					element.removeChild(child)),
+				element.innerHTML = '',
 				element
 			),
 
@@ -534,9 +533,9 @@ const DOM = (() => {
 				),
 
 				// Set the header of the modal
-				modal_header: (header) => (
+				modal_header: (...headers) => (
 					modal.select('.header').clear(),
-					modal.select('.header').append(header),
+					modal.select('.header').append(...headers),
 					modal
 				),
 
@@ -573,6 +572,13 @@ const DOM = (() => {
 
 			// Add methods
 			decorate(form, {
+
+				// Get-setter for field values
+				form_field_value: (name, value) => (
+					value != null
+						? (form.select(`input.${name}`).value = value, form)
+						: (form.select(`input.${name}`).value)
+				),
 
 				// Adds new fields
 				form_field: (name, attributes={}, check=(() => Promise.resolve(true))) => (
