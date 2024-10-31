@@ -110,6 +110,25 @@ app.get('/problems', (req, res) => {
   }
 });
 
+app.get('/progress', (req, res) => {
+  const user = auth(req, res);
+  if(user){
+
+    // Look for user
+    identify(user._id)
+      .then(userData => {
+        if(!userData || !userData.isAdmin)
+          return res.sendFile('./public/user/progress.html', { root: __dirname });
+
+        // Parse the HTML file and replace the mustache tags.
+        return res.sendFile('./public/admin/config.html', { root: __dirname });
+      });
+  } else {
+    // Isnt logged in
+    return res.sendFile('./public/home-redirect.html', { root: __dirname });
+  }
+});
+
 app.get('/config', (req, res) => {
   const user = auth(req, res);
   if(user){
@@ -118,7 +137,7 @@ app.get('/config', (req, res) => {
     identify(user._id)
       .then(userData => {
         if(!userData || !userData.isAdmin)
-          return res.sendFile('./public/home-redirect.html', { root: __dirname });
+          return res.sendFile('./public/user/progress.html', { root: __dirname });
 
         // Parse the HTML file and replace the mustache tags.
         return res.sendFile('./public/admin/config.html', { root: __dirname });
