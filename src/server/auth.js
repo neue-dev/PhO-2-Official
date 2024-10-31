@@ -1,51 +1,127 @@
+/**
+ * @ Author: Mo David
+ * @ Create Time: 2024-11-01 03:20:42
+ * @ Modified time: 2024-11-01 04:48:52
+ * @ Description:
+ * 
+ * Deals with auth-related tasks.
+ */
+
 import 'dotenv/config'
 
 import jwt from 'jsonwebtoken';
 
-const access_token_secret = process.env.ACCESS_TOKEN_SECRET;
-const refresh_token_secret = process.env.REFRESH_TOKEN_SECRET;
+import { send_file } from './io.js';
+import { User } from './models/user.js';
 
-//* Token creation
-export const generate = function(user){
-  return jwt.sign(
-    { _id: user._id, }, 
-    access_token_secret,
-    // { expiresIn: '15m' }
-  );
-}
+export const SERVER_HOME_URL = '/public/home.html'
 
-//* Refresh token creation
-export const refresh = function(user){
-  return jwt.sign(
-    { _id: user._id, }, 
-    refresh_token_secret,
-  );
-}
+/**
+ * Generates a new token for the session
+ * 
+ * @param user  The user to generate it for. 
+ * @return      The new token. 
+ */
+export const generate_token = (user) => jwt.sign({ _id: user._id, }, process.env.ACCESS_TOKEN_SECRET);
 
-//* Token verification
-export const auth = (req, res) => {
-  if(!req) return false;
+/**
+ * Refreshes a token.
+ * 
+ * @param user  The user who owns the token. 
+ * @return      The refreshed token.
+ */
+export const refresh_token = (user) => jwt.sign({ _id: user._id, }, process.env.REFRESH_TOKEN_SECRET);
 
-  // Not logged in yet
-  if(!req.cookies['authorization']) return false;
-  
-  // Retrieve tokens
-  const { accessToken, refreshToken } = req.cookies['authorization'];
+/**
+ * Wraps a function around an authorization check.
+ * 
+ * @param func  The function to wrap.
+ * @param fail  A failing function.
+ * @return      The wrapped function.
+ */
+const authorized_decorator = (func, fail) => (
 
-  // If no token is present, redirect to home page
-  if (!accessToken) return false;
+  // The wrapped function
+  (req, res) => {
 
-  // Verify token
-  try {
-    const user = jwt.verify(accessToken, access_token_secret);
-    req.user = user;
+    // Check for authorization first
+    if(!req) 
+      return fail(res)
     
-    return user;
+    if(!req.cookies) 
+      return fail(res)
+
+    if(!req.cookies.authorization) 
+      return fail(res)
     
-  } catch (error) {
-    // Token is probably invalid
-    return false;
+    // Call func
+    return func(req, res)
   }
-};
+) 
 
-export default { generate, auth, refresh };
+// A decorator for authorized checks
+// Performs redirects
+export const authorized_redirect = (func) => authorized_decorator(func, (res) => send_file(res, SERVER_HOME_URL))
+
+// A decorator for authorized checks
+// Fails the function with an error status
+export const authorized_fail = (func) => authorized_decorator(func, (res) => fail(res, { status: 401, error: 'Unauthorized request.' }))
+
+/**
+ * Makes sure the user is authorized...
+ * AND passes the user to the wrapped function.
+ * 
+ * @param func  The function to decorate.
+ * @param fail  A failing function.
+ * @return      The decorated function. 
+ */
+const authorized_user_decorator = (func, fail) => (
+  
+  // Wrapped func
+  authorized_redirect((req, res) => {
+    
+    // Grab tokens
+    const { 
+      accessToken, 
+      refreshToken 
+    } = req.cookies.authorization;
+
+    // If no token is present, redirect to home page
+    if (!accessToken) 
+      return fail(res);
+
+    // Token verification
+    try {
+
+      // We retrieve the access token dynamically for possibility of hot-swapping
+      req.user = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+
+      // Look for user in database and execute appropriate action
+      User.findOne({ _id: req.user._id })
+        .then(user => user ? func(req, res, user) : send_file(res))
+      
+    // Token is probably invalid
+    } catch (error) {
+      console.error(error);
+      return fail(res);
+    }
+  })
+)
+
+// A decorator for authorized user checks
+// Performs redirects
+export const authorized_user_redirect = (func) => authorized_user_decorator(func, (res) => send_file(res))
+
+// A decorator for authorized user checks
+// Fails the function with an error status
+export const authorized_user_fail = (func) => authorized_user_decorator(func, (res) => fail(res, { status: 401, error: 'Unauthorized request.' }))
+
+export default { 
+  generate_token,
+  refresh_token,
+
+  authorized_redirect,
+  authorized_fail,
+  authorized_user_redirect,
+  authorized_user_fail,
+};
