@@ -405,6 +405,10 @@ app.get('/dom', (req, res) => {
   res.sendFile('./public/utils/dom.js', { root: __dirname });
 })
 
+app.get('/component', (req, res) => {
+  res.sendFile('./public/utils/component.js', { root: __dirname });
+})
+
 app.get('/x', (req, res) => {
   res.sendFile('./public/utils/x.js', { root: __dirname });
 })

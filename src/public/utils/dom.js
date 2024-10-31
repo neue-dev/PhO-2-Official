@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-31 11:26:04
+ * @ Modified time: 2024-10-31 14:46:42
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -556,7 +556,11 @@ const DOM = (() => {
 	)
 
 	/**
-	 * Creates a form with state.
+	 * Creates a stateful form with the given id.
+	 * Methods are:
+	 * 
+	 * 	form_field()			Adds a new field to the form.
+	 * 	form_submit()			Submits the form.
 	 * 
 	 * @param id 		The id of the form.
 	 * @param form 	The form element.
