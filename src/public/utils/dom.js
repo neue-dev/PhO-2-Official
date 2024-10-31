@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-31 16:41:58
+ * @ Modified time: 2024-10-31 19:36:42
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -140,6 +140,19 @@ const DOM = (() => {
 				href != null
 					? (element.href = href, element)
 					: (element.href)
+			),
+
+			// Renames the tag of a given element
+			rename: (tag) => (
+
+				// Replaces the child, copies almost all properties
+				// Note that the element loses all event listeners tho 
+				((replacement) => (
+					Array.from(element.attributes).map(
+						attribute => replacement.a(attribute, element.a(attribute))), 
+					element.parent().insertBefore(replacement, element),
+					element.parent().removeChild(element)
+				))(fluent(document.createElement(tag)))
 			),
 
 			// Appends content
@@ -576,19 +589,49 @@ const DOM = (() => {
 				// Get-setter for field values
 				form_field_value: (name, value) => (
 					value != null
-						? (form.select(`input.${name}`).value = value, form)
-						: (form.select(`input.${name}`).value)
+						? (form.select(`.input.${name}`).value = value, form)
+						: (form.select(`.input.${name}`).value)
+				),
+
+				// Get-setter for field types
+				form_field_type: (name, type, options={}) => (
+
+					// Get the appropriate field
+					((field) => (
+
+						field
+						 
+							// Set the field type
+							? (type && field.a('type', type),
+
+								// Switch based on type, if specified
+								(({
+									date: () => (null),
+									text: () => (null),
+									select: () => (options.options.map(option => field.append(element('option').t(option)))),
+									duration: () => (type = 'number')
+								})[type] || (() => null)) (),
+
+								// Update the type
+								type && field.a('type', type),
+								
+								// Return form or current type
+								type ? form : field.a('type'))
+
+							// Field does not exist
+							: null
+
+					// Pass the field
+					))(
+						form.select(`.input.${name}`)
+					)
 				),
 
 				// Adds new fields
 				form_field: (name, attributes={}, check=(() => Promise.resolve(true))) => (
 
 					((name, label, field, container) => (
-
-						// Set field attributes and properties
-						Object.keys(attributes).map(attribute => 
-							field.a(attribute, attributes[attribute])),
-							
+						
 						// Append stuff to container
 						field.c(name).d(name),
 						container.c(name),
@@ -597,6 +640,16 @@ const DOM = (() => {
 						// Append the element
 						form.append(container),
 						form.state(name, field.value),
+
+						// Set field attributes and properties
+						Object.keys(attributes).map(attribute => 
+							field.a(attribute, attributes[attribute])),
+							
+						// Set the type, if specified
+						attributes.type && form.form_field_type(name, attributes.type, attributes),
+
+						// Set the value, if specified
+						attributes.value && form.form_field_value(name, attributes.value),
 						
 						// Input field event listener
 						field.listen('input', (e) => (
@@ -618,9 +671,21 @@ const DOM = (() => {
 
 					// Pass in the elements
 					))(
+
+						// Id of sorts
 						attributes.key ?? name.toLowerCase(),
+
+						// Label
 						element('label').t(name),
-						element('input').c('input'),
+
+						// Create element based on type
+						attributes.type 
+							? attributes.type === 'select'
+								? element('select').c('input')
+								: element('input').c('input')
+							: element('input').c('input'),
+
+						// The container
 						element('div').c('field')
 					)
 				),
