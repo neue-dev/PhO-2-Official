@@ -1,13 +1,28 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:53:41
- * @ Modified time: 2024-11-01 05:48:25
+ * @ Modified time: 2024-11-01 07:42:52
  * @ Description:
  * 
  * Handles db related queries and what not.
  */
 
 import mongoose from 'mongoose'
+
+/**
+ * Creates a new entry in the database.
+ * 
+ * @param model		The model to instantiate. 
+ * @param	db			The collection to modify.
+ * @param	params	The params for creating the document.
+ * @return				The created document.
+ */
+export const create = async (model, db, params) => (
+	await (new model({
+		_id: new mongoose.Types.ObjectId(),
+		...params,
+	}, { collection: db })).save()
+)
 
 /**
  * Returns a thenable that gives the document we requested.
@@ -19,7 +34,7 @@ import mongoose from 'mongoose'
 export const select = async (db, id) => (
 	typeof id !== 'object' 
 		? await db.findOne({ _id: mongoose.Types.ObjectId(id) })
-		: await db.findMany(id)
+		: await db.find(id)
 )
 
 /**
@@ -79,6 +94,7 @@ export const safe = (f, error) => (
 
 export default {
 	select,
+	create,
 	update,
 	drop,
 	safe,

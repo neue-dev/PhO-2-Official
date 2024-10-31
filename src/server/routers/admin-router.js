@@ -8,7 +8,7 @@ import bcrypt from 'bcrypt';
 export const admin_router = express.Router();
 
 import { fail, succeed } from '../io.js'
-import { select, update, drop, safe } from '../db.js'
+import { select, create, update, drop, safe } from '../db.js'
 import { authorized_user_fail } from '../auth.js';
 import { checkAnswer } from '../check.js';
 
@@ -94,58 +94,49 @@ const admin = (f) => (
 //   })
 // });
 
-// admin_router.post('/registeruser', (req, res) => {
-//   admin(req, res, async userData => {
-//     const { username, password, category } = req.body;
-//     const isAdmin = req.body.isAdmin || false;
-//     const user = await User.findOne({ username: username });
+/**
+ * Registers new users.
+ */
+admin_router.post('/registeruser', admin((req, res) => {
+  const { username, password, category, status } = req.body;
+  const params = { 
+    username, password, category, status, 
+    score: 0, isAdmin: false, attempts: [], submissions: [], lastSubmit: 0, lastMessage: 0, 
+  }
 
-//     // Check if user exists
-//     if (user)
-//       return res.json({
-//         message: "User already exists.",
-//         error: "User with the username already exists.",
-//       }).status(401);
+  // This is so sad...
+  bcrypt.hash(password, saltRounds)
+    .then(hash =>
+      
+      // Update password
+      params.password = hash,
+      
+      // Check if username taken
+      select(User, { username })
+        .then(user => !user || !user.length
+          ? create(User, 'users', params)
+            .then(safe(user => succeed(res, 'User successfully created.')))
+            .catch(error => fail(res, error))
+          : fail(res, { status: 403, error: 'Username taken.' })))
+}))
 
-//     // Hash password first
-//     await bcrypt.hash(password, saltRounds)
-//       .then(async hash => {
+/**
+ * Registers new problems.
+ */
+admin_router.post('/registerproblem', admin((req, res) => {
+  const { name, type, status, code, answer, tolerance, points } = req.body;
+  const params = {
+    name, type, status, code, answer, tolerance, points,
+  } 
 
-//         // Create the document
-//         const data = new User({
-//           _id: new mongoose.Types.ObjectId(),
-//           username: username,
-//           password: hash,
-//           isAdmin: isAdmin,
-//           category: category,
-//           status: 'participating',
-//           score: 0,
-//           attempts: [],
-//           submissions: [],
-//           lastSubmit: 0,
-//           lastMessage: 0,
-//         }, { collection: 'users' });
+  create(Problem, 'problems', params)
+    .then(safe(problem => succeed(res, 'Problem successfully created.')))
+    .catch(res, { status: 500, error: 'Something went wrong.' })
+}));
 
-//         // Try to save to database
-//         try {
-//           let user = await data.save();
-//           return res.status(200).json({
-//             message: 'User registration success.',
-//           });
-//         } catch (error) {
-//           return res.json({ 
-//             message: 'Server error.', 
-//             error: error.message 
-//           }).status(500);
-//         }
-//       })
-//       .catch(error => res.json({ 
-//         message: 'Server error.',
-//         error: error.message 
-//       }).status(500));
-//   });
-// });
-
+/**
+ * Grabs a list of all users.
+ */
 admin_router.post('/userlist', admin(async (req, res, user) => {
   const users = await User.find();
   const data = { users: [] };
@@ -154,6 +145,9 @@ admin_router.post('/userlist', admin(async (req, res, user) => {
   res.json(data);
 }))
 
+/**
+ * Grabs the configuration of the contest.
+ */
 admin_router.post('/configlist', admin(async (req, res, user) => {
   const config = await Config.find();
   const data = { config: [] };
@@ -162,7 +156,9 @@ admin_router.post('/configlist', admin(async (req, res, user) => {
   res.json(data);
 }))
 
-
+/**
+ * Grabs a list of all problems.
+ */
 admin_router.post('/problemlist', admin(async (req, res, user) => {
   const problems = await Problem.find();
   const data = { problems: [] };
@@ -171,6 +167,9 @@ admin_router.post('/problemlist', admin(async (req, res, user) => {
   res.json(data);
 }))
 
+/**
+ * Grabs a list of ALL submissions.
+ */
 admin_router.post('/submissionlog', admin(async (req, res, user) => {
   const submissions = await Submission.find({});
   const data = { submissions: [] };
@@ -179,7 +178,9 @@ admin_router.post('/submissionlog', admin(async (req, res, user) => {
   res.json(data);
 }));
 
-// Updates config variables
+/**
+ * Updates config variables.
+ */
 admin_router.post('/editconfig', admin((req, res, user) => {
   const { _id, key, value } = req.body;
   const changes = { /*key,*/ value };
@@ -191,7 +192,9 @@ admin_router.post('/editconfig', admin((req, res, user) => {
     .catch(error => fail(res, error));
 }))
 
-// Updates problems
+/**
+ * Updates problem details.
+ */
 admin_router.post('/editproblem', admin((req, res, user) => {
   const { _id, name, type, code, answer, tolerance, points, status } = req.body;
   const changes = { name, type, code, answer, tolerance, points, status };
@@ -202,7 +205,9 @@ admin_router.post('/editproblem', admin((req, res, user) => {
     .catch(error => fail(res, error))
 }));
 
-// Updates users
+/**
+ * Updates user details.
+ */
 admin_router.post('/edituser', admin((req, res, user) => {
   const { _id, username, password, category, status } = req.body;
   const changes = { username, category, status }
@@ -224,6 +229,9 @@ admin_router.post('/edituser', admin((req, res, user) => {
       .catch(error => fail(res, error))))
 }));
 
+/**
+ * Deletes users.
+ */
 admin_router.post('/deleteuser', admin((req, res, user) => {
   const { _id } = req.body;
 
@@ -233,6 +241,9 @@ admin_router.post('/deleteuser', admin((req, res, user) => {
     .catch(error => fail(res, error))
 }));
 
+/**
+ * Deletes problems.
+ */
 admin_router.post('/deleteproblem', admin((req, res, user) => {
   const { _id } = req.body;
 
@@ -241,46 +252,6 @@ admin_router.post('/deleteproblem', admin((req, res, user) => {
     .then(() => succeed(res, 'Problem successfully deleted.'))
     .catch(error => fail(res, error))
 }));
-
-// admin_router.post('/registerproblem', (req, res) => {
-//   admin(req, res, async userData => {
-//     const { name, code, answer, tolerance, points } = req.body;
-//     const problemCode = await Problem.findOne({ "code.number": code.number, "code.alpha": code.alpha });
-//     const problemName = await Problem.findOne({ name: name });
-
-//     // Check if problem exists
-//     if (problemCode || problemName)
-//       return res.json({
-//         message: "Problem already exists.",
-//         error: "Problem with the code or name already exists.",
-//       }).status(401);
-
-//     // Create the document
-//     const data = new Problem({
-//       _id: new mongoose.Types.ObjectId(),
-//       name: name,
-//       type: 'official',
-//       code: code,
-//       answer: answer,
-//       tolerance: tolerance,
-//       points: points,
-//       status: 'disabled',
-//     }, { collection: 'problems' });
-
-//     // Try to save to database
-//     try {
-//       let problem = await data.save();
-//       return res.status(200).json({
-//         message: 'Problem registration success.',
-//       });
-//     } catch (error) {
-//       return res.json({ 
-//         message: 'Server error.',
-//         error: error.message 
-//       }).status(500);
-//     }
-//   })
-// });
 
 // admin_router.post('/enableofficial', (req, res) => {
 //   admin(req, res, async userData => {
