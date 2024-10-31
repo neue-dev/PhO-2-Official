@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-31 14:46:42
+ * @ Modified time: 2024-10-31 15:37:18
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -584,7 +584,7 @@ const DOM = (() => {
 							field.a(attribute, attributes[attribute])),
 							
 						// Append stuff to container
-						field.c(name),
+						field.c(name).d(name),
 						container.c(name),
 						container.append(label, field),
 
@@ -612,9 +612,9 @@ const DOM = (() => {
 
 					// Pass in the elements
 					))(
-						name.toLowerCase(),
+						attributes.key ?? name.toLowerCase(),
 						element('label').t(name),
-						element('input').c('input').d(name.toLowerCase()),
+						element('input').c('input'),
 						element('div').c('field')
 					)
 				),
@@ -653,7 +653,7 @@ const DOM = (() => {
 		))(
 			form 
 				? stateful(form, id)
-				: stateful(element('form').c('form'), id)
+				: stateful(element('form').c('ui', 'form'), id)
 		)
 	)
 
