@@ -1,6 +1,21 @@
 
 const PROGRESS = (() => {
 
+  // ! <!-- ! move elsewhere  -->
+  const date = (timestamp) => {
+    
+    const date = new Date(timestamp * 1)
+    const date_options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    };
+
+    return `${date.toISOString().substring(11, 16)} 
+      ${date.toLocaleDateString(undefined, date_options)}`;
+  }
+
   // Tabs and tab menu
   const tabs = 
     DOM.stateful_tabs('progress-tabs', DOM.select('.tabs'));
@@ -22,9 +37,6 @@ const PROGRESS = (() => {
   // Set up the modals
   problems_modal.modal_header('View Problem Details');
   submissions_modal.modal_header('View Submission Details');
-
-  submissions_table.mapper = (data) => DOM.div().t(data);
-  problems_table.mapper = (data) => DOM.div().t(data);
 
   // Search bar
   const search_bar = DOM.select('.search-bar')
@@ -50,6 +62,66 @@ const PROGRESS = (() => {
 
   // Keybinds 
   DOM.keybind({ ctrlKey: true, keyCode: 'f' }, () => search_bar.focus())
+
+  /**
+   *  Reusable components and styles
+   */
+
+  // Some convenience styles
+  const auto_width = { width: 0 };
+  const full_width = { width: document.width };
+
+  // Built in components
+  const { tr, or, td, label, link, div, span, button, buttons, sup } = C.LIB;
+
+  // Extended components
+  const td_auto = 
+    C.new(() => td().s(auto_width));
+  const td_auto_right = 
+    C.new(() => td_auto().c('right', 'aligned'))
+  const td_auto_label = 
+    C.new(() => td_auto().append(label()))
+
+  // Edit and delete buttons
+  const view_button = 
+    C.new(() => button().c('view-button').t('View'))
+
+  // Table view buttons
+  const td_view_button = 
+    C.new(() => td_auto_right().append(buttons().append(view_button())))
+
+
+  const problem_table_mapper = (problem) => (
+    tr().append(
+      td_auto_label({ '.label': { t: problem.code.number + problem.code.alpha } }),
+      td_auto().t(problem.name),
+      td_auto().t(problem.points),
+      td_auto()
+    )
+  )
+
+  const submission_table_mapper = (submission) => (
+    tr().append(
+      td_auto_label({ '.label': { t: submission.problemCodeName.split(' ')[0] }}),
+      td_auto().t(submission.answer.mantissa + ' &times; 10').append(sup().t(submission.answer.exponent)),
+      td_auto().t(date(submission.timestamp)),
+      td_auto_label({ 
+        '.label': {
+          t: submission.verdict,
+          c: submission.verdict === 'correct' ? [ 'green' ] : [ 'red', 'basic' ]
+        }
+      })
+    )
+  )
+  
+  // Set up the tables
+  problems_table
+    .table_header('Problem', '', 'Points')
+    .mapper = problem_table_mapper;
+
+  submissions_table
+    .table_header('Submission', 'Submitted Answer', 'Timestamp', 'Verdict')
+    .mapper = submission_table_mapper;
 
   // Save the submissions
   X.request('./user/submissionlist', 'POST')

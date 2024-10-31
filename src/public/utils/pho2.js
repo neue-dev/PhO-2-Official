@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 06:26:15
- * @ Modified time: 2024-10-30 12:48:58
+ * @ Modified time: 2024-10-31 14:50:47
  * @ Description:
  * 
  * Utilities for managing the front-end of the website.
@@ -36,6 +36,14 @@ const PHO2 = (() => {
 			days: 		(Math.floor(millis / 1000 / 60 / 60 / 24)) + ''
 		}
 	}
+
+	/**
+	 * Saves or retrieves the submissions.
+	 * 
+	 * @param	submissions		The submissions	to save.
+	 * @return 							The saved submissions.
+	 */
+	_.submissions = (submissions) => DOM.store('submissions', submissions);
 
 	/**
 	 * Saves or retrieves the problems.
