@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-31 19:36:42
+ * @ Modified time: 2024-10-31 23:13:07
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -470,9 +470,8 @@ const DOM = (() => {
 	 * 
 	 * 	modal_open()			Launches the modal.
 	 * 	modal_close()			Deactivates the modal.
-	 * 	modal_on_yes()		Affirmative callback.
-	 * 	modal_on_no()			Negative callback.
 	 * 	modal_header()		Set the header of the modal.
+	 *  modal_action()		Add an action to the modal.
 	 * 	modal_append()		Append content to the body of the modal.
 	 * 
 	 * @param id 			An id for the modal.
@@ -509,12 +508,7 @@ const DOM = (() => {
 				element('div').c('ui', 'content'),
 
 				// Actions
-				element('div').c('actions').append(
-					element('div').c('ui', 'negative', 'deny', 'button', 'no').t('cancel')
-						.listen('click', () => modal.modal_close()),
-					element('div').c('ui', 'positive', 'right', 'labeled', 'icon', 'button', 'yes').t('confirm')
-						.listen('click', () => modal.modal_close())
-						.append(element('i').c('checkmark', 'icon')))),
+				element('div').c('actions')),
 				
 			// Add methods to it
 			decorate(modal, {
@@ -533,22 +527,20 @@ const DOM = (() => {
 					modal
 				),
 
-				// Adds callback for when the positive action is selected
-				modal_on_yes: (f) => (
-					modal.select('.yes.button').listen('click', f),
-					modal					
-				),
-
-				// Adds callback for when the negative action is selected
-				modal_on_no: (f) => (
-					modal.select('.no.button').listen('click', f),
-					modal					
-				),
-
 				// Set the header of the modal
 				modal_header: (...headers) => (
 					modal.select('.header').clear(),
 					modal.select('.header').append(...headers),
+					modal
+				),
+
+				// Adds an action to the modal
+				modal_action: (name, action) => (
+					modal.select('.actions').append(
+						element('div')
+							.t(name)
+							.c('ui', 'button', 'action', name)
+							.listen('click', () => action())),
 					modal
 				),
 
@@ -588,9 +580,23 @@ const DOM = (() => {
 
 				// Get-setter for field values
 				form_field_value: (name, value) => (
-					value != null
-						? (form.select(`.input.${name}`).value = value, form)
-						: (form.select(`.input.${name}`).value)
+					
+					// Get the appropriate field
+					((field) => (
+						value !== undefined
+							? (field.value = value, 
+
+								// Indicate input occurred
+								field.dispatch('input'),
+
+								// Return the form
+								form)
+
+							// Return the state
+							: (form.state(name))
+
+					// Pass the field
+					))(form.select(`.input.${name}`))
 				),
 
 				// Get-setter for field types
@@ -606,8 +612,8 @@ const DOM = (() => {
 
 								// Switch based on type, if specified
 								(({
-									date: () => (null),
 									text: () => (null),
+									date: () => (type = 'datetime-local'),
 									select: () => (options.options.map(option => field.append(element('option').t(option)))),
 									duration: () => (type = 'number')
 								})[type] || (() => null)) (),
@@ -628,7 +634,10 @@ const DOM = (() => {
 				),
 
 				// Adds new fields
-				form_field: (name, attributes={}, check=(() => Promise.resolve(true))) => (
+				form_field: (name, attributes={}, {
+					checker = (() => Promise.resolve(true)),
+					mapper = ((value) => (value))
+				} = {}) => (
 
 					((name, label, field, container) => (
 						
@@ -639,7 +648,6 @@ const DOM = (() => {
 
 						// Append the element
 						form.append(container),
-						form.state(name, field.value),
 
 						// Set field attributes and properties
 						Object.keys(attributes).map(attribute => 
@@ -655,10 +663,10 @@ const DOM = (() => {
 						field.listen('input', (e) => (
 							
 							// Check for invalid input
-							check(field.value)
+							checker(field.value)
 								.then(() => (
 									container.remove('.warning'),
-									form.state(name, field.value)))
+									form.state(name, mapper(field.value))))
 								.catch((err) => (
 									container.select('.warning')
 										? null
@@ -696,7 +704,7 @@ const DOM = (() => {
 					// Check that all fields are valid
 					Array.from(form.children).every(child => 
 						child.cis('field') 
-							? form.state(child.select('input').d()) != null
+							? form.form_field_value(child.select('.input').d()) != null
 							: true)
 
 						// Remove warning if it exists, make request
@@ -704,7 +712,7 @@ const DOM = (() => {
 								
 								// Create payload for request
 								Array.from(form.children).reduce((accumulator, child) => (
-									{ ...accumulator, [child.select('input').d()]: form.state(child.select('input').d()) }
+									{ ...accumulator, [child.select('.input').d()]: form.form_field_value(child.select('.input').d()) }
 								), {})
 							))
 
