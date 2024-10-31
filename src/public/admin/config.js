@@ -135,10 +135,43 @@ const CONFIG = (() => {
   const td_edit_button = 
     C.new(() => td_auto_right().append(buttons().append(edit_button())))
 
+  // Handles clicks of config table rows
+  const config_table_handler = (parameter) => (
+    config_form.select('input.value').a('type', parameter.type),
+    config_form.form_field_value('_id', parameter._id),
+    config_form.form_field_value('value', parameter.value),
+    config_modal.modal_header(parameter.key),
+    config_modal.modal_open()
+  )
+
+  // Handles clicks of problem table rows
+  const problems_table_handler = (problem) => (
+    problems_form.form_field_value('_id', problem._id),
+    problems_form.form_field_value('name', problem.name),
+    problems_form.form_field_value('code', problem.code.number + problem.code.alpha),
+    problems_form.form_field_value('type', problem.type),
+    problems_form.form_field_value('answer', problem.answer.mantissa + 'e' + problem.answer.exponent),
+    problems_form.form_field_value('tolerance', problem.tolerance),
+    problems_form.form_field_value('status', problem.status),
+    problems_form.form_field_value('points', problem.points),
+    problems_modal.modal_header(problem.name),
+    problems_modal.modal_open()
+  )
+
+  // Handles clicks of user table rows
+  const users_table_handler = (user) => (
+    users_form.form_field_value('_id', user._id),
+    users_form.form_field_value('username', user.username),
+    users_form.form_field_value('status', user.status),
+    users_form.form_field_value('category', user.category),
+    users_modal.modal_header(user.username),
+    users_modal.modal_open()
+  )
+    
   // Config table mapper
   const config_table_mapper = (parameter) => (
     tr().c('editable-row')
-      .listen('click', (e) => config_modal.modal_open())
+      .listen('click', () => config_table_handler(parameter))
       .append(
         td_auto_label({ '.label': { t: parameter.key }}),
         td_auto().append(
@@ -153,7 +186,7 @@ const CONFIG = (() => {
   // Problem table mapper
   const problems_table_mapper = (problem) => (
     tr().c('editable-row')
-      .listen('click', (e) => problems_modal.modal_open())
+      .listen('click', () => problems_table_handler(problem))
       .append(
         td_auto_label({ '.label': { t: problem.code.number + problem.code.alpha }}),
         td_auto().t(problem.name),
@@ -168,16 +201,14 @@ const CONFIG = (() => {
             t: problem.status, 
             c: problem.status === 'active' ? [ 'default' ] : [ 'basic', 'orange' ], 
           }
-        }),
-        td_auto().t(problem.answer.mantissa + ' &times; 10').append(sup().t(problem.answer.exponent)),
-        td_auto().t(problem.tolerance)
+        })
       )
   )
 
   // User table mapper
   const users_table_mapper = (user) => (
     tr().c('editable-row')
-      .listen('click', (e) => users_modal.modal_open())
+      .listen('click', () => users_table_handler(user))
       .append(
         td_auto().s(auto_width).t(user.username),
         td_auto_label({
@@ -198,15 +229,15 @@ const CONFIG = (() => {
 
   // Set up the tables
   config_table
-    .table_header('Parameter', 'Value', '')
+    .table_header('Parameter', 'Value')
     .mapper = config_table_mapper;
 
   users_table
-    .table_header('User', '', '', '')
+    .table_header('User', '', '')
     .mapper = users_table_mapper;
 
   problems_table
-    .table_header('Problem', '', '', '', 'Answer', 'Tolerance', '')
+    .table_header('Problem', '', '', '')
     .mapper = problems_table_mapper;
 
   // Save the config
