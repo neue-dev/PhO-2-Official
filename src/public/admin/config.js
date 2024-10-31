@@ -145,6 +145,8 @@ const CONFIG = (() => {
   const { tr, or, td, label, link, div, span, button, buttons, sup } = C.LIB;
 
   // Extended components
+  const tr_hoverable = 
+    C.new(() => tr().c('hoverable-row'));
   const td_auto = 
     C.new(() => td().s(auto_width));
   const td_auto_right = 
@@ -202,7 +204,7 @@ const CONFIG = (() => {
     
   // Config table mapper
   const config_table_mapper = (parameter) => (
-    tr().c('editable-row')
+    tr_hoverable()
       .listen('click', () => config_table_handler(parameter))
       .append(
         td_auto_label({ '.label': { t: parameter.key }}),
@@ -217,7 +219,7 @@ const CONFIG = (() => {
 
   // Problem table mapper
   const problems_table_mapper = (problem) => (
-    tr().c('editable-row')
+    tr_hoverable()
       .listen('click', () => problems_table_handler(problem))
       .append(
         td_auto_label({ '.label': { t: problem.code.number + problem.code.alpha }}),
@@ -239,7 +241,7 @@ const CONFIG = (() => {
 
   // User table mapper
   const users_table_mapper = (user) => (
-    tr().c('editable-row')
+    tr_hoverable()
       .listen('click', () => users_table_handler(user))
       .append(
         td_auto().s(auto_width).t(user.username),

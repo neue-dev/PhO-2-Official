@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-31 13:11:51
- * @ Modified time: 2024-10-31 14:18:22
+ * @ Modified time: 2024-11-01 00:09:02
  * @ Description:
  * 
  * The component interface defines a means for us to create reusable DOM elements.
@@ -41,7 +41,7 @@ const C = (() => {
 	_.new = (component) => (
 		
 		// Returns a new function that accepts props
-		(props={}) => (
+		(props={}, ...args) => (
 
 			// Extend the component
 			((component) => (
@@ -88,7 +88,7 @@ const C = (() => {
 				component
 
 			// Pass in the actual component
-			))(component())
+			))(component(...args))
 		)
 	)
 
@@ -112,6 +112,8 @@ const C = (() => {
 
 		// Misc
 		sup: _.new(() => DOM.sup()),
+		br: _.new(() => DOM.br()),
+		pre: _.new(() => DOM.pre())
 	}
 
 	return {

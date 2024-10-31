@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-31 23:38:00
+ * @ Modified time: 2024-11-01 00:07:04
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -239,6 +239,7 @@ const DOM = (() => {
 	_.div = () => element('div');
 	_.link = () => element('a');
 	_.pre = () => element('pre');
+	_.br = () => element('br');
 
 	// Table-related
 	_.table = () => element('table').c('ui', 'table');
@@ -473,6 +474,7 @@ const DOM = (() => {
 	 * 	modal_header()		Set the header of the modal.
 	 *  modal_action()		Add an action to the modal.
 	 * 	modal_append()		Append content to the body of the modal.
+	 * 	modal_clear()			Clears the body of the modal.
 	 * 
 	 * @param id 			An id for the modal.
 	 * @param modal 	The element to use.
@@ -547,6 +549,11 @@ const DOM = (() => {
 				// Add elements to the body of the modal
 				modal_append: (...elements) => (
 					modal.select('.content').append(...elements),
+					modal
+				),
+
+				modal_clear: () => (
+					modal.select('.content').clear(),
 					modal
 				)
 			})
