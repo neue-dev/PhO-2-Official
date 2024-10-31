@@ -51,53 +51,27 @@
           Only registered participants can login.
           <br><br><br><br>
 
-          <div class="ui form">
-            <div class="field">
-              <label>Username</label>
-              <input type="text" class="username" name="username" placeholder="...">
-            </div>
-            <div class="field">
-              <label>Password</label>
-              <input type="password" class="password" name="password" placeholder="...">
-            </div>
-            <button class="ui button login-button">Login</button>
-        </div>
+          <div>
+            <div class="ui form login-form"></div><br><br>
+            <button class="ui black button login-button">Login</button>
+          </div>
       </div>
     </div>
 
     <script src="/trademark"></script>
     <script>
-      (function() {
 
-        const username = document.getElementsByClassName('username')[0];
-        const password = document.getElementsByClassName('password')[0];
-        const login_button = document.getElementsByClassName('login-button')[0];
+      const login_form = DOM.stateful_form('login-form', DOM.select('.login-form'));
+      const login_button = DOM.select('.login-button');
 
-        // Login functionalities
-        function doLogin() {
-          if(!username.value || !password.value) {
-            // ! tell user no empty fields allowed
-          }
+      login_form.form_field('Username', { type: 'text', placeholder: '...' })
+      login_form.form_field('Password', { type: 'password', placeholder: '...' })
 
-          X.request('./auth/login', 'POST', { 
-            username: username.value, 
-            password: password.value 
-          }).then(() => location.href = './dashboard')
-          
-        }
+      login_button.listen('click', () => 
+        login_form.form_submit('./auth/login')
+          .then(() => location.href = './dashboard')
+          .catch(() => alert('Invalid login.')))
 
-        login_button.addEventListener('click', e => {
-          doLogin();
-        });
-
-        username.addEventListener('keydown', e => {
-          if(e.keyCode == 13) doLogin();
-        });
-
-        password.addEventListener('keydown', e => {
-          if(e.keyCode == 13) doLogin();
-        });
-      })();
     </script>
   </body>
 </html> 
