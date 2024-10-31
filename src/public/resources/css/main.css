@@ -64,6 +64,22 @@ span {
   font-weight: bold;
 }
 
+/* Inputs */
+input, input:focus, input:active {
+  -webkit-box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) inset !important;
+  -webkit-text-fill-color: #080808 !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: #080808 !important;
+  -webkit-box-shadow: 0 0 0 0 rgba(5, 3, 3, 0) inset !important;
+  box-shadow: inset 0 0 20px 20px rgba(0, 0, 0, 0);
+}
+
 /* Modals */
 .dimmer {
   position: fixed !important;
@@ -72,11 +88,21 @@ span {
   width: 100vw !important;
   height: 100vh !important;
   padding-left: 50vw !important;
-  padding-top: 30vh !important;
+  padding-top: 44vh !important;
 }
 
 .ui.modal.visible.active {
   transform: translate(-50%, -50%);
+}
+
+/* Table */
+.editable-row {
+  cursor: pointer;
+}
+
+.editable-row:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+  transform: translateX(6px);
 }
 
 /* Menu */

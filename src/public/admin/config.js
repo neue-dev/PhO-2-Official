@@ -38,10 +38,46 @@ const CONFIG = (() => {
   const problems_table = DOM.stateful_table('problems-table', DOM.select('.problems-table'));
   const problems_modal = DOM.stateful_modal('problems-modal', DOM.select('.problems-modal'))
 
+  // Modal forms
+  const config_form = 
+    DOM.stateful_form('config-form')
+      .form_field('_id', { type: 'text' })
+      .form_field('Value', { type: 'text' })
+        .select('.field._id').s({ display: 'none' }).parent()
+
+  const users_form = 
+    DOM.stateful_form('users-form')
+      .form_field('_id', { type: 'text' })
+      .form_field('Username', { type: 'text' })
+      .form_field('Password', { type: 'text' })
+      .form_field('Status', { type: 'text' })
+      .form_field('Category', { type: 'text' })
+        .select('.field._id').s({ display: 'none' }).parent()
+
+  const problems_form = 
+    DOM.stateful_form('problems-form')
+      .form_field('_id', { type: 'text' })
+      .form_field('Name', { type: 'text' })
+      .form_field('Code', { type: 'text' })
+      .form_field('Answer', { type: 'text' })
+      .form_field('Tolerance', { type: 'text' })
+      .form_field('Type', { type: 'text' })
+      .form_field('Status', { type: 'text' })
+      .form_field('Points', { type: 'text' })
+        .select('.field._id').s({ display: 'none' }).parent()
+
   // Set up the modals
-  config_modal.modal_header('Edit Config');
-  users_modal.modal_header('Edit User');
-  problems_modal.modal_header('Edit Problem');
+  config_modal
+    .modal_header('Edit Config')
+    .modal_append(config_form)
+
+  users_modal
+    .modal_header('Edit User')
+    .modal_append(users_form)
+
+  problems_modal
+    .modal_header('Edit Problem')
+    .modal_append(problems_form)
 
   // Search bar
   const search_bar = DOM.select('.search-bar')
@@ -90,75 +126,74 @@ const CONFIG = (() => {
   // Edit and delete buttons
   const edit_button = 
     C.new(() => button().c('edit-button').t('Edit')) 
+  const recheck_button = 
+    C.new(() => button().c('recheck-button').t('Recheck'))
   const delete_button = 
     C.new(() => button().c('delete-button', 'negative').t('Delete'))
 
   // Table edit and delete buttons
   const td_edit_button = 
     C.new(() => td_auto_right().append(buttons().append(edit_button())))
-  const td_edit_delete_button = 
-    C.new(() => td_auto_right().append(buttons().append(edit_button(), or(), delete_button())))
 
   // Config table mapper
   const config_table_mapper = (parameter) => (
-    tr().append(
-      td_auto_label({ '.label': { t: parameter.key }}),
-      td_auto().append(
-        parameter.type === 'url'
-          ? link().t(parameter.value).ref(parameter.value) : parameter.type === 'date'
-          ? span().t(date(parameter.value)) : parameter.type === 'duration'
-          ? span().t(parameter.value) 
-          : span().t(parameter.value)),
-      td_edit_button().listen('click', (e) => config_modal.modal_open()))
+    tr().c('editable-row')
+      .listen('click', (e) => config_modal.modal_open())
+      .append(
+        td_auto_label({ '.label': { t: parameter.key }}),
+        td_auto().append(
+          parameter.type === 'url'
+            ? link().t(parameter.value).ref(parameter.value) : parameter.type === 'date'
+            ? span().t(date(parameter.value)) : parameter.type === 'duration'
+            ? span().t(parameter.value) 
+            : span().t(parameter.value))
+      )
   )
 
   // Problem table mapper
   const problems_table_mapper = (problem) => (
-    tr().append(
-      td_auto_label({ '.label': { t: problem.code.number + problem.code.alpha }}),
-      td_auto().t(problem.name),
-      td_auto_label({ 
-        '.label': { 
-          t: problem.status, 
-          c: [ 
-            problem.status === 'active' ? 'default' : 'orange', 
-            problem.status === 'active' ? 'default' : 'basic' 
-          ]
-        }
-      }),
-      td_auto().t(problem.answer.mantissa + ' &times; 10').append(sup().t(problem.answer.exponent)),
-      td_auto().t(problem.tolerance),
-      td_edit_delete_button({
-        '.edit-button': { listen: [ 'click', (e) => problems_modal.modal_open() ] },
-        '.delete-button': { listen: [ 'click', (e) => problems_modal.modal_open() ] }
-      })
-    )
+    tr().c('editable-row')
+      .listen('click', (e) => problems_modal.modal_open())
+      .append(
+        td_auto_label({ '.label': { t: problem.code.number + problem.code.alpha }}),
+        td_auto().t(problem.name),
+        td_auto_label({ 
+          '.label': { 
+            t: problem.type, c: 'black',
+            s: problem.type === 'official' ? { visibility: 'hidden' } : {},
+          }
+        }),
+        td_auto_label({ 
+          '.label': { 
+            t: problem.status, 
+            c: problem.status === 'active' ? [ 'default' ] : [ 'basic', 'orange' ], 
+          }
+        }),
+        td_auto().t(problem.answer.mantissa + ' &times; 10').append(sup().t(problem.answer.exponent)),
+        td_auto().t(problem.tolerance)
+      )
   )
 
   // User table mapper
   const users_table_mapper = (user) => (
-    tr().append(
-      td_auto().s(auto_width).t(user.username),
-      td_auto_label({
-        '.label': {
-          t: user.isAdmin ? 'admin' : user.category,
-          c: user.isAdmin ? 'red' : user.category === 'junior' ? 'default': 'black'
-        }
-      }),
-      td_auto_label({
-        '.label': {
-          t: user.status,
-          c: [
-            user.status === 'spectating' ? 'blue' : user.status === 'disqualified' ? 'orange' : 'default',
-            user.status === 'participating' ? 'default' : 'basic'
-          ]
-        }
-      }),
-      td_edit_delete_button({
-        '.edit-button': { listen: [ 'click', (e) => users_modal.modal_open() ] },
-        '.delete-button': { listen: [ 'click', (e) => users_modal.modal_open() ] }
-      })
-    )
+    tr().c('editable-row')
+      .listen('click', (e) => users_modal.modal_open())
+      .append(
+        td_auto().s(auto_width).t(user.username),
+        td_auto_label({
+          '.label': {
+            t: user.status,
+            c: user.status === 'spectating' ? [ 'basic', 'blue' ] : [ 'basic', 'orange' ],
+            s: user.status === 'participating' ? { visibility: 'hidden' } : {},
+          }
+        }),
+        td_auto_label({
+          '.label': {
+            t: user.isAdmin ? 'admin' : user.category,
+            c: user.isAdmin ? 'red' : user.category === 'junior' ? 'default': 'black'
+          }
+        })
+      )
   )
 
   // Set up the tables
@@ -167,11 +202,11 @@ const CONFIG = (() => {
     .mapper = config_table_mapper;
 
   users_table
-    .table_header('User', 'Category', 'Status', '')
+    .table_header('User', '', '', '')
     .mapper = users_table_mapper;
 
   problems_table
-    .table_header('Problem', '', 'Answer', 'Tolerance', '')
+    .table_header('Problem', '', '', '', 'Answer', 'Tolerance', '')
     .mapper = problems_table_mapper;
 
   // Save the config
