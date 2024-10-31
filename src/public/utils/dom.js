@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-10-31 23:13:07
+ * @ Modified time: 2024-10-31 23:38:00
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -666,7 +666,10 @@ const DOM = (() => {
 							checker(field.value)
 								.then(() => (
 									container.remove('.warning'),
-									form.state(name, mapper(field.value))))
+									form.state(name, 
+										typeof mapper === 'object'
+											? (mapper[field.type] ?? ((value) => value))(field.value)
+											: (mapper(field.value)))))
 								.catch((err) => (
 									container.select('.warning')
 										? null

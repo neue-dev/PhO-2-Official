@@ -37,12 +37,16 @@ const CONFIG = (() => {
   const problems_table = DOM.stateful_table('problems-table', DOM.select('.problems-table'));
   const problems_modal = DOM.stateful_modal('problems-modal', DOM.select('.problems-modal'));
 
+  // Problem mappers
+  const code_mapper = (code) => ({ number: code.match(/^[0-9]*/)[0], alpha: code.match(/[a-zA-Z]*$/)[0] })
+  const answer_mapper = (answer) => ({ mantissa: answer.split('e')[0], exponent: answer.split('e')[1] ?? '0' })
+
   // Modal forms
   const config_form = 
     DOM.stateful_form('config-form')
       .form_field('_id', { type: 'text' })
       .form_field('Key', { type: 'text' })
-      .form_field('Value', { type: 'text' })
+      .form_field('Value', { type: 'text' }, { mapper: { 'datetime-local': (value) => new Date(value).getTime() } })
         .select('.field._id').s({ display: 'none' }).parent()
         .select('.field.key').s({ display: 'none' }).parent()
 
@@ -59,12 +63,8 @@ const CONFIG = (() => {
     DOM.stateful_form('problems-form')
       .form_field('_id', { type: 'text' })
       .form_field('Name', { type: 'text' })
-      .form_field('Code', { type: 'text' }, { 
-        checker: (value) => Promise.resolve(true),
-        mapper: (value) => ({ number: value.match(/^[0-9]*/)[0], alpha: value.match(/[a-zA-Z]*$/)[0] }) })
-      .form_field('Answer', { type: 'text' }, { 
-        checker: (value) => Promise.resolve(true),
-        mapper: (value) => ({ mantissa: value.split('e')[0], exponent: value.split('e')[1] ?? '0' }) })
+      .form_field('Code', { type: 'text' }, { checker: (value) => Promise.resolve(true), mapper: code_mapper })
+      .form_field('Answer', { type: 'text' }, { checker: (value) => Promise.resolve(true), mapper: answer_mapper })
       .form_field('Tolerance', { type: 'text' })
       .form_field('Type', { type: 'select', options: [ 'official', 'debug' ] })
       .form_field('Status', { type: 'select', options: [ 'active', 'disabled' ] })
