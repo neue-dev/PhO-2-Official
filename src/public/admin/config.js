@@ -50,8 +50,8 @@ const CONFIG = (() => {
       .form_field('_id', { type: 'text' })
       .form_field('Username', { type: 'text' })
       .form_field('Password', { type: 'text' })
-      .form_field('Status', { type: 'text' })
-      .form_field('Category', { type: 'text' })
+      .form_field('Status', { type: 'select', options: [ 'participating', 'spectating', 'disqualified' ] })
+      .form_field('Category', { type: 'select', options: [ 'junior', 'senior', 'admin' ] })
         .select('.field._id').s({ display: 'none' }).parent()
 
   const problems_form = 
@@ -61,8 +61,8 @@ const CONFIG = (() => {
       .form_field('Code', { type: 'text' })
       .form_field('Answer', { type: 'text' })
       .form_field('Tolerance', { type: 'text' })
-      .form_field('Type', { type: 'text' })
-      .form_field('Status', { type: 'text' })
+      .form_field('Type', { type: 'select', options: [ 'official', 'debug' ] })
+      .form_field('Status', { type: 'select', options: [ 'active', 'disabled' ] })
       .form_field('Points', { type: 'text' })
         .select('.field._id').s({ display: 'none' }).parent()
 
@@ -137,7 +137,7 @@ const CONFIG = (() => {
 
   // Handles clicks of config table rows
   const config_table_handler = (parameter) => (
-    config_form.select('input.value').a('type', parameter.type),
+    config_form.form_field_type('value', parameter.type),
     config_form.form_field_value('_id', parameter._id),
     config_form.form_field_value('value', parameter.value),
     config_modal.modal_header(parameter.key),
