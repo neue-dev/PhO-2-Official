@@ -8,7 +8,7 @@ import bcrypt from 'bcrypt';
 export const admin_router = express.Router();
 
 import { fail, succeed } from '../io.js'
-import { select, update, safe } from '../db.js'
+import { select, update, drop, safe } from '../db.js'
 import { authorized_user_fail } from '../auth.js';
 import { checkAnswer } from '../check.js';
 
@@ -146,31 +146,6 @@ const admin = (f) => (
 //   });
 // });
 
-// admin_router.post('/deleteuser', (req, res) => {
-//   admin(req, res, async userData => {
-//     const { username } = req.body;
-//     const user = await User.findOne({ username: username });
-
-//     // Check if user exists
-//     if(user) {
-//       try {
-//         await User.deleteOne({ username: username });
-//         return res.status(200).json({
-//           message: 'User deletion success.',
-//         });
-//       } catch(err) {
-//         return res.json({
-//           error: 'Something went wrong. Try again.'
-//         }).status(500);
-//       }
-//     } else {
-//       return res.json({
-//         error: 'User to be deleted does not exist.'
-//       }).status(401);
-//     }
-//   })
-// });
-
 admin_router.post('/userlist', admin(async (req, res, user) => {
   const users = await User.find();
   const data = { users: [] };
@@ -247,6 +222,24 @@ admin_router.post('/edituser', admin((req, res, user) => {
       .then(safe(user => update(User, _id, changes), 'User does not exist.'))
       .then(() => succeed(res, 'User edited successfully'))
       .catch(error => fail(res, error))))
+}));
+
+admin_router.post('/deleteuser', admin((req, res, user) => {
+  const { _id } = req.body;
+
+  select(User, _id)
+    .then(safe(user => drop(User, _id), 'User does not exist.'))
+    .then(() => succeed(res, 'User successfully deleted.'))
+    .catch(error => fail(res, error))
+}));
+
+admin_router.post('/deleteproblem', admin((req, res, user) => {
+  const { _id } = req.body;
+
+  select(Problem, _id)
+    .then(safe(problem => drop(Problem, _id), 'Problem does not exist.'))
+    .then(() => succeed(res, 'Problem successfully deleted.'))
+    .catch(error => fail(res, error))
 }));
 
 // admin_router.post('/registerproblem', (req, res) => {
@@ -347,31 +340,6 @@ admin_router.post('/edituser', admin((req, res, user) => {
 //         message: 'Server error.', 
 //         error: error.message 
 //       }).status(500);
-//     }
-//   })
-// });
-
-// admin_router.post('/deleteproblem', (req, res) => {
-//   admin(req, res, async userData => {
-//     const { name } = req.body;
-//     const problem = await Problem.findOne({ name: name });
-
-//     // Check if problem exists
-//     if(problem) {
-//       try {
-//         await Problem.deleteOne({ name: name });
-//         return res.status(200).json({
-//           message: 'Problem deletion success.',
-//         });
-//       } catch(err) {
-//         return res.json({
-//           error: 'Something went wrong. Try again.'
-//         }).status(500);
-//       }
-//     } else {
-//       return res.json({
-//         error: 'Problem to be deleted does not exist.'
-//       }).status(401);
 //     }
 //   })
 // });

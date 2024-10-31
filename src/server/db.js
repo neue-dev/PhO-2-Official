@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:53:41
- * @ Modified time: 2024-11-01 05:19:00
+ * @ Modified time: 2024-11-01 05:48:25
  * @ Description:
  * 
  * Handles db related queries and what not.
@@ -11,6 +11,7 @@ import mongoose from 'mongoose'
 
 /**
  * Returns a thenable that gives the document we requested.
+ * 
  * @param db	The db to query. 
  * @param id 	The id of the document OR a set of parameters to match.
  * @return		A promise for the document/s.
@@ -49,6 +50,19 @@ export const update = async (db, id, changes) => (
 )
 
 /**
+ * Deletes a particular document.
+ * 
+ * @param db	The db to query. 
+ * @param id 	The id of the document OR a set of parameters to match.
+ * @return		A promise for deletion of the documents.
+ */
+export const drop = async (db, id) => (
+	typeof id !== 'object' 
+		? await db.deleteOne({ _id: mongoose.Types.ObjectId(id) })
+		: await db.deleteMany(id)
+)
+
+/**
  * Wraps a function around a null check 
  * 
  * @param	f				The function to wrap.
@@ -66,5 +80,6 @@ export const safe = (f, error) => (
 export default {
 	select,
 	update,
+	drop,
 	safe,
 }

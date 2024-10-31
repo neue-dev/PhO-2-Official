@@ -86,7 +86,20 @@ const CONFIG = (() => {
     modal.select('.action.cancel').c('red')
   )
 
+  const action_delete = (modal, form, target, callback) => (
+    modal.modal_action('delete', () => 
+      form.form_submit(target)
+        .then(() => callback())
+        .then(() => modal.modal_close())
+        .catch(() => (alert))),
+    modal.select('.action.delete')
+      .c('red', 'basic', 'left', 'floated')
+  )
+
   // Modal buttons
+  action_delete(users_modal, users_form, './admin/deleteuser', load_users)
+  action_delete(problems_modal, problems_form, './admin/deleteproblem', load_problems)
+
   action_cancel(config_modal)
   action_cancel(users_modal)
   action_cancel(problems_modal)
@@ -199,6 +212,10 @@ const CONFIG = (() => {
     users_form.form_field_value('status', user.status),
     users_form.form_field_value('category', user.category),
     users_modal.modal_header(user.username),
+    users_modal.select('.action.delete').s(
+      user.isAdmin 
+        ? { visibility: 'hidden' }
+        : { visibility: 'visible' }),
     users_modal.modal_open()
   )
     
