@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-01 06:36:47
+ * @ Modified time: 2024-11-01 07:17:14
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -470,12 +470,14 @@ const DOM = (() => {
 	 * Creates a stateful modal with the given id.
 	 * Methods are:
 	 * 
-	 * 	modal_open()			Launches the modal.
-	 * 	modal_close()			Deactivates the modal.
-	 * 	modal_header()		Set the header of the modal.
-	 *  modal_action()		Add an action to the modal.
-	 * 	modal_append()		Append content to the body of the modal.
-	 * 	modal_clear()			Clears the body of the modal.
+	 * 	modal_open()					Launches the modal.
+	 * 	modal_close()					Deactivates the modal.
+	 * 	modal_header()				Set the header of the modal.
+	 *  modal_action()				Add an action to the modal.
+	 * 	modal_action_show()		Enables an action.
+	 * 	modal_action_hide()		Deactivates an action.
+	 * 	modal_append()				Append content to the body of the modal.
+	 * 	modal_clear()					Clears the body of the modal.
 	 * 
 	 * @param id 			An id for the modal.
 	 * @param modal 	The element to use.
@@ -547,6 +549,16 @@ const DOM = (() => {
 					modal
 				),
 
+				modal_action_show: (action) => (
+					modal.select(`.action.${action}`)
+						.s({ display: 'inline-block' })
+				),
+
+				modal_action_hide: (action) => (
+					modal.select(`.action.${action}`)
+						.s({ display: 'none' })
+				),
+
 				// Add elements to the body of the modal
 				modal_append: (...elements) => (
 					modal.select('.content').append(...elements),
@@ -571,8 +583,11 @@ const DOM = (() => {
 	 * Creates a stateful form with the given id.
 	 * Methods are:
 	 * 
-	 * 	form_field()			Adds a new field to the form.
-	 * 	form_submit()			Submits the form.
+	 * 	form_field_value()	Get-setter for field values.
+	 * 	form_field_type()		Get-setter for field types.
+	 * 	form_field()				Adds a new field to the form.
+	 * 	form_submit()				Submits the form.
+	 * 	form_clear()				Clears field values.
 	 * 
 	 * @param id 		The id of the form.
 	 * @param form 	The form element.
@@ -705,7 +720,8 @@ const DOM = (() => {
 							: element('input').c('input'),
 
 						// The container
-						element('div').c('field')
+						// Fields are required by default
+						element('div').c('field', 'req')
 					)
 				),
 
@@ -714,7 +730,7 @@ const DOM = (() => {
 
 					// Check that all fields are valid
 					Array.from(form.children).every(child => 
-						child.cis('field') 
+						child.cis('field', 'req')
 							? form.form_field_value(child.select('.input').d()) != null
 							: true)
 
@@ -733,6 +749,14 @@ const DOM = (() => {
 								? null
 								: form.append(element('div').c('form', 'warning').t('Some fields are invalid.')), 
 							Promise.reject(false))
+				),
+
+				// Clears the input values of the form
+				form_clear: () => (
+					Array.from(form.children).map(child => 
+						child.cis('field') 
+							? form.form_field_value(child.select('.input').d(), null)
+							: true)
 				),
 				
 				// Return form

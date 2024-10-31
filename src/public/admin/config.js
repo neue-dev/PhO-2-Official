@@ -118,6 +118,15 @@ const CONFIG = (() => {
     modal.select('.action.cancel').c('red')
   )
 
+  const action_create = (modal, form, target, callback) => (
+    modal.modal_action('create', () =>
+      form.form_submit(target)
+        .then(() => callback())
+        .then(() => modal.modal_close())
+        .catch(() => (alert))),
+    modal.select('.action.create').c('blue')
+  )
+
   const action_delete = (modal, form, target, callback) => (
     modal.modal_action('delete', () => 
       form.form_submit(target)
@@ -139,6 +148,9 @@ const CONFIG = (() => {
   action_apply(config_modal, config_form, './admin/editconfig', load_config)
   action_apply(users_modal, users_form, './admin/edituser', load_users)
   action_apply(problems_modal, problems_form, './admin/editproblem', load_problems)
+
+  action_create(users_modal, users_form, './admin/registeruser', load_users)
+  action_create(problems_modal, problems_form, './admin/registerproblem', load_problems)
 
   // Set up the modals
   config_modal
@@ -194,13 +206,14 @@ const CONFIG = (() => {
     problems_form.form_field_value('name', problem.name),
     problems_form.form_field_value('type', problem.type),
     problems_form.form_field_value('status', problem.status),
-
-    // Problem code
     problems_form.form_field_value('code', problem.code.number + problem.code.alpha),
     problems_form.form_field_value('answer', problem.answer.mantissa + 'e' + problem.answer.exponent),    
     problems_form.form_field_value('tolerance', problem.tolerance),
     problems_form.form_field_value('points', problem.points),
     problems_modal.modal_header(problem.name),
+    problems_modal.modal_action_hide('create'),
+    problems_modal.modal_action_show('delete'),
+    problems_modal.modal_action_show('apply'),
     problems_modal.modal_open()
   )
 
@@ -210,11 +223,14 @@ const CONFIG = (() => {
     users_form.form_field_value('username', user.username),
     users_form.form_field_value('status', user.status),
     users_form.form_field_value('category', user.category),
+    users_form.select('.field.password').uc('req'),
     users_modal.modal_header(user.username),
-    users_modal.select('.action.delete').s(
-      user.isAdmin 
-        ? { visibility: 'hidden' }
-        : { visibility: 'visible' }),
+    users_modal.modal_action_hide('create'),
+    users_modal.modal_action_show('delete'),
+    users_modal.modal_action_show('apply'),
+    user.isAdmin 
+      ? users_modal.modal_action_hide('delete') 
+      : null,
     users_modal.modal_open()
   )
     
@@ -281,12 +297,21 @@ const CONFIG = (() => {
 
   // Set up the global buttons
   users_new.listen('click', () => (
+    users_form.form_clear(),
+    users_form.select('.field.password').c('req'),
     users_modal.modal_header('create new user'),
+    users_modal.modal_action_hide('delete'),
+    users_modal.modal_action_hide('apply'),
+    users_modal.modal_action_show('create'),
     users_modal.modal_open()
   ))
 
   problems_new.listen('click', () => (
+    problems_form.form_clear(),
     problems_modal.modal_header('create new problem'),
+    problems_modal.modal_action_hide('delete'),
+    problems_modal.modal_action_hide('apply'),
+    problems_modal.modal_action_show('create'),
     problems_modal.modal_open()
   ))
 
