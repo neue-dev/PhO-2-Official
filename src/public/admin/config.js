@@ -88,24 +88,24 @@ const CONFIG = (() => {
   // Edit button
   const edit_button = () => 
     DOM.td().s(auto_width).c('right', 'aligned').append(
-      DOM.buttons().append(DOM.button().t('Edit')))
+      DOM.buttons().append(DOM.button().c('edit-button').t('Edit')))
 
   // Edit delete button
   const edit_delete_button = () => 
     DOM.td().s(auto_width).c('right', 'aligned').append(
       DOM.buttons().append(
-        DOM.button().t('Edit'),
+        DOM.button().t('Edit').c('edit-button'),
         DOM.or(),
-        DOM.button().t('Delete').c('negative')))
+        DOM.button().t('Delete').c('delete-button', 'negative')))
 
   // Config table mapper
   const config_table_mapper = (parameter) => (
     tr().append(
       td_label().select(0).t(parameter.key).parent(),
       td().append(
-        parameter.type == 'url'
-          ? DOM.link().t(parameter.value).ref(parameter.value) : parameter.type == 'date'
-          ? DOM.span().t(date(parameter.value)) : parameter.type == 'duration'
+        parameter.type === 'url'
+          ? DOM.link().t(parameter.value).ref(parameter.value) : parameter.type === 'date'
+          ? DOM.span().t(date(parameter.value)) : parameter.type === 'duration'
           ? DOM.span().t(parameter.value) 
           : DOM.span().t(parameter.value)),
       edit_button()
@@ -117,11 +117,15 @@ const CONFIG = (() => {
     tr().append(
       td_label().select(0).t(problem.code.number + problem.code.alpha).parent(),
       td().t(problem.name),
+      td_label().select(0).t(problem.status)
+        .c(problem.status === 'active' ? 'default' : 'orange')
+        .c(problem.status === 'active' ? 'default' : 'basic').parent(),
       td().t(problem.answer.mantissa + ' &times; 10').append(
         DOM.sup().t(problem.answer.exponent)),
       td().t(problem.tolerance),
       edit_delete_button()
-        .listen('click', (e) => problems_modal.modal_open()))
+        .select('.edit-button').listen('click', (e) => problems_modal.modal_open()).parent()
+        .select('.delete-button').listen('click', (e) => problems_modal.modal_open()).parent().parent())
   )
 
   // User table mapper
@@ -132,20 +136,21 @@ const CONFIG = (() => {
         user.isAdmin 
           ? DOM.label().c('red').t('admin')
           : DOM.label().t(user.category).c(
-            user.category == 'junior' 
+            user.category === 'junior' 
               ? 'default'
               : 'black'
           )),
       td_label().select(0).t(user.status)
-        .c(user.status == 'spectating' 
-          ? 'blue' : user.status == 'disqualified' 
+        .c(user.status === 'spectating' 
+          ? 'blue' : user.status === 'disqualified' 
           ? 'orange'
           : 'default')
-        .c(user.status == 'participating' 
+        .c(user.status === 'participating' 
           ? 'default' 
           : 'basic').parent(),
       edit_delete_button()
-        .listen('click', (e) => users_modal.modal_open()))
+        .select('.edit-button').listen('click', (e) => users_modal.modal_open()).parent()
+        .select('.delete-button').listen('click', (e) => users_modal.modal_open()).parent().parent())
   )
 
   // Set up the tables
