@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:20:42
- * @ Modified time: 2024-11-01 04:48:52
+ * @ Modified time: 2024-11-01 05:39:08
  * @ Description:
  * 
  * Deals with auth-related tasks.
@@ -11,7 +11,7 @@ import 'dotenv/config'
 
 import jwt from 'jsonwebtoken';
 
-import { send_file } from './io.js';
+import { send_file, fail, succeed } from './io.js';
 import { User } from './models/user.js';
 
 export const SERVER_HOME_URL = '/public/home.html'
@@ -78,7 +78,7 @@ export const authorized_fail = (func) => authorized_decorator(func, (res) => fai
 const authorized_user_decorator = (func, fail) => (
   
   // Wrapped func
-  authorized_redirect((req, res) => {
+  authorized_decorator((req, res) => {
     
     // Grab tokens
     const { 
@@ -105,7 +105,7 @@ const authorized_user_decorator = (func, fail) => (
       console.error(error);
       return fail(res);
     }
-  })
+  }, fail)
 )
 
 // A decorator for authorized user checks

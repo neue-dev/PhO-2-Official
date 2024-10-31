@@ -1,20 +1,16 @@
 import 'dotenv/config'
 
 import express from 'express';
-import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-import { generate, refresh } from '../server/auth.js';
-
-// The router to use
-export const auth_router = express.Router();
-
-//* Models
+import { generate_token, refresh_token } from '../auth.js';
 import { User } from '../models/user.js';
 
-//* Refresh tokens
-let refreshTokens = [];
+
+export const auth_router = express.Router();
+
+const refreshTokens = [];
 
 //* Authentication Routes
 auth_router.post('/login', async (req, res) => {
@@ -52,8 +48,8 @@ auth_router.post('/login', async (req, res) => {
           if(response) {
 
             // Create signed jwt token
-            const accessToken = generate(user);
-            const refreshToken = refresh(user);
+            const accessToken = generate_token(user);
+            const refreshToken = refresh_token(user);
             if(!refreshTokens.includes(refreshToken)) refreshTokens.push(refreshToken);
             
             return res.status(200).cookie('authorization', { accessToken, refreshToken }, {
@@ -109,7 +105,7 @@ auth_router.post('/token', (req, res) => {
         error: "The refresh token could not be verified.",
       }).clearCookie('authorization').status(403)
 
-    const accessToken = generate(user);
+    const accessToken = generate_token(user);
     
     if(user)
       return res.status(200).cookie('authorization', { accessToken, refreshToken }, {
