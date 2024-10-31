@@ -169,8 +169,8 @@ admin_router.post('/registeruser', (req, res) => {
 
 admin_router.post('/edituser', (req, res) => {
   admin(req, res, async userData => {
-    const { username, password, category, status } = req.body;
-    const user = await User.findOne({ username: username });
+    const { _id, username, password, category, status } = req.body;
+    const user = await User.findOne({ _id: _id });
     let userStatus = status;
     let userCategory = category;
     
@@ -187,9 +187,10 @@ admin_router.post('/edituser', (req, res) => {
           await bcrypt.hash(password, saltRounds)
           .then(async hash => {
             await User.updateOne(
-              { username: username },
+              { _id: _id },
               { $set: 
                 {
+                  username: username,
                   password: hash,
                   category: userCategory,
                   status: userStatus,
@@ -285,15 +286,15 @@ admin_router.post('/configlist', (req, res) => {
 
 admin_router.post('/editconfig', (req, res) => {
   admin(req, res, async userData => {
-    const { key, value } = req.body;
-    const configParameter = await Config.findOne({ key: key });
-
+    const { _id, key, value } = req.body;
+    const configParameter = await Config.findOne({ _id: mongoose.Types.ObjectId(_id) });
+    
     // Check if config parameter exists
     if(configParameter) {
       try {
         await Config.updateOne(
-          { key: key },
-          { value: value });
+          { _id: _id },
+          { key: key, value: value });
 
         // Update the environment variables too
         // Is this a good idea? Might it break something along the way? I hope fucking not!
@@ -419,33 +420,24 @@ admin_router.post('/disableofficial', (req, res) => {
 
 admin_router.post('/editproblem', (req, res) => {
   admin(req, res, async userData => {
-    const { name, type, code, answer, tolerance, points, status } = req.body;
-    const problemName = await Problem.findOne({ name: name });
-
-    const pcode = code || problemName.code;
-    const ptype = type || problemName.type;
-    const panswer = answer || problemName.answer;
-    const ptolerance = tolerance || problemName.tolerance;
-    const ppoints = points || problemName.points;
-    const pstatus = status || problemName.status;
-
-    let problemCode;
-    if(code) problemCode = await Problem.findOne({ "code.number": code.number, "code.alpha": code.alpha });
-
-    // Check if problem code exists
-    if (problemCode)
-      return res.json({
-        message: "Problem code exists.",
-        error: "Cannot duplicate problem code.",
-      }).status(401);
+    const { _id, name, type, code, answer, tolerance, points, status } = req.body;
+    const problem = await Problem.findOne({ _id: _id });
+    const pname = name || problem.name;
+    const pcode = code || problem.code;
+    const ptype = type || problem.type;
+    const panswer = answer || problem.answer;
+    const ptolerance = tolerance || problem.tolerance;
+    const ppoints = points || problem.points;
+    const pstatus = status || problem.status;
 
     // Try to save to database
     try {
-      let problem = await Problem.findOne({ name: name });
+      let problem = await Problem.findOne({ _id: _id });
       await Problem.updateOne(
-        { name: name },
+        { _id: _id },
         { $set: 
           {
+            name: pname,
             type: ptype,
             code: pcode,
             answer: panswer,
