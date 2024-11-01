@@ -67,39 +67,36 @@ const CONFIG = (() => {
   const users_new = new_button();
   const problems_new = new_button();
 
-  // Problem mappers
-  const code_mapper = (code) => ({ number: code.match(/^[0-9]*/)[0], alpha: code.match(/[a-zA-Z]*$/)[0] })
-  const answer_mapper = (answer) => ({ mantissa: answer.split('e')[0], exponent: answer.split('e')[1] ?? '0' })
-
   // Modal forms
-  const config_form = 
-    DOM.stateful_form('config-form')
-      .form_field('_id', { type: 'text' })
-      .form_field('Key', { type: 'text' })
-      .form_field('Value', { type: 'text' }, { mapper: { 'datetime-local': (value) => new Date(value).getTime() } })
-        .select('.field._id').s({ display: 'none' }).parent()
-        .select('.field.key').s({ display: 'none' }).parent()
+  const config_form = DOM.stateful_form('config-form')
+    .form_field('_id', { type: 'text' })
+    .form_field('Key', { type: 'text' })
+    .form_field('Value', { type: 'text' }, { mapper: { 'datetime-local': (value) => new Date(value).getTime() } })
+      .select('.field._id').s({ display: 'none' }).parent()
+      .select('.field.key').s({ display: 'none' }).parent()
 
-  const users_form = 
-    DOM.stateful_form('users-form')
-      .form_field('_id', { type: 'text' })
-      .form_field('Username', { type: 'text' })
-      .form_field('Password', { type: 'text' })
-      .form_field('Status', { type: 'select', options: [ 'participating', 'spectating', 'disqualified' ] })
-      .form_field('Category', { type: 'select', options: [ 'junior', 'senior' ] })
-        .select('.field._id').s({ display: 'none' }).parent()
+  const users_form = DOM.stateful_form('users-form')
+    .form_field('_id', { type: 'text' })
+    .form_field('Username', { type: 'text' })
+    .form_field('Password', { type: 'text' })
+    .form_field('Status', { type: 'select', options: [ 'participating', 'spectating', 'disqualified' ] })
+    .form_field('Category', { type: 'select', options: [ 'junior', 'senior' ] })
+      .select('.field._id').s({ display: 'none' }).parent()
 
-  const problems_form = 
-    DOM.stateful_form('problems-form')
-      .form_field('_id', { type: 'text' })
-      .form_field('Name', { type: 'text' })
-      .form_field('Code', { type: 'text' }, { checker: (value) => Promise.resolve(true), mapper: code_mapper })
-      .form_field('Answer', { type: 'text' }, { checker: (value) => Promise.resolve(true), mapper: answer_mapper })
-      .form_field('Tolerance', { type: 'text' })
-      .form_field('Type', { type: 'select', options: [ 'official', 'debug' ] })
-      .form_field('Status', { type: 'select', options: [ 'active', 'disabled' ] })
-      .form_field('Points', { type: 'text' })
-        .select('.field._id').s({ display: 'none' }).parent()
+  const problems_form = DOM.stateful_form('problems-form')
+    .form_field('_id', { type: 'text' })
+    .form_field('Name', { type: 'text' })
+    .form_field('Code', { type: 'text' }, { 
+      checker: Formatter.valid_problem_code, 
+      mapper: Formatter.lift_problem_code, })
+    .form_field('Answer', { type: 'text' }, { 
+      checker: Formatter.valid_submission_answer, 
+      mapper: Formatter.lift_submission_answer })
+    .form_field('Tolerance', { type: 'text' })
+    .form_field('Type', { type: 'select', options: [ 'official', 'debug' ] })
+    .form_field('Status', { type: 'select', options: [ 'active', 'disabled' ] })
+    .form_field('Points', { type: 'text' })
+      .select('.field._id').s({ display: 'none' }).parent()
 
   // ! handle with toasts
   const action_apply = (modal, form, target, callback) => (
@@ -107,7 +104,7 @@ const CONFIG = (() => {
       form.form_submit(target)
         .then(() => callback())
         .then(() => modal.modal_close())
-        .catch(() => (alert))),
+        .catch(alert)),
     modal.select('.action.apply').c('black')
   )
 
@@ -121,7 +118,7 @@ const CONFIG = (() => {
       form.form_submit(target)
         .then(() => callback())
         .then(() => modal.modal_close())
-        .catch(() => (alert))),
+        .catch(alert)),
     modal.select('.action.create').c('blue')
   )
 
@@ -130,7 +127,7 @@ const CONFIG = (() => {
       form.form_submit(target)
         .then(() => callback())
         .then(() => modal.modal_close())
-        .catch(() => (alert))),
+        .catch(alert)),
     modal.select('.action.delete')
       .c('red', 'basic', 'left', 'floated')
   )

@@ -40,8 +40,10 @@ const PROGRESS = (() => {
 
   // Forms
   problems_form.form_field('_id', { type: 'text' });
-  problems_form.form_field('answer', { type: 'text' }, 
-    { checker: () => Promise.resolve(true), mapper: (value) => (value) });
+  problems_form.form_field('answer', { type: 'text' }, { 
+    checker: Formatter.valid_submission_answer, 
+    mapper: Formatter.lift_submission_answer 
+  });
   problems_form.select('.field._id').s({ display: 'none' })
 
   // Search bar
@@ -110,6 +112,7 @@ const PROGRESS = (() => {
       .filter(submission => submission.verdict === 'correct').length > 0
 
   const problems_table_handler = (problem) => (
+    problems_form.form_field_value('_id', problem._id),
     problems_modal.modal_header(problem.name),
     problems_modal.modal_clear(),
     problems_modal.modal_append(
@@ -138,7 +141,7 @@ const PROGRESS = (() => {
   // Comparators
   const problems_table_comparator = (a, b) => 
     (a.code.number + a.code.alpha).localeCompare(b.code.number + b.code.alpha)
-  const submissions_table_comparator = (a, b) => a.timestamp - b.timestamp
+  const submissions_table_comparator = (a, b) => b.timestamp - a.timestamp
 
   // Problem table mapper
   const problems_table_mapper = (problem) => (
@@ -169,7 +172,10 @@ const PROGRESS = (() => {
   )
 
   const action_submit = (modal) => (
-    modal.modal_action('submit', () => modal.modal_close()),
+    modal.modal_action('submit', () => 
+      problems_form.form_submit('/user/submit')
+        .then(() => modal.modal_close())
+        .catch(alert)),
     modal.select('.action.submit').c('blue')
   )
 
