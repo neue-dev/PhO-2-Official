@@ -102,6 +102,9 @@ admin_router.post('/registeruser', admin((req, res) => {
     score: 0, isAdmin: false, attempts: [], submissions: [], lastSubmit: 0, lastMessage: 0, 
   }
 
+  // Ensure we capture all inputs
+  Object.keys(params).map(key => params[key] = params[key] ? params[key] : req.body['user-' + key])
+
   // This is so sad...
   bcrypt.hash(password, SALT_ROUNDS)
     .then(hash =>
@@ -123,9 +126,10 @@ admin_router.post('/registeruser', admin((req, res) => {
  */
 admin_router.post('/registerproblem', admin((req, res) => {
   const { name, type, status, code, answer, tolerance, points } = req.body;
-  const params = {
-    name, type, status, code, answer, tolerance, points,
-  } 
+  const params = { name, type, status, code, answer, tolerance, points }
+  
+  // Ensure we capture all inputs
+  Object.keys(params).map(key => params[key] = params[key] ? params[key] : req.body['problem-' + key])
 
   create(Problem, 'problems', params)
     .then(safe(problem => succeed(res, 'Problem successfully created.')))
@@ -167,6 +171,9 @@ admin_router.post('/editconfig', admin((req, res, user) => {
   const { _id, key, value } = req.body;
   const changes = { /*key,*/ value };
 
+  // Ensure we capture all inputs
+  Object.keys(changes).map(key => changes[key] = changes[key] ? changes[key] : req.body['config-' + key])
+
   select(Config, _id)
     .then(safe(parameter => update(Config, _id, changes), 'Parameter does not exist.'))
     .then(() => process.env[key] = value)
@@ -181,6 +188,9 @@ admin_router.post('/editproblem', admin((req, res, user) => {
   const { _id, name, type, code, answer, tolerance, points, status } = req.body;
   const changes = { name, type, code, answer, tolerance, points, status };
 
+  // Ensure we capture all inputs
+  Object.keys(changes).map(key => changes[key] = changes[key] ? changes[key] : req.body['problem-' + key])
+
   select(Problem, _id)
     .then(safe(problem => update(Problem, _id, changes), 'Problem does not exist.'))
     .then(() => succeed(res, 'Problem edited successfully.'))
@@ -193,6 +203,9 @@ admin_router.post('/editproblem', admin((req, res, user) => {
 admin_router.post('/edituser', admin((req, res, user) => {
   const { _id, username, password, category, status } = req.body;
   const changes = { username, category, status }
+
+  // Ensure we capture all inputs
+  Object.keys(changes).map(key => changes[key] = changes[key] ? changes[key] : req.body['user-' + key])
 
   // Invalid password
   if(!password || password === '')

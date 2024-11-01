@@ -85,10 +85,10 @@ const CONFIG = (() => {
 
   const problems_form = DOM.stateful_form('problems-form')
     .form_field('_id', { type: 'text' })
-    .form_field('Name', { type: 'text' })
-    .form_field('Code', { type: 'text' }, { 
+    .form_field('Name', { key: 'problem-name', type: 'text' })
+    .form_field('Code', { key: 'problem-code', type: 'text' }, { 
       checker: Formatter.valid_problem_code, 
-      mapper: Formatter.lift_problem_code, })
+      mapper: Formatter.lift_problem_code })
     .form_field('Answer', { type: 'text' }, { 
       checker: Formatter.valid_submission_answer, 
       mapper: Formatter.lift_submission_answer })
@@ -199,10 +199,10 @@ const CONFIG = (() => {
   // Handles clicks of problem table rows
   const problems_table_handler = (problem) => (
     problems_form.form_field_value('_id', problem._id),
-    problems_form.form_field_value('name', problem.name),
+    problems_form.form_field_value('problem-name', problem.name),
     problems_form.form_field_value('type', problem.type),
     problems_form.form_field_value('status', problem.status),
-    problems_form.form_field_value('code', problem.code.number + problem.code.alpha),
+    problems_form.form_field_value('problem-code', problem.code.number + problem.code.alpha),
     problems_form.form_field_value('answer', problem.answer.mantissa + 'e' + problem.answer.exponent),    
     problems_form.form_field_value('tolerance', problem.tolerance),
     problems_form.form_field_value('points', problem.points),
