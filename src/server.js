@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 08:26:47
- * @ Modified time: 2024-11-01 04:30:24
+ * @ Modified time: 2024-11-01 10:36:32
  * @ Description:
  * 
  * The main thread on the server.
@@ -63,6 +63,7 @@ const SERVER = (() => {
     '/pho2/pho2.js',
     '/pho2/darkmode.js',
     '/pho2/timer.js',
+    '/pho2/formatter.js',
     '/pho2/trademark.js',
   ]
 
