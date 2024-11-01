@@ -177,11 +177,12 @@ const CONFIG = (() => {
     const table = tab.select('table')
     const value = e.target.value.toUpperCase();
 
-    // Filter it
+    // Filter and sort it
     table.table_filter((data, text) =>  
       text
         .toUpperCase()
         .includes(value))
+    table.table_sort(table.comparator);
 
     // Re-render it
     table.table_map(table.mapper);
@@ -233,6 +234,12 @@ const CONFIG = (() => {
       : null,
     users_modal.modal_open()
   )
+
+  // Comparators
+  const config_table_comparator = (a, b) => 0
+  const problems_table_comparator = (a, b) => 
+    (a.code.number + a.code.alpha).localeCompare(b.code.number + b.code.alpha)
+  const users_table_comparator = (a, b) => a.username.localeCompare(b.username)
     
   // Config table mapper
   const config_table_mapper = (parameter) => (
@@ -327,10 +334,13 @@ const CONFIG = (() => {
     .table_header('Problem', '', '', '')
       .select('thead').select(0).append(th().append(problems_new)).parent()
 
-  // Mappers
+  // Mappers and comparators
   config_table.mapper = config_table_mapper
+  config_table.comparator = config_table_comparator
   users_table.mapper = users_table_mapper
+  users_table.comparator = users_table_comparator
   problems_table.mapper = problems_table_mapper
+  problems_table.comparator = problems_table_comparator
 
   // Save the config
   function load_config() {
@@ -338,6 +348,7 @@ const CONFIG = (() => {
       .then(({ config }) => PHO2.config(config))
       .then(() => config_label.t(PHO2.config().length))
       .then(() => config_table.table_data(PHO2.config()))
+      .then(() => config_table.table_sort(config_table.comparator))
       .then(() => config_table.table_map(config_table.mapper))
   }
 
@@ -347,6 +358,7 @@ const CONFIG = (() => {
       .then(({ users }) => PHO2.users(users))
       .then(() => users_label.t(PHO2.users().length))
       .then(() => users_table.table_data(PHO2.users()))
+      .then(() => users_table.table_sort(users_table.comparator))
       .then(() => users_table.table_map(users_table.mapper))
   }
 
@@ -356,6 +368,7 @@ const CONFIG = (() => {
       .then(({ problems }) => PHO2.problems(problems))
       .then(() => problems_label.t(PHO2.problems().length))
       .then(() => problems_table.table_data(PHO2.problems()))
+      .then(() => problems_table.table_sort(problems_table.comparator))
       .then(() => problems_table.table_map(problems_table.mapper))
   }
 

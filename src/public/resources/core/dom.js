@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-01 07:17:14
+ * @ Modified time: 2024-11-01 08:08:47
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -375,6 +375,7 @@ const DOM = (() => {
 	 * 	table_data()			Get-setter for the data associated with the table.
 	 * 	table_header()		Setter for the table header.
 	 * 	table_map()				Sets how the data maps to rows.
+	 * 	table_sort()			Sorts the rows according to a comparator that works on the data.
 	 * 	table_filter()		Applies a filter to the table.		
 	 * 
 	 * @param id			Identifier for the element and its store in localStorage. 
@@ -432,6 +433,13 @@ const DOM = (() => {
 									? { display: '' }
 									: { display: 'none' }))),
 					table
+				),
+
+				// Sorts the rows of the table
+				table_sort: (comparator) => (
+					table.state('view', 
+						table.state('view')
+							.sort(comparator))
 				),
 				
 				// Applies a filter to the table data
@@ -608,14 +616,8 @@ const DOM = (() => {
 					((field) => (
 						value !== undefined
 							? (field.value = value, 
-
-								// Indicate input occurred
 								field.dispatch('input'),
-
-								// Return the form
 								form)
-
-							// Return the state
 							: (form.state(name))
 
 					// Pass the field
@@ -637,14 +639,13 @@ const DOM = (() => {
 								(({
 									text: () => (null),
 									date: () => (type = 'datetime-local'),
-									select: () => (options.options.map(option => field.append(element('option').t(option)))),
+									select: () => (options.options.map(option => 
+										field.append(element('option').t(option)))),
 									duration: () => (type = 'number')
 								})[type] || (() => null)) (),
 
-								// Update the type
+								// Update type then return form (or current type)
 								type && field.a('type', type),
-								
-								// Return form or current type
 								type ? form : field.a('type'))
 
 							// Field does not exist
