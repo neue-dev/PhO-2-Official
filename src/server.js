@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 08:26:47
- * @ Modified time: 2024-11-01 10:36:32
+ * @ Modified time: 2024-11-02 01:31:10
  * @ Description:
  * 
  * The main thread on the server.
@@ -139,8 +139,8 @@ const SERVER = (() => {
     // Dashboard
     app.get('/dashboard', authorized_user_redirect((req, res, user) => (
       user.isAdmin
-        ? send_file(res, './public/admin/dashboard.html')
-        : send_file(res, './public/user/dashboard.html')
+        ? write_file(res, './public/admin/dashboard.html', { CONTEST_FORUM_URL: process.env.CONTEST_FORUM_URL })
+        : send_file(res, './public/user/dashboard.html', { CONTEST_FORUM_URL: process.env.CONTEST_FORUM_URL })
     )))
 
     // Config and progress pages
