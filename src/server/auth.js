@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:20:42
- * @ Modified time: 2024-11-01 05:39:08
+ * @ Modified time: 2024-11-01 08:52:35
  * @ Description:
  * 
  * Deals with auth-related tasks.
@@ -11,10 +11,9 @@ import 'dotenv/config'
 
 import jwt from 'jsonwebtoken';
 
-import { send_file, fail, succeed } from './io.js';
+import { send_file, fail, succeed, SERVER_HOME_URL } from './io.js';
 import { User } from './models/user.js';
 
-export const SERVER_HOME_URL = '/public/home.html'
 
 /**
  * Generates a new token for the session

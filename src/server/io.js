@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:33:05
- * @ Modified time: 2024-11-01 04:35:38
+ * @ Modified time: 2024-11-01 08:52:48
  * @ Description:
  * 
  * Handles server IO responsibilities.
@@ -20,6 +20,7 @@ const __dirname = dirname(path.join(__filename, '..'));
 
 // Constants
 export const SERVER_PUBLIC_URL = __dirname + '/public/resources'
+export const SERVER_HOME_URL = '/public/home.html'
 
 /**
  * Sends a file to the client.
@@ -85,4 +86,7 @@ export default {
 	redirect,
 	fail,
 	succeed,
+
+	SERVER_PUBLIC_URL,
+	SERVER_HOME_URL,
 }
