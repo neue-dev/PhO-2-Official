@@ -1,118 +1,132 @@
-const overall_table = document.querySelectorAll(".overall-table")[0];
-const junior_table = document.querySelectorAll(".junior-table")[0];
-const senior_table = document.querySelectorAll(".senior-table")[0];
-filterFunc([overall_table, junior_table, senior_table]);
 
-document.addEventListener('DOMContentLoaded', function() {
-  M.Sidenav.init(document.querySelectorAll('.sidenav'), {});
-  M.Tabs.init(document.querySelectorAll('.leaderboard-tabs'), {});
+const LEADERBOARD = (() => {
 
-  loadLeaderboard();
-});
+  /**
+   *  Reusable components and styles
+   */
 
-const loadLeaderboard = () => {
-  createXHR('./user/problemlist', 'POST', {}, data => {
-    data.problems.forEach(problem => {
-      DATA.problems[problem._id] = problem;
-    });
+  // Some convenience styles
+  const auto_width = { width: 0 };
+  const full_width = { width: document.width };
 
-    createXHR('./user/scorelist', 'POST', {}, data => {
-      data.users.forEach(user => {
+  // Built in components
+  const { tr, td, th, label, link, span, button, icon } = C.LIB;
 
-        DATA.users[user._id] = {
-          _id: user._id,
-          username: user.username,
-          category: user.category,
-          score: (function(){
-            let sum = 0; 
-            let done = []; user.attempts.forEach(problem => {
-              if(Object.keys(DATA.problems).includes(problem) && !done.includes(problem)) {
-                sum += DATA.problems[problem].points;
-                done.push(problem);
-              }
-            });
+  // Extended components
+  const tr_hoverable = 
+    C.new(() => tr().c('hoverable-row'));
+  const td_auto = 
+    C.new(() => td().s(auto_width));
+  const td_auto_right = 
+    C.new(() => td_auto().c('right', 'aligned'))
+  const td_auto_label = 
+    C.new(() => td_auto().append(label()))
 
-            return sum;
-          })()
-        }
+  // Edit and delete buttons
+  const new_button = 
+    C.new(() => button().c('new-button', 'blue', 'right', 'labeled', 'icon').t('new')
+      .append(icon().c('plus')))
 
-        // if(user.score){
-        //   DATA.users[user_id].score = user.score;
-        // }
-      });
-
-      displayLeaderboard(overall_table, junior_table, senior_table);
-    });
-  });
-}
-
-const displayLeaderboard = (overall_table, junior_table, senior_table) => {
-  let userData = [];
-  let overall_rank = 1, overall_index = 1, overall_pscore = Number.POSITIVE_INFINITY;
-  let junior_rank = 1, junior_index = 1, junior_pscore = Number.POSITIVE_INFINITY;
-  let senior_rank = 1, senior_index = 1, senior_pscore = Number.POSITIVE_INFINITY;
-
-  Object.keys(DATA.users).forEach(user => {
-    userData.push(DATA.users[user]);
-  });
-
-  userData.sort((a, b) => (function(){
-    if(a.score == b.score)
-      return `${a.username}`.localeCompare(b.username);
-    return b.score - a.score;
-  })());
-
-  userData.forEach(user => {
-    let user_data = document.createElement('tr');
-    let user_rank = document.createElement('td');
-    let user_name = document.createElement('td');
-    let user_score = document.createElement('td');
-
-    let user_catdata = document.createElement('tr');
-    let user_catrank = document.createElement('td');
-    let user_catname = document.createElement('td');
-    let user_catscore = document.createElement('td');
-
-    if(user.score < overall_pscore){
-      overall_rank = overall_index;
-      overall_pscore = user.score;
-    }
-    overall_index++;
-
-    if(user.category == 'junior'){
-      if(user.score < junior_pscore){
-        junior_rank = junior_index;
-        junior_pscore = user.score;
-      }
-      junior_index++;
-    }
+  // Tabs and tab menu
+  const tabs = 
+    DOM.stateful_tabs('leaderboard-tabs', DOM.select('.tabs'));
     
-    if(user.category == 'senior'){
-      if(user.score < senior_pscore){
-        senior_rank = senior_index;
-        senior_pscore = user.score;
-      }
-      senior_index++;
-    }
+  const tabs_menu = 
+    DOM.stateful_menu('leaderboard-menu', DOM.select('.tabs-menu'))
+      .menu_on_selected(c => tabs.tabs_active_tab(c))
+      .menu_selected_item('.all');
 
-    user_rank.innerHTML = `<div>${overall_rank + '.'}</div>`;
-    user_catrank.innerHTML = `<div>${(user.category == 'junior' ? junior_rank : (user.category == 'senior' ? senior_rank : '')) + '.'}<div>`;
-    user_name.innerHTML = user_catname.innerHTML = `<b>${user.username}</b>`;
-    user_score.innerHTML = user_catscore.innerHTML = `<div>${user.score}</div>`;
-    user_rank.style.maxWidth = user_catrank.style.maxWidth = '32px';
+  // Labels and Tables
+  const all_label = DOM.select('.all-label');
+  const all_table = DOM.stateful_table('all-table', DOM.select('.all-table'));
 
-    user_data.appendChild(user_rank);
-    user_data.appendChild(user_name);
-    user_data.appendChild(user_score);
-    overall_table.appendChild(user_data);
+  const junior_label = DOM.select('.junior-label');
+  const junior_table = DOM.stateful_table('junior-table', DOM.select('.junior-table'));
+  
+  const senior_label = DOM.select('.senior-label');
+  const senior_table = DOM.stateful_table('senior-table', DOM.select('.senior-table'));
 
-    user_catdata.appendChild(user_catrank);
-    user_catdata.appendChild(user_catname);
-    user_catdata.appendChild(user_catscore);
+  // Search bar
+  const search_bar = DOM.select('.search-bar')
 
-    if(user.category == 'junior')
-      junior_table.appendChild(user_catdata);
-    if(user.category == 'senior')
-      senior_table.appendChild(user_catdata);
-  })
-}
+  // Filter feature
+  search_bar.listen('input', (e) => {
+
+    // Grab the table
+    const tab_name = tabs.tabs_active_tab();
+    const tab = tabs.select(tab_name);
+    const table = tab.select('table')
+    const value = e.target.value.toUpperCase();
+
+    // Filter and sort it
+    table.table_filter((data, text) =>  
+      text
+        .toUpperCase()
+        .includes(value))
+    table.table_sort(table.comparator);
+
+    // Re-render it
+    table.table_map(table.mapper);
+  });
+
+  // Keybinds 
+  DOM.keybind({ ctrlKey: true, keyCode: 'f' }, () => search_bar.focus())
+
+  // Comparators
+  const leaderboard_table_comparator = (a, b) => 
+    a.rank - b.rank || a.username.localeCompare(b.username)
+    
+  // Config table mapper factory
+  const leaderboard_table_mapper_factory = (cat) => (
+    (score) => (
+      (cat === 'all' || cat === score.category) 
+        ? tr_hoverable()
+          .append(
+            td_auto_label({ '.label': { t: cat === 'all' ? score.rank : score.cat_rank }}),
+            td_auto().append(score.username),
+            td_auto_label({ '.label': { 
+              t: score.category,
+              c: score.category === 'junior' ? 'default' : 'black',  
+            }}),
+            td_auto_label({ '.label': { t: score.score }}),
+            td_auto()
+          )
+        : tr_hoverable()
+    )
+  )
+
+  // Set up the tables
+  all_table.table_header('', 'Team', '', 'Score', '')
+  junior_table.table_header('', 'Team', '', 'Score', '')
+  senior_table.table_header('', 'Team', '', 'Score', '')
+
+  // Mappers and comparators
+  all_table.mapper = leaderboard_table_mapper_factory('all')
+  all_table.comparator = leaderboard_table_comparator
+  junior_table.mapper = leaderboard_table_mapper_factory('junior')
+  junior_table.comparator = leaderboard_table_comparator
+  senior_table.mapper = leaderboard_table_mapper_factory('senior')
+  senior_table.comparator = leaderboard_table_comparator
+
+  // Save the scores
+  function load_scores() {
+    X.request('./user/scorelist', 'POST')
+      .then(({ scores }) => PHO2.scores(scores))
+      .then(() => all_label.t(PHO2.scores().length))
+      .then(() => all_table.table_data(PHO2.scores()))
+      .then(() => all_table.table_sort(all_table.comparator))
+      .then(() => all_table.table_map(all_table.mapper))
+
+      .then(() => junior_label.t(PHO2.scores().filter(score => score.category === 'junior').length))
+      .then(() => junior_table.table_data(PHO2.scores()))
+      .then(() => junior_table.table_sort(junior_table.comparator))
+      .then(() => junior_table.table_map(junior_table.mapper))
+
+      .then(() => senior_label.t(PHO2.scores().filter(score => score.category === 'senior').length))
+      .then(() => senior_table.table_data(PHO2.scores()))
+      .then(() => senior_table.table_sort(senior_table.comparator))
+      .then(() => senior_table.table_map(senior_table.mapper))
+  }
+
+  load_scores();
+})()
