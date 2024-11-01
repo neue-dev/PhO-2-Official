@@ -3,61 +3,78 @@ import 'dotenv/config'
 import express from 'express';
 import mongoose from 'mongoose';
 
-// import { identify } from '../identify.js';
-// import { auth } from '../auth.js';
+import { fail, succeed } from '../io.js'
+import { select, create, update, drop, safe } from '../db.js'
+import { authorized_user_fail } from '../auth.js';
 // import { checkAnswer } from '../check.js';
 
 // The router to use
 export const user_router = express.Router();
 
-// //* Models and Constants
-// import { User } from '../models/user.js';
-// import { Config } from '../models/config.js';
-// import { Problem } from '../models/problem.js';
-// import { Submission } from '../models/submission.js';
-// import { Message } from '../models/message.js';
+import { User } from '../models/user.js';
+import { Config } from '../models/config.js';
+import { Problem } from '../models/problem.js';
+import { Submission } from '../models/submission.js';
+import { Message } from '../models/message.js';
 
-// //* User Authentication
-// const isuser = function(req, res, callback){
-//   const user = auth(req, res);
-//   if(user){
+/**
+ * Wraps a function around a user check.
+ * Basically, if you're logged in, you're a user.
+ * 
+ * @param f   The function to wrap. 
+ * @return    The wrapped function.
+ */
+const user = (f) => (
 
-//     // Look for user
-//     identify(user._id)
-//       .then(userData => {
-//         if(!userData)
-//           // User does not exist
-//           return res.json({
-//             error: 'Invalid user is making the request.'
-//           }).status(403);
+  // Make sure user is authorized first
+  authorized_user_fail((req, res, user) => (
+    user
+      ? f(req, res, user)
+      : null
+  ))
+)
 
-//         if(userData.status == 'disqualified' && !user.isAdmin) {
-//           return res.json({
-//             message: "Disqualified user making request.",
-//             error: "User disqualified.",
-//           }).status(401);
-//         }
+/**
+ * Request for user info.
+ */
+user_router.post('/data', user((req, res, user) => {
+  res.json({
+    username: user.username,
+    category: user.category,
+    lastSubmit: user.lastSubmit,
+    lastMessage: user.lastMessage,
+  });
+}));
 
-//         return callback(userData);
-//       });
-//   } else {
-//     // Isnt logged in
-//     return res.json({
-//       error: 'User must be logged in to make request.'
-//     }).status(403);
-//   }
-// }
+/**
+ * Public config info.
+ */
+user_router.post('/configlist', user(async (req, res, user) => {
+  select(Config, {})
+    .then(safe(parameters => res.json({ config: parameters
+      .filter(parameter => parameter.security === 'public')
+      .map(parameter => ({ key: parameter.key, value: parameter.value }))
+    })))
+}));
 
-// user_router.post('/data', (req, res) => {
-//   isuser(req, res, async data => {
-//     res.json({
-//       username: data.username,
-//       category: data.category,
-//       lastSubmit: data.lastSubmit,
-//       lastMessage: data.lastMessage,
-//     });
-//   });
-// });
+/**
+ * Problem list.
+ */
+user_router.post('/problemlist', user(async (req, res, user) => {    
+  select(Problem, {})
+    .then(safe(problems => res.json({ problems: problems
+      .filter(problem => problem.status === 'active')
+      .map(problem => ({ _id: problem._id, name: problem.name, code: problem.code, points: problem.points, }))
+    })))
+}));
+
+/**
+ * Submission list.
+ */
+user_router.post('/submissionlist', user(async (req, res, user) => {
+  select(Submission, { user_id: user._id })
+    .then(safe(submissions => res.json({ submissions })));
+}));
 
 // user_router.post('/scorelist', (req, res) => {
 //   isuser(req, res, async () => {
@@ -86,25 +103,6 @@ export const user_router = express.Router();
 //   });
 // });
 
-// user_router.post('/configlist', (req, res) => {
-//   isuser(req, res, async () => {
-  
-//     // Retrieve data from database and send to user
-//     const config = await Config.find();
-//     const data = { config: [] };
-
-//     config.forEach(configParameter => {
-//       if(configParameter.security == 'public')
-//         data.config.push({
-//           key: configParameter.key,
-//           value: configParameter.value
-//         })
-//     });
-
-//     res.json(data);
-//   });
-// });
-
 // user_router.post('/announcementlist', (req, res) => {
 //   isuser(req, res, async () => {
   
@@ -120,38 +118,6 @@ export const user_router = express.Router();
 //         timestamp: announcement.timestamp,
 //       })
 //     });
-
-//     res.json(data);
-//   });
-// });
-
-// user_router.post('/problemlist', (req, res) => {
-//   isuser(req, res, async () => {
-    
-//     // Retrieve data from database and send to user
-//     const problems = await Problem.find();
-//     const data = { problems: [] };
-
-//     problems.forEach(problem => {
-//       if(problem.status == 'active') 
-//         data.problems.push({
-//           _id: problem._id,
-//           name: problem.name,
-//           code: problem.code,
-//           points: problem.points,
-//         })
-//     });
-
-//     res.json(data);
-//   });
-// });
-
-// user_router.post('/submissionlist', (req, res) => {
-//   isuser(req, res, async userData => {
-    
-//     // Retrieve data from database and send to user
-//     const submissions = await Submission.find({ user_id: userData._id });
-//     const data = { submissions: submissions };
 
 //     res.json(data);
 //   });
