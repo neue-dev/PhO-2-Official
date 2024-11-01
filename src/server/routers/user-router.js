@@ -17,6 +17,13 @@ import { Problem } from '../models/problem.js';
 import { Submission } from '../models/submission.js';
 import { Message } from '../models/message.js';
 
+// Bad idea, but we're gonna cache the scores here LMAO
+const SCORE_CACHE = {
+  scores: [],
+  interval: 100000, // Cache lasts about a minute and a half
+  last_update: 0,   // Last update yes
+}
+
 /**
  * Wraps a function around a user check.
  * Basically, if you're logged in, you're a user.
@@ -76,32 +83,51 @@ user_router.post('/submissionlist', user(async (req, res, user) => {
     .then(safe(submissions => res.json({ submissions })));
 }));
 
-// user_router.post('/scorelist', (req, res) => {
-//   isuser(req, res, async () => {
-    
-//     // Retrieve data from database and send to user
-//     const users = await User.find();
-//     const data = { users: [] };
+/**
+ * Score list.
+ */
+user_router.post('/scorelist', user(async (req, res, user) => {
 
-//     users.forEach(user => {
-//       const userData = {
-//         _id: user._id,
-//         username: user.username,
-//         attempts: (user.attempts.filter(attempt => attempt.verdict)).map(attempt => attempt.problem_id),
-//         category: user.category,
-//       };
+  // Check if cache is kinda old
+  if(new Date().getTime() - SCORE_CACHE.last_update <= SCORE_CACHE.interval)
+    return res.json({ scores: SCORE_CACHE.scores })
 
-//       // If competition is done
-//       if(!true)
-//         userData['score'] = user.score;
+  // Recompute the cache
+  select(User, {})
+    .then(safe(users => {
+      select(Problem, {})
+        .then(safe(problems => {
 
-//       if(user.status == 'participating') 
-//         data.users.push(userData)
-//     });
+          // This looks like sht but here we go
+          const problems_points = problems.reduce((acc, problem) => (acc[problem._id.toString()] = problem.points, acc), {})
+          const user_scores = [];
 
-//     res.json(data);
-//   });
-// });
+          // Compute the scores
+          users.map(user => user_scores.push({
+            username: user.username,
+            category: user.category,
+            score: [ ...(new Set(user.attempts.filter(attempt => attempt.verdict).map(attempt => attempt.problem_id.toString()))) ]
+              .reduce((acc, attempt) => (acc += problems_points[attempt] || 0, acc), 0)
+          }))
+
+          // Sort the leaderboard by score then by name, then compute the rankings
+          user_scores.sort((a, b) => b.score - a.score || a.username.localeCompare(b.username))
+          user_scores.reduce((acc, user) => 
+            (user.score != acc.prev && (acc.rank += 1), acc.prev = user.score, user.rank = acc.rank, acc), { prev: -1, rank: 0 })
+          user_scores.filter(user => user.category === 'junior').reduce((acc, user) => 
+            (user.score != acc.prev && (acc.rank += 1), acc.prev = user.score, user.cat_rank = acc.rank, acc), { prev: -1, rank: 0 })
+          user_scores.filter(user => user.category === 'senior').reduce((acc, user) => 
+            (user.score != acc.prev && (acc.rank += 1), acc.prev = user.score, user.cat_rank = acc.rank, acc), { prev: -1, rank: 0 })
+
+          // Copy to cache
+          SCORE_CACHE.scores = user_scores
+          SCORE_CACHE.last_update = new Date().getTime()
+
+          // Send it back
+          res.json(SCORE_CACHE.scores)
+        }))
+    }))
+}));
 
 // user_router.post('/announcementlist', (req, res) => {
 //   isuser(req, res, async () => {
