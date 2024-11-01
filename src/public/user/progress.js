@@ -135,6 +135,12 @@ const PROGRESS = (() => {
     submissions_modal.modal_open()
   )
 
+  // Comparators
+  const problems_table_comparator = (a, b) => 
+    (a.code.number + a.code.alpha).localeCompare(b.code.number + b.code.alpha)
+  const submissions_table_comparator = (a, b) => a.timestamp - b.timestamp
+
+  // Problem table mapper
   const problems_table_mapper = (problem) => (
     tr_hoverable()
       .listen('click', () => problems_table_handler(problem))
@@ -146,6 +152,7 @@ const PROGRESS = (() => {
       )
   )
 
+  // Submission table mapper
   const submissions_table_mapper = (submission) => (
     tr_hoverable()
       .listen('click', () => submissions_table_handler(submission))
@@ -176,20 +183,20 @@ const PROGRESS = (() => {
   action_close(problems_modal)
   action_close(submissions_modal)
   
-  // Set up the tables and modals
-  problems_table
-    .table_header('Problem', '', 'Points')
-    .mapper = problems_table_mapper;
-
-  submissions_table
-    .table_header('Submission', 'Submitted Answer', 'Verdict')
-    .mapper = submissions_table_mapper;
+  // Set up the tables and their props
+  problems_table.table_header('Problem', '', 'Points')
+  problems_table.mapper = problems_table_mapper
+  problems_table.comparator = problems_table_comparator
+  submissions_table.table_header('Submission', 'Submitted Answer', 'Verdict')
+  submissions_table.mapper = submissions_table_mapper
+  submissions_table.comparator = submissions_table_comparator
 
   // Save the submissions
   X.request('./user/submissionlist', 'POST')
     .then(({ submissions }) => PHO2.submissions(submissions))
     .then(() => submissions_label.t(PHO2.submissions().length))
     .then(() => submissions_table.table_data(PHO2.submissions()))
+    .then(() => submissions_table.table_sort(submissions_table.comparator))
     .then(() => submissions_table.table_map(submissions_table.mapper))
 
   // Save the problems
@@ -197,6 +204,7 @@ const PROGRESS = (() => {
     .then(({ problems }) => PHO2.problems(problems))
     .then(() => problems_label.t(PHO2.problems().length))
     .then(() => problems_table.table_data(PHO2.problems()))
+    .then(() => problems_table.table_sort(problems_table.comparator))
     .then(() => problems_table.table_map(problems_table.mapper))
 
 })()

@@ -37,8 +37,6 @@ const CONFIG = (() => {
     C.new(() => td_auto().append(label()))
 
   // Edit and delete buttons
-  const edit_button = 
-    C.new(() => button().c('edit-button').t('Edit')) 
   const new_button = 
     C.new(() => button().c('new-button', 'blue', 'right', 'labeled', 'icon').t('new')
       .append(icon().c('plus')))
