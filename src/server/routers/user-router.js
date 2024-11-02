@@ -3,12 +3,12 @@ import 'dotenv/config'
 import express from 'express';
 import mongoose from 'mongoose';
 
+import { PHO2 } from '../pho2.js';
 import { io, fail, succeed } from '../io.js'
 import { Aggregate, Fields, Predicate, Query, select, create, update, drop, safe, QueryFactory } from '../db.js'
 import { authorized_user_fail } from '../auth.js';
-// import { checkAnswer } from '../check.js';
+import { check_answer } from '../check.js';
 
-// The router to use
 export const user_router = express.Router();
 
 import { User } from '../models/user.js';
@@ -16,7 +16,6 @@ import { Config } from '../models/config.js';
 import { Problem } from '../models/problem.js';
 import { Submission } from '../models/submission.js';
 import { Message } from '../models/message.js';
-import { check_answer } from '../check.js';
 
 // Possibly bad idea, but we're gonna cache some stuff here
 // ! move the score_update_interval to the config!!
@@ -24,9 +23,36 @@ const CACHE = {
   scores: {},
   scores_update_interval: 100000,     // Cache lasts about a minute and a half
   scores_last_update: 0,              // Last update yes
-
+  
   // We're gonna cache the last submit timestamps of the users too
-  users: {}
+  users: {},
+
+  // User getter
+  user: function(id) {
+    return this.users[id]
+  },
+
+  // Score getter
+  score: function(id) {
+    return this.scores[id]
+  },
+  
+  // Registers a user to the cache
+  user_create: function(user) {
+    this.users[user._id] = {
+      last_submit: 0
+    }
+  },
+
+  // Registers a score to the cache
+  score_create: function(user) { 
+    this.scores[user._id] = { 
+      username: user.username, 
+      category: user.category, 
+      score: 0, 
+      rank: 0, 
+    } 
+  },
 }
 
 /**
@@ -59,45 +85,34 @@ const user = (f) => (
  * Request for user info.
  */
 user_router.post('/data', user(io((req, res, user) => {
-  
 
-
-  select(Submission, { user_id: user._id })
-    .then(safe(submissions => {
-
-      // ! todo
-      const last_submit = 0;
-
-      res.json({
-        username: user.username,
-        category: user.category,
-        last_submit, 
-      })
+  // Get last submission timestamp
+  PHO2.user_last_submission(user).then(last_submission =>
+    res.json({
+      username: user.username,
+      category: user.category,
+      last_submit: last_submission.length ? last_submission[0].timestamp : 0, 
     }))
 })));
 
 /**
  * Public config info.
  */
-user_router.post('/configlist', user(async (req, res, user) => {
-
-  select(Config, {})
-    .then(safe(parameters => res.json({ config: parameters
-      .filter(parameter => parameter.security === 'public')
-      .map(parameter => ({ key: parameter.key, value: parameter.value }))
-    })))
-}));
+user_router.post('/configlist', user(io((req, res, user) => {
+  Query(Config)
+    .select({ security: 'public' })
+    .then(parameters => res.json({ config: parameters.map(parameter => ({ key: parameter.key, value: parameter.value }))}))
+})));
 
 /**
  * Problem list.
+ * MAKE SURE the answer is not included in the response...
  */
-user_router.post('/problemlist', user(async (req, res, user) => {    
-  select(Problem, {})
-    .then(safe(problems => res.json({ problems: problems
-      .filter(problem => problem.status === 'active')
-      .map(problem => ({ _id: problem._id, name: problem.name, code: problem.code, points: problem.points, }))
-    })))
-}));
+user_router.post('/problemlist', user(io((req, res, user) => {   
+  Query(Problem)
+    .select({ status: 'active' })
+    .then(problems => res.json({ problems: problems.map(problem => ({ _id: problem._id, name: problem.name, code: problem.code, points: problem.points, }))}))
+})));
 
 /**
  * Submission list.
@@ -114,7 +129,7 @@ user_router.post('/submissionlist', user(io((req, res, user) => {
 
 /**
  * Score list.
- * Computes the scores of the 
+ * Computes the scores of the users.
  */
 user_router.post('/scorelist', user(io((req, res, user) => {
 
@@ -130,13 +145,7 @@ user_router.post('/scorelist', user(io((req, res, user) => {
 
   // Get user list first to define the score cache
   Query(User).select().then(users => (
-    users.map(user => 
-      CACHE.scores[user._id] = { 
-        username: user.username, 
-        category: user.category, 
-        score: 0, 
-        rank: 0, 
-      })
+    users.map(user => CACHE.score_create(user))
   )).run()
 
   // This is way better
@@ -165,7 +174,7 @@ user_router.post('/scorelist', user(io((req, res, user) => {
     .then(scores => (
 
       // Update score cache
-      scores.map(score => CACHE.scores[score._id].score = score.score),
+      scores.map(score => CACHE.score(score._id).score = score.score),
       CACHE.scores = Object.values(CACHE.scores),
       
       // Sort then generate ranks
@@ -188,10 +197,14 @@ user_router.post('/scorelist', user(io((req, res, user) => {
     .run();
 })));
 
+/**
+ * Submits an answer for a problem.
+ */
 user_router.post('/submit', user(io((req, res, user) => {
   const { _id, answer } = req.get('submit-');
 
   // Grab timestamp
+  const user_id = user._id;
   const timestamp = now();
   const cooldown = parseInt(process.env.SUBMISSION_COOLDOWN.toString())
   const max_attempts = parseInt(process.env.SUBMISSION_ATTEMPTS.toString())
@@ -203,11 +216,11 @@ user_router.post('/submit', user(io((req, res, user) => {
     return res.failure({ status: 403, error: 'You cannot submit outside of the contest period.'})()
 
   // Check cache
-  if(!CACHE.users[user._id])
-    CACHE.users[user._id] = { timestamp: 0 }
+  if(!CACHE.users[user_id])
+    CACHE.user_create(user)
 
   // Cached cooldown check
-  if(timestamp - CACHE.users[user._id].last_submit < cooldown)
+  if(timestamp - CACHE.users[user_id].last_submit < cooldown)
     return res.failure({ status: 403, error: 'You can only submit after your cooldown.'})()
 
   // Grab problem
@@ -223,54 +236,50 @@ user_router.post('/submit', user(io((req, res, user) => {
       let attempts = 0;
 
       // Grab last_submit
-      Aggregate(Submission)
-        .filter('user_id', user._id)
-        .filter('timestamp', Predicate().lt(elims_end))
-        .filter('timestamp', Predicate().ge(elims_start))
-        .group('user_id', [], Fields().field('last_submit').max('timestamp'))
-        .result_is_empty(() => CACHE.users[user._id].last_submit = 0)
-        .result_is_not_empty(submissions => CACHE.users[user._id].last_submit = submissions[0].timestamp)
-        .then(() => {
+      PHO2.user_last_submission(user).then(last_submission => {
 
-          // Cooldown check
-          if(timestamp - CACHE.users[user._id].last_submit < cooldown)
-            return res.failure({ status: 403, error: 'You can only submit after your cooldown.'})()
+        // Update the last submit
+        CACHE.users[user_id].last_submit = last_submission.length ? last_submission[0].timestamp : 0;
 
-          // Grab number of attempts
-          Aggregate(Submission)
-            .filter('user_id', user._id)
-            .filter('problem_id', _id)
-            .count('user_id')
-            .result_is_empty(() => attempts = 0)
-            .result_is_not_empty(submissions => attempts = submissions[0].count)
-            .then(() => {
+        // Cooldown check
+        if(timestamp - CACHE.users[user_id].last_submit < cooldown)
+          return res.failure({ status: 403, error: 'You can only submit after your cooldown.'})()
 
-              // Max submissions reached
-              if(attempts >= max_attempts)
-                return res.failure({ status: 403, error: 'Maximum number of attempts reached for this problem.'})()
+        // Grab number of attempts
+        Aggregate(Submission)
+          .filter('user_id', user_id)
+          .filter('problem_id', _id)
+          .count('user_id')
+          .result_is_empty(() => attempts = 0)
+          .result_is_not_empty(submissions => attempts = submissions[0].count)
+          .then(() => {
 
-              // Check if already answered
-              Aggregate(Submission)
-                .filter('user_id', user._id)
-                .filter('problem_id', _id)
-                .filter('verdict', 'correct')
-                .result_is_not_empty(res.failure({ status: 469, error: 'Problem already answered correctly.' }))
-                .result_is_empty(() => {
+            // Max submissions reached
+            if(attempts >= max_attempts)
+              return res.failure({ status: 403, error: 'Maximum number of attempts reached for this problem.'})()
 
-                  // Save the submission
-                  const verdict = check_answer(answer, answer_key, tolerance) ? 'correct' : 'wrong';
-                  const submission = { user_id: user._id, problem_id: _id, answer, verdict, timestamp };
+            // Check if already answered
+            Aggregate(Submission)
+              .filter('user_id', user_id)
+              .filter('problem_id', _id)
+              .filter('verdict', 'correct')
+              .result_is_not_empty(res.failure({ status: 469, error: 'Problem already answered correctly.' }))
+              .result_is_empty(() => {
 
-                  Query(Submission)
-                    .insert(submission)
-                    .then(res.success({ message: 'Submission logged successfully.' }))
-                    .run()
-                })
-                .run()
-            })
-            .run()
-        })
-        .run()
+                // Save the submission
+                const verdict = check_answer(answer, answer_key, tolerance) ? 'correct' : 'wrong';
+                const submission = { user_id: user_id, problem_id: _id, answer, verdict, timestamp };
+
+                Query(Submission)
+                  .insert(submission)
+                  .then(res.success({ message: 'Submission logged successfully.' }))
+                  .run()
+              })
+              .run()
+          })
+          .run()
+      })
+      .run()
     })
     .run()
     .catch(res.failure())

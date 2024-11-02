@@ -9,7 +9,7 @@ export const admin_router = express.Router();
 import { io } from '../io.js'
 import { Query, QueryFactory } from '../db.js'
 import { authorized_user_fail } from '../auth.js';
-import { checkAnswer } from '../check.js';
+import { check_answer } from '../check.js';
 
 import { User } from '../models/user.js';
 import { Config } from '../models/config.js';
