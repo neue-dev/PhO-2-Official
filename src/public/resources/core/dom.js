@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-03 03:04:39
+ * @ Modified time: 2024-11-03 03:21:33
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -746,8 +746,7 @@ const DOM = (() => {
 
 					// Check that all fields are valid
 					Array.from(form.children).every(child => 
-						(console.log(child.classList, child.cis('field', 'req')),
-						child.cis('field', 'req')
+						(child.cis('field', 'req')
 							? form.form_field_value(child.select('.input').d()) != null
 							: true))
 
@@ -756,16 +755,14 @@ const DOM = (() => {
 								
 								// Create payload for request
 								Array.from(form.children).reduce((accumulator, child) => (
-									{ ...accumulator, [child.select('.input').d()]: form.form_field_value(child.select('.input').d()) }
+									child.cis('field', 'req') 
+										? { ...accumulator, [child.select('.input').d()]: form.form_field_value(child.select('.input').d()) }
+										: accumulator
 								), {})
 							))
 
 						// Reject submission action
-						: (
-							form.select('.form.warning')
-								? null
-								: form.append(element('div').c('form', 'warning').t('Some fields are invalid.')), 
-							Promise.reject(false))
+						: (Promise.reject('Some fields are invalid.'))
 				),
 
 				// Clears the input values of the form
