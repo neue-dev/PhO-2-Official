@@ -86,13 +86,28 @@ const user = (f) => (
  */
 user_router.post('/data', user(io((req, res, user) => {
 
+  // Current timestamp and cooldown
+  const timestamp = new Date().getTime();
+  const cooldown = process.env.SUBMISSION_COOLDOWN;
+
+  // Check cache
+  if(!CACHE.users[user._id])
+    CACHE.user_create(user)
+
+  // No need to update; user can't have submitted within cooldown
+  if(timestamp - CACHE.users[user._id].last_submit < cooldown && CACHE.users[user._id].last_submit > 0)
+    return res.json({
+      username: user.username, category: user.category,
+      last_submit: CACHE.users[user._id].last_submit, 
+    })
+
   // Get last submission timestamp
   PHO2.user_last_submission(user).then(last_submission =>
     res.json({
-      username: user.username,
-      category: user.category,
+      username: user.username, category: user.category,
       last_submit: last_submission.length ? last_submission[0].timestamp : 0, 
     }))
+    .run()
 })));
 
 /**
@@ -102,6 +117,7 @@ user_router.post('/configlist', user(io((req, res, user) => {
   Query(Config)
     .select({ security: 'public' })
     .then(parameters => res.json({ config: parameters.map(parameter => ({ key: parameter.key, value: parameter.value }))}))
+    .run()
 })));
 
 /**
@@ -112,6 +128,7 @@ user_router.post('/problemlist', user(io((req, res, user) => {
   Query(Problem)
     .select({ status: 'active' })
     .then(problems => res.json({ problems: problems.map(problem => ({ _id: problem._id, name: problem.name, code: problem.code, points: problem.points, }))}))
+    .run()
 })));
 
 /**
