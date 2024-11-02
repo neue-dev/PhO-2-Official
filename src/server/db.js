@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:53:41
- * @ Modified time: 2024-11-02 14:07:25
+ * @ Modified time: 2024-11-02 15:46:12
  * @ Description:
  * 
  * Handles db related queries and what not.
@@ -31,6 +31,63 @@ const cast_if_id = (field, id) =>
 		: id;
 
 /**
+ * A predicate builder that makes it easier to deal with mongodb.
+ *  
+ * @return	A new predicate with the conditions we specified. 
+ */
+export const Predicate = () => (
+		
+	// Give it methods
+	((predicate) => (
+
+		Object.setPrototypeOf(predicate, {
+
+			// Not equal to
+			ne: (...values) => (
+				values.length <= 1
+					? predicate.$ne = values[0] === undefined ? null : values[0]
+					: predicate.$nin = values,
+				predicate
+			),
+
+			// Equal to
+			eq: (...values) => (
+				values.length <= 1
+					? predicate.$eq = values[0] === undefined ? null : values[0]
+					: predicate.$in = values,
+				predicate
+			),
+
+			// Less than or equal
+			le: (value) => (
+				predicate.$lte = value,
+				predicate
+			),
+
+			// Greater than or equal
+			ge: (value) => (
+				predicate.$gte = value,
+				predicate
+			),
+
+			// Less than
+			lt: (value) => (
+				predicate.$lt = value,
+				predicate
+			),
+
+			// Greater than
+			gt: (value) => (
+				predicate.$gt = value,
+				predicate
+			)
+		})
+
+	// The predicate we want to modify	
+	))({})
+)
+
+/**
  * This is a helper function.
  * Flattens an object so that nested objects become expressed as absolute keys.
  * Don't mind the _en, it's only an internal function and not the actual parameter.
@@ -58,39 +115,6 @@ const flatten = ((_en) => (
 	// The actual flatten function
 	(obj) => _en(obj).reduce((acc, prop) => (acc[prop.key] = prop.value, acc), {})
 ))()
-
-/**
- * A predicate builder that makes it easier to deal with mongodb.
- *  
- * @return	A new predicate with the conditions we specified. 
- */
-export const Predicate = () => (
-		
-	// Give it methods
-	((predicate) => (
-
-		Object.setPrototypeOf(predicate, {
-
-			// Not equal to
-			ne: (...values) => (
-				values.length <= 1
-					? predicate.$ne = values[0] === undefined ? null : values[0]
-					: predicate.$nin = values,
-				predicate
-			),
-
-			// Equal to
-			eq: (...values) => (
-				values.length <= 1
-					? predicate.$eq = values[0] === undefined ? null : values[0]
-					: predicate.$in = values,
-				predicate
-			)
-		})
-
-	// The predicate we want to modify	
-	))({})
-)
 
 /**
  * Creates a decorated query object with our custom helper methods.
@@ -200,6 +224,131 @@ export const Query = (Model) => (
 )
 
 /**
+ * Util func for mapping retains.
+ * 
+ * @param retains		An array of fields to keep. 
+ * @return					Object containing $first => retain.
+ */
+const map_retains = (retains) => retains.reduce((acc, retain) => (acc[retain] = { $first: `$${retain}` }, acc), {})
+
+/**
+ * Maps nested fields into the fields we're after.
+ * 
+ * @param nests				An array of fields to translate.
+ * @param	collection	The collection they're from.
+ * @return						Object containing mappings of fields from their old collection.
+ */
+const map_nests = (nests, collection, prefix) => nests.reduce((acc, nested) => (acc[`${prefix}_${nested}`] = { $first: `$${collection}.${nested}` }, acc), {})
+
+/**
+ * Concats multi-type fields into one string.
+ * 
+ * @param fields	The fields to concat. 
+ * @return				A command for concatenating those fields.
+ */
+const concat_fields = (fields) => ({ $concat: fields.map((field) => ({ $toString: `$${field}` })) })
+
+/**
+ * Maps fields from 'field' to '$field'.
+ * Also inverts the mapping, so the function call (Aggregate.rename()) feels more intuitive.
+ * 
+ * @param fields	The fields ot map. 
+ * @return				The object with the mapped fields.
+ */
+const rename_fields = (fields) => Object.keys(fields).reduce((acc, field) => (acc[fields[field]] = `$${field}`, acc), {})
+
+/**
+ * Extension of the mongoose aggregate class.
+ * 
+ * @param Model		The model to create the aggregate for. 
+ * @return				The decorated aggregate.
+ */
+export const Aggregate = (Model) => (
+
+	((aggregate, aggregate_promise, aggregate_resolve, aggregate_reject) => (
+
+		// Alias the old methods
+		aggregate._group = aggregate.group,
+		aggregate._project = aggregate.project,
+
+		// Create a promise for the resolution of the query
+		aggregate_promise = new Promise((resolve, reject) => 
+			(aggregate_resolve = resolve, aggregate_reject = reject)),
+
+		Object.assign(aggregate, {
+
+			// Filters the values of the ROWS
+			filter: (field, value) => (
+				aggregate.match({ [field]: cast_if_id(field, value) }),
+				aggregate
+			),
+
+			// Groups documents by the given key, specifies new keys to generate
+			group: (field, retains=[], aggregates={}) => (
+				field === null 
+					? aggregate._group({ _id: null, ...map_retains(retains), ...aggregates })
+					: Array.isArray(field)
+						? (aggregate.addFields({ __g: concat_fields(field) }),
+							aggregate._group({ _id: '$__g', ...map_retains(retains), ...aggregates }),
+							aggregate.project({ __g: false }))
+						: aggregate._group({ _id: `$${field}`, ...map_retains(retains), ...aggregates }),
+				aggregate
+			),
+
+			// Returns the count of documents when grouped by field
+			count: (field) => (
+				aggregate.group(field, [], { count: { $sum: 1 } }),
+				aggregate
+			),
+
+			// I regret not doing this in SQL now...
+			join: (Model, local_id, foreign_id, prefix, fields) => (
+				aggregate.lookup({ from: Model.collection.name, localField: local_id, foreignField: foreign_id, as: '_' + Model.collection.name }),
+				aggregate.addFields({ ...map_nests(fields, '_' + Model.collection.name, prefix) }),
+				aggregate.project({ ['_' + Model.collection.name]: false }),
+				aggregate
+			),
+			
+			// Specifies the shape of the output
+			rename: (mapping) => (
+				aggregate._project(rename_fields(mapping)),
+				aggregate
+			),
+
+			// Checks if result is empty, and executes callback if true
+			result_is_empty: (f) => (
+				aggregate_promise.then(results => (results.length ? null : f(), results)), 
+				aggregate
+			),
+
+			// Checks if result is not empty, and executes callback with results
+			result_is_not_empty: (f) => (
+				aggregate_promise.then(results => (results.length ? f(results) : null, results)), 
+				aggregate
+			),
+
+			// Executes the query
+			run: () => (
+				aggregate.exec().then(results => aggregate_resolve(results)),
+				aggregate
+			),
+
+			// Chains a then to the query_promise
+			then: (f) => (
+				aggregate_promise.then(results => f(results)), 
+				aggregate
+			),
+
+			// Chains a catch to the query_promise
+			catch: (f) => (
+				aggregate_promise.catch(error => f(error)),
+				aggregate
+			)
+		})
+	))(Model.aggregate())
+)
+
+/**
  * Factory class for creating commonly-used queries.
  */
 export const QueryFactory = (() => {
@@ -272,113 +421,6 @@ export const QueryFactory = (() => {
 	}
 
 })();
-
-/**
- * Util func for mapping retains.
- * 
- * @param retains		An array of fields to keep. 
- * @return					Object containing $first => retain.
- */
-const map_retains = (retains) => retains.reduce((acc, retain) => (acc[retain] = { $first: `$${retain}` }, acc), {})
-
-/**
- * Maps nested fields into the fields we're after.
- * 
- * @param nests				An array of fields to translate.
- * @param	collection	The collection they're from.
- * @return						Object containing mappings of fields from their old collection.
- */
-const map_nests = (nests, collection, prefix) => nests.reduce((acc, nested) => (acc[`${prefix}_${nested}`] = { $first: `$${collection}.${nested}` }, acc), {})
-
-/**
- * Concats multi-type fields into one string.
- * 
- * @param fields	The fields to concat. 
- * @return				A command for concatenating those fields.
- */
-const concat_fields = (fields) => ({ $concat: fields.map((field) => ({ $toString: `$${field}` })) })
-
-/**
- * Maps fields from 'field' to '$field'.
- * Also inverts the mapping, so the function call (Aggregate.rename()) feels more intuitive.
- * 
- * @param fields	The fields ot map. 
- * @return				The object with the mapped fields.
- */
-const rename_fields = (fields) => Object.keys(fields).reduce((acc, field) => (acc[fields[field]] = `$${field}`, acc), {})
-
-/**
- * Extension of the mongoose aggregate class.
- * 
- * @param Model		The model to create the aggregate for. 
- * @return				The decorated aggregate.
- */
-export const Aggregate = (Model) => (
-
-	((aggregate, aggregate_promise, aggregate_resolve, aggregate_reject) => (
-
-		// Alias the old methods
-		aggregate._group = aggregate.group,
-		aggregate._project = aggregate.project,
-
-		// Create a promise for the resolution of the query
-		aggregate_promise = new Promise((resolve, reject) => 
-			(aggregate_resolve = resolve, aggregate_reject = reject)),
-
-		Object.assign(aggregate, {
-
-			// Filters the values of the ROWS
-			filter: (field, value) => (
-				aggregate.match({ [field]: cast_if_id(field, value) }),
-				aggregate
-			),
-
-			// Groups documents by the given key, specifies new keys to generate
-			group: (field, retains=[], aggregates={}) => (
-				field === null 
-					? aggregate._group({ _id: null, ...map_retains(retains), ...aggregates })
-					: Array.isArray(field)
-						? (aggregate.addFields({ __g: concat_fields(field) }),
-							aggregate._group({ _id: '$__g', ...map_retains(retains), ...aggregates }),
-							aggregate.project({ __g: false }))
-						: aggregate._group({ _id: `$${field}`, ...map_retains(retains), ...aggregates }),
-				aggregate
-			),
-
-			// I regret not doing this in SQL now...
-			join: (Model, local_id, foreign_id, prefix, fields) => (
-				aggregate.lookup({ from: Model.collection.name, localField: local_id, foreignField: foreign_id, as: '_' + Model.collection.name }),
-				aggregate.addFields({ ...map_nests(fields, '_' + Model.collection.name, prefix) }),
-				aggregate.project({ ['_' + Model.collection.name]: false }),
-				aggregate
-			),
-			
-			// Specifies the shape of the output
-			rename: (mapping) => (
-				aggregate._project(rename_fields(mapping)),
-				aggregate
-			),
-
-			// Executes the query
-			run: () => (
-				aggregate.exec().then(results => aggregate_resolve(results)),
-				aggregate
-			),
-
-			// Chains a then to the query_promise
-			then: (f) => (
-				aggregate_promise.then(results => f(results)), 
-				aggregate
-			),
-
-			// Chains a catch to the query_promise
-			catch: (f) => (
-				aggregate_promise.catch(error => f(error)),
-				aggregate
-			)
-		})
-	))(Model.aggregate())
-)
 
 /**
  * Creates a bunch of new fields, usually for aggregates.

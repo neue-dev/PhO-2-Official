@@ -1,5 +1,14 @@
+/**
+ * @ Author: Mo David
+ * @ Create Time: 1970-01-01 08:00:00
+ * @ Modified time: 2024-11-02 15:55:49
+ * @ Description:
+ * 
+ * The only thing I will not refactor...
+ */
+
 // Checks answer
-export const checkAnswer = (answer, key, tolerance) => {
+export const check_answer = (answer, key, tolerance) => {
   let user_mantissa = answer.mantissa;
   let user_exponent = answer.exponent;
 
@@ -16,5 +25,5 @@ export const checkAnswer = (answer, key, tolerance) => {
 }
 
 export default {
-  checkAnswer
+  check_answer
 }
