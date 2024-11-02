@@ -125,7 +125,7 @@ const PROGRESS = (() => {
   )
 
   const submissions_table_handler = (submission) => (
-    submissions_modal.modal_header(submission.problemCodeName),
+    submissions_modal.modal_header(submission.problem_code.number + submission.problem_code.alpha + ' ' + submission.problem_name),
     submissions_modal.modal_clear(),
     submissions_modal.modal_append(
       br(),
@@ -160,7 +160,7 @@ const PROGRESS = (() => {
     tr_hoverable()
       .listen('click', () => submissions_table_handler(submission))
       .append(
-        td_auto_label({ '.label': { t: submission.problemCodeName.split(' ')[0] }}),
+        td_auto_label({ '.label': { t: submission.problem_code.number + submission.problem_code.alpha }}),
         td_auto().t(submission.answer.mantissa + ' &times; 10').append(sup().t(submission.answer.exponent)),
         td_auto_label({ 
           '.label': {
@@ -171,9 +171,10 @@ const PROGRESS = (() => {
       )
   )
 
-  const action_submit = (modal) => (
+  const action_submit = (modal, form, target, callback) => (
     modal.modal_action('submit', () => 
-      problems_form.form_submit('/user/submit')
+      form.form_submit(target)
+        .then(() => callback())
         .then(() => modal.modal_close())
         .catch(alert)),
     modal.select('.action.submit').c('blue')
@@ -185,7 +186,7 @@ const PROGRESS = (() => {
   )
 
   // Modal buttons
-  action_submit(problems_modal)
+  action_submit(problems_modal, problems_form, './user/submit', () => (load_problems(), load_submissions()))
   action_close(problems_modal)
   action_close(submissions_modal)
   
@@ -198,19 +199,26 @@ const PROGRESS = (() => {
   submissions_table.comparator = submissions_table_comparator
 
   // Save the submissions
-  X.request('./user/submissionlist', 'POST')
-    .then(({ submissions }) => PHO2.submissions(submissions))
-    .then(() => submissions_label.t(PHO2.submissions().length))
-    .then(() => submissions_table.table_data(PHO2.submissions()))
-    .then(() => submissions_table.table_sort(submissions_table.comparator))
-    .then(() => submissions_table.table_map(submissions_table.mapper))
+  function load_submissions() {
+    X.request('./user/submissionlist', 'POST')
+      .then(({ submissions }) => PHO2.submissions(submissions))
+      .then(() => submissions_label.t(PHO2.submissions().length))
+      .then(() => submissions_table.table_data(PHO2.submissions()))
+      .then(() => submissions_table.table_sort(submissions_table.comparator))
+      .then(() => submissions_table.table_map(submissions_table.mapper))
+  }
 
   // Save the problems
-  X.request('./user/problemlist', 'POST')
-    .then(({ problems }) => PHO2.problems(problems))
-    .then(() => problems_label.t(PHO2.problems().length))
-    .then(() => problems_table.table_data(PHO2.problems()))
-    .then(() => problems_table.table_sort(problems_table.comparator))
-    .then(() => problems_table.table_map(problems_table.mapper))
+  function load_problems() {
+    X.request('./user/problemlist', 'POST')
+      .then(({ problems }) => PHO2.problems(problems))
+      .then(() => problems_label.t(PHO2.problems().length))
+      .then(() => problems_table.table_data(PHO2.problems()))
+      .then(() => problems_table.table_sort(problems_table.comparator))
+      .then(() => problems_table.table_map(problems_table.mapper))
+  }
+
+  load_problems();
+  load_submissions();
 
 })()

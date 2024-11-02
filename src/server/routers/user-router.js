@@ -4,7 +4,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 
 import { io, fail, succeed } from '../io.js'
-import { Aggregate, Fields, Predicate, Query, select, create, update, drop, safe } from '../db.js'
+import { Aggregate, Fields, Predicate, Query, select, create, update, drop, safe, QueryFactory } from '../db.js'
 import { authorized_user_fail } from '../auth.js';
 // import { checkAnswer } from '../check.js';
 
@@ -16,12 +16,17 @@ import { Config } from '../models/config.js';
 import { Problem } from '../models/problem.js';
 import { Submission } from '../models/submission.js';
 import { Message } from '../models/message.js';
+import { check_answer } from '../check.js';
 
-// Bad idea, but we're gonna cache the scores here LMAO
-const SCORE_CACHE = {
+// Possibly bad idea, but we're gonna cache some stuff here
+// ! move the score_update_interval to the config!!
+const CACHE = {
   scores: {},
-  interval: 100000, // Cache lasts about a minute and a half
-  last_update: 0,   // Last update yes
+  scores_update_interval: 100000,     // Cache lasts about a minute and a half
+  scores_last_update: 0,              // Last update yes
+
+  // We're gonna cache the last submit timestamps of the users too
+  users: {}
 }
 
 /**
@@ -43,9 +48,9 @@ const now = () => (
 const user = (f) => (
 
   // Make sure user is authorized first
-  authorized_user_fail((req, res, user) => (
+  authorized_user_fail((req, res, user, ...args) => (
     user
-      ? f(req, res, user)
+      ? f(req, res, user, ...args)
       : null
   ))
 )
@@ -97,27 +102,36 @@ user_router.post('/problemlist', user(async (req, res, user) => {
 /**
  * Submission list.
  */
-user_router.post('/submissionlist', user(async (req, res, user) => {
-  select(Submission, { user_id: user._id })
-    .then(safe(submissions => res.json({ submissions })));
-}));
+user_router.post('/submissionlist', user(io((req, res, user) => {
+  Aggregate(Submission)
+    .filter('user_id', user._id)
+    .join(Problem, 'problem_id', '_id', 'problem', [ 'name', 'code', 'points' ])
+    .filter('problem_name', Predicate().ne())
+    .then(submissions => res.json({ submissions }))
+    .run()
+    .catch(res.failure())
+})));
 
 /**
  * Score list.
+ * Computes the scores of the 
  */
-user_router.post('/scorelist', user(async (req, res, user) => {
+user_router.post('/scorelist', user(io((req, res, user) => {
+
+  // Timestamp
+  const timestamp = now()
 
   // Check if cache is kinda old
-  if(now() - SCORE_CACHE.last_update <= SCORE_CACHE.interval)
-    return res.json({ scores: SCORE_CACHE.scores })
+  if(timestamp - CACHE.scores_last_update <= CACHE.scores_update_interval)
+    return res.json({ scores: CACHE.scores })
 
   // Clear cache
-  SCORE_CACHE.scores = {};
+  CACHE.scores = {};
 
   // Get user list first to define the score cache
   Query(User).select().then(users => (
     users.map(user => 
-      SCORE_CACHE.scores[user._id] = { 
+      CACHE.scores[user._id] = { 
         username: user.username, 
         category: user.category, 
         score: 0, 
@@ -151,140 +165,116 @@ user_router.post('/scorelist', user(async (req, res, user) => {
     .then(scores => (
 
       // Update score cache
-      scores.map(score => SCORE_CACHE.scores[score._id].score = score.score),
-      SCORE_CACHE.scores = Object.values(SCORE_CACHE.scores),
+      scores.map(score => CACHE.scores[score._id].score = score.score),
+      CACHE.scores = Object.values(CACHE.scores),
       
       // Sort then generate ranks
-      SCORE_CACHE.scores.sort((a, b) => b.score - a.score || a.username.localeCompare(b.username)),
-      SCORE_CACHE.scores.reduce((acc, score) => 
+      CACHE.scores.sort((a, b) => b.score - a.score || a.username.localeCompare(b.username)),
+      CACHE.scores.reduce((acc, score) => 
         (score.score !== acc.prev && acc.rank++, acc.prev = score.score, score.rank = acc.rank, acc), { prev: -1, rank: 0 }),
-      SCORE_CACHE.scores.filter(score => score.category === 'junior').reduce((acc, score) => 
+      CACHE.scores.filter(score => score.category === 'junior').reduce((acc, score) => 
         (score.score !== acc.prev && acc.rank++, acc.prev = score.score, score.cat_rank = acc.rank, acc), { prev: -1, rank: 0 }),
-      SCORE_CACHE.scores.filter(score => score.category === 'senior').reduce((acc, score) => 
+      CACHE.scores.filter(score => score.category === 'senior').reduce((acc, score) => 
         (score.score !== acc.prev && acc.rank++, acc.prev = score.score, score.cat_rank = acc.rank, acc), { prev: -1, rank: 0 }),
 
       // Update timestamp
-      SCORE_CACHE.last_update = now(),
+      CACHE.scores_last_update = timestamp,
 
       // Send it to the user
-      res.json({ scores: SCORE_CACHE.scores })
+      res.json({ scores: CACHE.scores })
     ))
 
     // Run
     .run();
-}));
+})));
 
-// user_router.post('/submit', user((req, res, user) => {
-//   const { _id, code, answer } = req.body;
-//   const username = user.username;
+user_router.post('/submit', user(io((req, res, user) => {
+  const { _id, answer } = req.get('submit-');
 
-//   select(User, { username })
-//     .then(safe(user => 
-//   select(Problem, { _id })
-//     .then(safe(problem => {
+  // Grab timestamp
+  const timestamp = now();
+  const cooldown = parseInt(process.env.SUBMISSION_COOLDOWN.toString())
+  const max_attempts = parseInt(process.env.SUBMISSION_ATTEMPTS.toString())
+  const elims_start = parseInt(process.env.CONTEST_ELIMS_START.toString())
+  const elims_end = parseInt(process.env.CONTEST_ELIMS_END.toString())
 
-//     // Grab timestamp
-//     const timestamp = now();
+  // Is in contest period
+  if(timestamp < elims_start || timestamp > elims_end)
+    return res.failure({ status: 403, error: 'You cannot submit outside of the contest period.'})()
 
-//     if(timestamp - user.lastSubmit < parseInt(process.env.SUBMISSION_COOLDOWN.toString()))
-//       return fail(res, { status: 403, error: 'You can only submit after your cooldown.'})
+  // Check cache
+  if(!CACHE.users[user._id])
+    CACHE.users[user._id] = { timestamp: 0 }
 
-//     if(timestamp < parseInt(process.env.CONTEST_ELIMS_START.toString()) || 
-//       timestamp > parseInt(process.env.CONTEST_ELIMS_END.toString()))
-//       return fail(res, { status: 403, error: 'You cannot submit outside of the contest period.'})
+  // Cached cooldown check
+  if(timestamp - CACHE.users[user._id].last_submit < cooldown)
+    return res.failure({ status: 403, error: 'You can only submit after your cooldown.'})()
 
-//     if(problem.status === 'disabled')
-//       return fail(res, { status: 403, error: 'The requested problem has been disabled.' })
+  // Grab problem
+  Query(Problem)
+    .select({ _id })
+    .result_is_empty(res.failure({ status: 400, error: 'Requested problem does not exist.' }))
+    .result_is_not_empty(problems => {
 
-//   }))))
+      // Grab problem details
+      const problem = problems[0];
+      const answer_key = problem.answer;
+      const tolerance = problem.tolerance;
+      let attempts = 0;
 
-//   // Retrieve data from database and send to user
-//   const user = await User.findOne({ username: username });
-//   const problem = await Problem.findOne({ "code.number": code.number, "code.alpha": code.alpha });
-//   const answerKey = problem.answer;
-//   const tolerance = problem.tolerance;
-  
-  
+      // Grab last_submit
+      Aggregate(Submission)
+        .filter('user_id', user._id)
+        .filter('timestamp', Predicate().lt(elims_end))
+        .filter('timestamp', Predicate().ge(elims_start))
+        .group('user_id', [], Fields().field('last_submit').max('timestamp'))
+        .result_is_empty(() => CACHE.users[user._id].last_submit = 0)
+        .result_is_not_empty(submissions => CACHE.users[user._id].last_submit = submissions[0].timestamp)
+        .then(() => {
 
-//   if(user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length)
-//     if(user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString())[0].count >= process.env.SUBMISSION_ATTEMPTS)
-//       return res.json({
-//         message: "Max attempts for problem reached.",
-//         error: "There is a limit to the number of submissions per problem.",
-//       }).status(401);
+          // Cooldown check
+          if(timestamp - CACHE.users[user._id].last_submit < cooldown)
+            return res.failure({ status: 403, error: 'You can only submit after your cooldown.'})()
 
-//   if(user.attempts.filter(attempt => 
-//     attempt.problem_id.toString() == problem._id.toString() && 
-//     attempt.verdict).length) 
-//     return res.json({
-//       message: "Problem already answered correctly.",
-//       error: "You already got this problem right....",
-//     }).status(401);
+          // Grab number of attempts
+          Aggregate(Submission)
+            .filter('user_id', user._id)
+            .filter('problem_id', _id)
+            .count('user_id')
+            .result_is_empty(() => attempts = 0)
+            .result_is_not_empty(submissions => attempts = submissions[0].count)
+            .then(() => {
 
-//   const verdict = checkAnswer(answer, answerKey, tolerance);
-//   const timestamp = (new Date()).getTime();
-//   const submission_id = new mongoose.Types.ObjectId();
+              // Max submissions reached
+              if(attempts >= max_attempts)
+                return res.failure({ status: 403, error: 'Maximum number of attempts reached for this problem.'})()
 
-//   // Try to save to database
-//   try {
+              // Check if already answered
+              Aggregate(Submission)
+                .filter('user_id', user._id)
+                .filter('problem_id', _id)
+                .filter('verdict', 'correct')
+                .result_is_not_empty(res.failure({ status: 469, error: 'Problem already answered correctly.' }))
+                .result_is_empty(() => {
 
-//     let count = 
-//       user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString()).length ?
-//       user.attempts.filter(attempt => attempt.problem_id.toString() == problem._id.toString())[0].count : 0;
+                  // Save the submission
+                  const verdict = check_answer(answer, answer_key, tolerance) ? 'correct' : 'wrong';
+                  const submission = { user_id: user._id, problem_id: _id, answer, verdict, timestamp };
 
-//     // Update the user's attempts
-//     if(!count) {
-//       await User.updateOne(
-//         { username: username },
-//         { $set: { 
-//           "attempts": user.attempts.concat([{
-//             problem_id: problem._id,
-//             count: 1,
-//             verdict: verdict, 
-//           }]),
-//           "lastSubmit": timestamp,
-//         }},
-//         { arrayFilters: [
-//           { "attempt.problem_id": problem._id, }
-//         ]}
-//       );  
-
-//     } else {
-//       await User.updateOne(
-//         { username: username },
-//         { $set: { 
-//           "attempts.$[attempt].count": count + 1,
-//           "attempts.$[attempt].verdict": verdict,
-//           "lastSubmit": timestamp,
-//         }},
-//         { arrayFilters: [
-//           { "attempt.problem_id": problem._id, }
-//         ]}
-//       );
-//     }
-
-//     const data = new Submission({
-//       _id: submission_id,
-//       user_id: user._id,
-//       username: user.username,
-//       problem_id: problem._id,
-//       problemCodeName: problem.code.number + problem.code.alpha + ' ' + problem.name,
-//       answer: answer,
-//       verdict: verdict ? 'correct' : 'wrong',
-//       timestamp: timestamp,
-//     }, { collection: 'submissions' });
-//     let submission = await data.save();
-
-//     return res.status(200).json({
-//       message: 'Submission logged successfully.',
-//     });
-//   } catch (error) {
-//     return res.json({ 
-//       message: 'Server error.',
-//       error: error.message
-//     }).status(500);
-//   }
-// }));
+                  Query(Submission)
+                    .insert(submission)
+                    .then(res.success({ message: 'Submission logged successfully.' }))
+                    .run()
+                })
+                .run()
+            })
+            .run()
+        })
+        .run()
+    })
+    .run()
+    .catch(res.failure())
+})));
 
 // user_router.post('/message', (req, res) => {
 //   isuser(req, res, async userData => {
