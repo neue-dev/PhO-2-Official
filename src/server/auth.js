@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:20:42
- * @ Modified time: 2024-11-01 08:52:35
+ * @ Modified time: 2024-11-02 11:02:37
  * @ Description:
  * 
  * Deals with auth-related tasks.
@@ -41,7 +41,7 @@ export const refresh_token = (user) => jwt.sign({ _id: user._id, }, process.env.
 const authorized_decorator = (func, fail) => (
 
   // The wrapped function
-  (req, res) => {
+  (req, res, ...args) => {
 
     // Check for authorization first
     if(!req) 
@@ -54,7 +54,7 @@ const authorized_decorator = (func, fail) => (
       return fail(res)
     
     // Call func
-    return func(req, res)
+    return func(req, res, ...args)
   }
 ) 
 
@@ -77,7 +77,7 @@ export const authorized_fail = (func) => authorized_decorator(func, (res) => fai
 const authorized_user_decorator = (func, fail) => (
   
   // Wrapped func
-  authorized_decorator((req, res) => {
+  authorized_decorator((req, res, ...args) => {
     
     // Grab tokens
     const { 
@@ -97,7 +97,7 @@ const authorized_user_decorator = (func, fail) => (
 
       // Look for user in database and execute appropriate action
       User.findOne({ _id: req.user._id })
-        .then(user => user ? func(req, res, user) : send_file(res))
+        .then(user => user ? func(req, res, user, ...args) : send_file(res))
       
     // Token is probably invalid
     } catch (error) {
