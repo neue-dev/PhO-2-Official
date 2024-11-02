@@ -175,68 +175,29 @@ admin_router.post('/deleteproblem', admin(io((req, res, user) => {
     .catch(res.failure())
 })));
 
-// admin_router.post('/enableofficial', admin(io((req, res, user) => {
+/**
+ * Enables the official problems.
+ */
+admin_router.post('/enableofficial', admin(io((req, res, user) => {
+  Query(Problem)
+    .select({ type: 'official'})
+    .update({ status: 'active' })
+    .then(res.success({ message: 'Official problems are now active.' }))
+    .run()
+    .catch(res.failure())
+})));
 
-//     Query(Problem)
-//       .select({ type: 'official'})
-
-//     // Try to update problem statuses
-//     try {
-
-//       // Update the problems
-//       const officials = await Problem.find({ type: 'official' });
-//       officials.forEach(official => {
-//         (async() => {
-//           await Problem.updateOne(
-//             { name: official.name },
-//             { $set: { status: 'active' }});
-//         })()
-//       });
-
-//       // Just so the UI can update properly (doesn't fall behind by accident)
-//       await sleep(250);
-
-//       return res.status(200).json({
-//         message: 'Official problems enabled.',
-//       });
-//     } catch (error) {
-//       return res.json({ 
-//         message: 'Server error.', 
-//         error: error.message 
-//       }).status(500);
-//     }
-// })));
-
-// admin_router.post('/disableofficial', (req, res) => {
-//   admin(req, res, async userData => {
-    
-//     // Try to update problem statuses
-//     try {
-      
-//       // Update the problems
-//       const officials = await Problem.find({ type: 'official' });
-//       officials.forEach(official => {
-//         (async() => {
-//           await Problem.updateOne(
-//             { name: official.name },
-//             { $set: { status: 'disabled' }});
-//         })()
-//       });
-
-//       // Just so the UI can update properly (doesn't fall behind by accident)
-//       await sleep(250);
-
-//       return res.status(200).json({
-//         message: 'Official problems disabled.',
-//       });
-//     } catch (error) {
-//       return res.json({ 
-//         message: 'Server error.', 
-//         error: error.message 
-//       }).status(500);
-//     }
-//   })
-// });
+/**
+ * Disables the official problems.
+ */
+admin_router.post('/disableofficial', admin(io((req, res) => {
+  Query(Problem)
+    .select({ type: 'official'})
+    .update({ status: 'disabled' })
+    .then(res.success({ message: 'Official problems are now disabled.' }))
+    .run()
+    .catch(res.failure())
+})));
 
 // admin_router.post('/recheckproblem', async(req, res) => {
 //   admin(req, res, async userData => {
