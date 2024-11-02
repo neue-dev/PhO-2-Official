@@ -1,6 +1,7 @@
 # Some personal dev files
 .note.txt
 .TODO.txt
+test.js
 
 # Config files and modules
 .env
