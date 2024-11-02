@@ -1,20 +1,6 @@
 
 const CONFIG = (() => {
 
-  // ! <!-- ! move elsewhere  -->
-  const date = (timestamp) => {
-    
-    const date = new Date(timestamp * 1)
-    const date_options = {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    };
-
-    return `${date.toString().substring(15, 21)} - ${date.toString().substring(4, 15)}`;
-  }
-
   /**
    *  Reusable components and styles
    */
@@ -44,7 +30,8 @@ const CONFIG = (() => {
   // Tabs and tab menu
   const tabs = 
     DOM.stateful_tabs('config-tabs', DOM.select('.tabs'));
-    
+  
+  // Inits the menu tabs, DO NOT REMOVE
   const tabs_menu = 
     DOM.stateful_menu('config-menu', DOM.select('.tabs-menu'))
       .menu_on_selected(c => tabs.tabs_active_tab(c))
@@ -71,7 +58,7 @@ const CONFIG = (() => {
   const config_form = DOM.stateful_form('config-form')
     .form_field('_id', { type: 'text' })
     .form_field('Key', { type: 'text' })
-    .form_field('Value', { type: 'text' }, { mapper: { 'datetime-local': (value) => new Date(value).getTime() } })
+    .form_field('Value', { type: 'text' }, { mapper: { 'datetime-local': (value) => Time.timestamp_from_datestr(value) } })
       .select('.field._id').s({ display: 'none' }).parent()
       .select('.field.key').s({ display: 'none' }).parent()
 
@@ -248,7 +235,7 @@ const CONFIG = (() => {
         td_auto().append(
           parameter.type === 'url'
             ? link().t(parameter.value).ref(parameter.value) : parameter.type === 'date'
-            ? span().t(date(parameter.value)) : parameter.type === 'duration'
+            ? span().t(Time.timestamp_to_mdy_hms(parameter.value)) : parameter.type === 'duration'
             ? span().t(parameter.value) 
             : span().t(parameter.value))
       )

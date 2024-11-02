@@ -1,24 +1,11 @@
 
 const PROGRESS = (() => {
 
-  // ! <!-- ! move elsewhere  -->
-  const date = (timestamp) => {
-    
-    const date = new Date(timestamp * 1)
-    const date_options = {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    };
-
-    return `${date.toString().substring(4, 24)}`;
-  }
-
   // Tabs and tab menu
   const tabs = 
     DOM.stateful_tabs('progress-tabs', DOM.select('.tabs'));
   
+  // Inits the menu tabs, DO NOT REMOVE
   const tabs_menu = 
     DOM.stateful_menu('progress-menu', DOM.select('.tabs-menu'))
       .menu_on_selected(c => tabs.tabs_active_tab(c))
@@ -134,7 +121,7 @@ const PROGRESS = (() => {
       br(),
       span().t(submission.answer.mantissa + ' &times; 10').append(sup().t(submission.answer.exponent))
         .c('ui', 'header', 'huge', 'text'), br(), br(), br(),
-      label().t(date(submission.timestamp)),
+      label().t(Time.timestamp_to_mdy_hms(submission.timestamp)),
       label().t(submission.verdict)
         .c(submission.verdict === 'correct' ? 'green' : 'red' )
         .c(submission.verdict === 'correct' ? 'default' : 'basic' )),
@@ -227,7 +214,16 @@ const PROGRESS = (() => {
       .then(() => problems_table.table_map(problems_table.mapper))
   }
 
-  load_submissions().then(() => load_problems())
-  load_problems();
+  // Save user data
+  function load_user() {
+    return X.request('./user/data', 'POST')
+      .then((user) => PHO2.user(user))
+      .then(() => console.log(PHO2.user()))
+  }
 
+  console.log(Time.millis_to_ms())
+
+  // Load the stuffs
+  load_user();
+  load_submissions().then(() => load_problems())
 })()
