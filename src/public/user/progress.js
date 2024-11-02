@@ -112,6 +112,7 @@ const PROGRESS = (() => {
       .filter(submission => submission.verdict === 'correct').length > 0
 
   const problems_table_handler = (problem) => (
+    problems_form.form_clear(),
     problems_form.form_field_value('_id', problem._id),
     problems_form.select('.field.answer')
       .s(problem_submissions_verdict(problem) ? { display: 'none' } : { display: 'block' }),
@@ -208,7 +209,7 @@ const PROGRESS = (() => {
 
   // Save the submissions
   function load_submissions() {
-    X.request('./user/submissionlist', 'POST')
+    return X.request('./user/submissionlist', 'POST')
       .then(({ submissions }) => PHO2.submissions(submissions))
       .then(() => submissions_label.t(PHO2.submissions().length))
       .then(() => submissions_table.table_data(PHO2.submissions()))
@@ -218,7 +219,7 @@ const PROGRESS = (() => {
 
   // Save the problems
   function load_problems() {
-    X.request('./user/problemlist', 'POST')
+    return X.request('./user/problemlist', 'POST')
       .then(({ problems }) => PHO2.problems(problems))
       .then(() => problems_label.t(PHO2.problems().length))
       .then(() => problems_table.table_data(PHO2.problems()))
@@ -226,7 +227,7 @@ const PROGRESS = (() => {
       .then(() => problems_table.table_map(problems_table.mapper))
   }
 
+  load_submissions().then(() => load_problems())
   load_problems();
-  load_submissions();
 
 })()

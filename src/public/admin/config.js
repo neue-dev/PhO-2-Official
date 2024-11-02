@@ -188,6 +188,7 @@ const CONFIG = (() => {
 
   // Handles clicks of config table rows
   const config_table_handler = (parameter) => (
+    config_form.form_clear(),
     config_form.form_field_value('_id', parameter._id),
     config_form.form_field_value('key', parameter.key),
     config_form.form_field_type('value', parameter.type),
@@ -198,6 +199,7 @@ const CONFIG = (() => {
 
   // Handles clicks of problem table rows
   const problems_table_handler = (problem) => (
+    problems_form.form_clear(),
     problems_form.form_field_value('_id', problem._id),
     problems_form.form_field_value('problem-name', problem.name),
     problems_form.form_field_value('type', problem.type),
@@ -215,6 +217,7 @@ const CONFIG = (() => {
 
   // Handles clicks of user table rows
   const users_table_handler = (user) => (
+    users_form.form_clear(),
     users_form.form_field_value('_id', user._id),
     users_form.form_field_value('username', user.username),
     users_form.form_field_value('status', user.status),
