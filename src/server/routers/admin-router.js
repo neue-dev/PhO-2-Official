@@ -1,14 +1,13 @@
 import 'dotenv/config'
 
 import express from 'express';
-import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 
 // The router to use
 export const admin_router = express.Router();
 
-import { fail, succeed } from '../io.js'
-import { select, create, update, drop, safe } from '../db.js'
+import { io } from '../io.js'
+import { Query, QueryFactory } from '../db.js'
 import { authorized_user_fail } from '../auth.js';
 import { checkAnswer } from '../check.js';
 
@@ -28,188 +27,113 @@ const SALT_ROUNDS = 10;
 const admin = (f) => (
 
   // Make sure user is authorized first
-  authorized_user_fail((req, res, user) => (
+  authorized_user_fail((req, res, user, ...args) => (
     user.isAdmin
-      ? f(req, res, user)
+      ? f(req, res, user, ...args)
       : null
   ))
 )
 
-// //* Admin Routes
-// admin_router.post('/newannouncement', (req, res) => {
-//   admin(req, res, async userData => {
-//     const { title, content } = req.body;
-//     const user_id = userData._id;
-//     const timestamp = (new Date()).getTime();
-
-//     const data = new Message({
-//       _id: new mongoose.Types.ObjectId(),
-//       user_id: user_id,
-//       type: 'announcement',
-//       title: title,
-//       content: content,
-//       timestamp: timestamp,
-//     }, { collection: 'messages' });
-
-//     // Try to save to database
-//     try {
-//       let announcement = await data.save();
-//       return res.status(200).json({
-//         message: 'Announcement was posted.',
-//       });
-//     } catch (error) {
-//       return res.json({ 
-//         message: 'Server error.',
-//         error: error.message 
-//       }).status(500);
-//     }
-//   })
-// });
-
-// admin_router.post('/deleteannouncement', (req, res) => {
-//   admin(req, res, async userData => {
-//     const { id } = req.body;
-//     const _id = mongoose.Types.ObjectId(id);
-//     const announcement = await Message.findOne({ _id: _id });
-
-//     // Check if announcement exists
-//     if(announcement) {
-//       try {
-//         await Message.deleteOne({ _id: _id });
-//         return res.status(200).json({
-//           message: 'Announcement deletion success.',
-//         });
-//       } catch(err) {
-//         return res.json({
-//           error: 'Something went wrong. Try again.'
-//         }).status(500);
-//       }
-//     } else {
-//       return res.json({
-//         error: 'Announcement to be deleted does not exist.'
-//       }).status(401);
-//     }
-//   })
-// });
-
 /**
  * Registers new users.
  */
-admin_router.post('/registeruser', admin((req, res) => {
-  const { username, password, category, status } = req.body;
-  const params = { 
-    username, password, category, status, 
-    score: 0, isAdmin: false, attempts: [], submissions: [], lastSubmit: 0, lastMessage: 0, 
-  }
+admin_router.post('/registeruser', admin(io((req, res, user) => {
+  const { username, password, category, status } = req.get('user-');
+  const new_user = { username, password, category, status, isAdmin: false }
 
-  // Ensure we capture all inputs
-  Object.keys(params).map(key => params[key] = params[key] ? params[key] : req.body['user-' + key])
+  // We gotta hash the password first
+  bcrypt.hash(password, SALT_ROUNDS).then(hash =>
+    new_user.password = hash,
 
-  // This is so sad...
-  bcrypt.hash(password, SALT_ROUNDS)
-    .then(hash =>
-      
-      // Update password
-      params.password = hash,
-      
-      // Check if username taken
-      select(User, { username })
-        .then(user => !user || !user.length
-          ? create(User, 'users', params)
-            .then(safe(user => succeed(res, 'User successfully created.')))
-            .catch(error => fail(res, error))
-          : fail(res, { status: 403, error: 'Username taken.' })))
-}))
+    QueryFactory.insert_if_unique(User, { username })(new_user)
+      (res.success({ message: 'User created successfully.'}))
+      (res.failure({ error: 400, error: 'Username taken.' }))
+      .run()
+      .catch(res.failure())
+  )
+})))
 
 /**
  * Registers new problems.
  */
-admin_router.post('/registerproblem', admin((req, res) => {
-  const { name, type, status, code, answer, tolerance, points } = req.body;
-  const params = { name, type, status, code, answer, tolerance, points }
-  
-  // Ensure we capture all inputs
-  Object.keys(params).map(key => params[key] = params[key] ? params[key] : req.body['problem-' + key])
+admin_router.post('/registerproblem', admin(io((req, res, user) => {
+  const { name, type, status, code, answer, tolerance, points } = req.get('problem-');
+  const new_problem = { name, type, status, code, answer, tolerance, points }
 
-  create(Problem, 'problems', params)
-    .then(safe(problem => succeed(res, 'Problem successfully created.')))
-    .catch(res, { status: 500, error: 'Something went wrong.' })
-}));
+  // Create the problem
+  QueryFactory.insert_if_unique(Problem, [ { name }, { code } ])(new_problem)
+    (res.success({ message: 'Problem created successfully.'}))
+    (res.failure({ status: 400, error: 'Problem name or code already exists.' }))
+    .run()
+    .catch(res.failure())
+})));
 
 /**
  * Grabs a list of all users.
  */
-admin_router.post('/userlist', admin(async (req, res, user) => {
-  select(User, {}).then(safe(users => res.json({ users })))
-}))
+admin_router.post('/userlist', admin((req, res, user) => 
+  Query(User).select().then(users => res.json({ users })).run()
+))
 
 /**
  * Grabs the configuration of the contest.
  */
-admin_router.post('/configlist', admin(async (req, res, user) => {
-  select(Config, {}).then(safe(parameters => res.json({ config: parameters })))
-}))
+admin_router.post('/configlist', admin((req, res, user) => 
+  Query(Config).select().then(config => res.json({ config })).run()
+))
 
 /**
  * Grabs a list of all problems.
  */
-admin_router.post('/problemlist', admin(async (req, res, user) => {
-  select(Problem, {}).then(safe(problems => res.json({ problems })))
-}))
+admin_router.post('/problemlist', admin((req, res, user) => 
+  Query(Problem).select().then(problems => res.json({ problems })).run()
+))
 
 /**
  * Grabs a list of ALL submissions.
  */
-admin_router.post('/submissionlog', admin(async (req, res, user) => {
-  select(Submission, {}).then(safe(submissions => res.json({ submissions })))
-}));
+admin_router.post('/submissionlog', admin((req, res, user) => 
+  Query(Submission).select().then(submissions => res.json({ submissions })).run()
+));
 
 /**
  * Updates config variables.
  */
-admin_router.post('/editconfig', admin((req, res, user) => {
-  const { _id, key, value } = req.body;
+admin_router.post('/editconfig', admin(io((req, res, user) => {
+  const { _id, key, value } = req.get('config-');
   const changes = { /*key,*/ value };
 
-  // Ensure we capture all inputs
-  Object.keys(changes).map(key => changes[key] = changes[key] ? changes[key] : req.body['config-' + key])
-
-  select(Config, _id)
-    .then(safe(parameter => update(Config, _id, changes), 'Parameter does not exist.'))
-    .then(() => process.env[key] = value)
-    .then(() => succeed(res, 'Config parameter edited successfully.'))
-    .catch(error => fail(res, error));
-}))
+  QueryFactory.update_if_exists(Config)(_id)(changes)
+    (res.success({ message: 'Parameter updated successfully.' }))
+    (res.failure({ status: 400, error: 'Parameter does not exist.' }))
+    .run()
+    .catch(res.failure())
+})))
 
 /**
  * Updates problem details.
  */
-admin_router.post('/editproblem', admin((req, res, user) => {
-  const { _id, name, type, code, answer, tolerance, points, status } = req.body;
+admin_router.post('/editproblem', admin(io((req, res, user) => {
+  const { _id, name, type, code, answer, tolerance, points, status } = req.get('problem-');
   const changes = { name, type, code, answer, tolerance, points, status };
 
-  // Ensure we capture all inputs
-  Object.keys(changes).map(key => changes[key] = changes[key] ? changes[key] : req.body['problem-' + key])
-
-  select(Problem, _id)
-    .then(safe(problem => update(Problem, _id, changes), 'Problem does not exist.'))
-    .then(() => succeed(res, 'Problem edited successfully.'))
-    .catch(error => fail(res, error))
-}));
+  QueryFactory.update_if_exists(Problem)(_id)(changes)
+    (res.success({ message: 'Problem updated successfully.' }))
+    (res.failure({ status: 400, error: 'Problem does not exist.' }))
+    .run()
+    .catch(res.failure())
+})));
 
 /**
  * Updates user details.
  */
-admin_router.post('/edituser', admin((req, res, user) => {
-  const { _id, username, password, category, status } = req.body;
+admin_router.post('/edituser', admin(io((req, res, user) => {
+  const { _id, username, password, category, status } = req.get('user-');
   const changes = { username, category, status }
-
-  // Ensure we capture all inputs
-  Object.keys(changes).map(key => changes[key] = changes[key] ? changes[key] : req.body['user-' + key])
 
   // Invalid password
   if(!password || password === '')
-    fail(res, { status: 400, error: 'Password cannot be empty.' })
+    res.failure({ status: 400, error: 'Password cannot be empty.' })
 
   // Hash password
   bcrypt.hash(password, SALT_ROUNDS).then(hash => (
@@ -218,36 +142,41 @@ admin_router.post('/edituser', admin((req, res, user) => {
     changes.password = hash,
 
     // Update user
-    select(User, _id)
-      .then(safe(user => update(User, _id, changes), 'User does not exist.'))
-      .then(() => succeed(res, 'User edited successfully'))
-      .catch(error => fail(res, error))))
-}));
+    QueryFactory.update_if_exists(User)(_id)(changes)
+      (res.success({ message: 'User updated successfully.' }))
+      (res.failure({ status: 400, error: 'User does not exist.' }))
+      .run()
+      .catch(res.failure())
+  ))
+})));
 
 /**
  * Deletes users.
  */
-admin_router.post('/deleteuser', admin((req, res, user) => {
-  const { _id } = req.body;
+admin_router.post('/deleteuser', admin(io((req, res, user) => {
+  const { _id } = req.get('user-');
 
-  select(User, _id)
-    .then(safe(user => drop(User, _id), 'User does not exist.'))
-    .then(() => succeed(res, 'User successfully deleted.'))
-    .catch(error => fail(res, error))
-}));
+  QueryFactory.delete_if_exists(User, _id)
+    (res.success({ message: 'User deleted successfully.' }))
+    (res.failure({ status: 400, error: 'User does not exist.' }))
+    .run()
+    .catch(res.failure())
+})));
 
 /**
  * Deletes problems.
  */
-admin_router.post('/deleteproblem', admin((req, res, user) => {
-  const { _id } = req.body;
+admin_router.post('/deleteproblem', admin(io((req, res, user) => {
+  const { _id } = req.get('problem-');
 
-  select(Problem, _id)
-    .then(safe(problem => drop(Problem, _id), 'Problem does not exist.'))
-    .then(() => succeed(res, 'Problem successfully deleted.'))
-    .catch(error => fail(res, error))
-}));
+  QueryFactory.delete_if_exists(Problem, _id)
+    (res.success({ message: 'Problem deleted successfully.' }))
+    (res.failure({ status: 400, error: 'Problem does not exist.' }))
+    .run()
+    .catch(res.failure())
+})));
 
+// ! asdddddddddddddddddddddddddddddddddddddd
 // admin_router.post('/enableofficial', (req, res) => {
 //   admin(req, res, async userData => {
 
