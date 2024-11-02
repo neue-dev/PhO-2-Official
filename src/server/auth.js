@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:20:42
- * @ Modified time: 2024-11-02 11:02:37
+ * @ Modified time: 2024-11-03 05:30:29
  * @ Description:
  * 
  * Deals with auth-related tasks.
@@ -96,6 +96,7 @@ const authorized_user_decorator = (func, fail) => (
       req.user = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
 
       // Look for user in database and execute appropriate action
+      // We don't use our API to avoid coupling io.js to db.js
       User.findOne({ _id: req.user._id })
         .then(user => user ? func(req, res, user, ...args) : send_file(res))
       

@@ -47,7 +47,7 @@ admin_router.post('/registeruser', admin(io((req, res, user) => {
 
     QueryFactory.insert_if_unique(User, { username })(new_user)
       (res.success({ message: 'User created successfully.'}))
-      (res.failure({ error: 400, error: 'Username taken.' }))
+      (res.failure({ status: 400, error: 'Username taken.' }))
       .run()
       .catch(res.failure())
   )
@@ -130,23 +130,22 @@ admin_router.post('/editproblem', admin(io((req, res, user) => {
 admin_router.post('/edituser', admin(io((req, res, user) => {
   const { _id, username, password, category, status } = req.get('user-');
   const changes = { username, category, status }
-
-  // Invalid password
-  if(!password || password === '')
-    res.failure({ status: 400, error: 'Password cannot be empty.' })
-
-  // Hash password
-  bcrypt.hash(password, SALT_ROUNDS).then(hash => (
-
-    // Specify hash to store
-    changes.password = hash,
-
-    // Update user
+  
+  // Update query
+  const update_query = (changes) =>
     QueryFactory.update_if_exists(User)(_id)(changes)
       (res.success({ message: 'User updated successfully.' }))
       (res.failure({ status: 400, error: 'User does not exist.' }))
-      .run()
-      .catch(res.failure())
+      .run().catch(res.failure())  
+
+  // Update without password
+  if(!password || password === '')
+    return update_query(changes)
+
+  // Update with a password
+  bcrypt.hash(password, SALT_ROUNDS).then(hash => (
+    changes.password = hash,
+    update_query(changes)
   ))
 })));
 
@@ -176,9 +175,10 @@ admin_router.post('/deleteproblem', admin(io((req, res, user) => {
     .catch(res.failure())
 })));
 
-// ! asdddddddddddddddddddddddddddddddddddddd
-// admin_router.post('/enableofficial', (req, res) => {
-//   admin(req, res, async userData => {
+// admin_router.post('/enableofficial', admin(io((req, res, user) => {
+
+//     Query(Problem)
+//       .select({ type: 'official'})
 
 //     // Try to update problem statuses
 //     try {
@@ -205,8 +205,7 @@ admin_router.post('/deleteproblem', admin(io((req, res, user) => {
 //         error: error.message 
 //       }).status(500);
 //     }
-//   })
-// });
+// })));
 
 // admin_router.post('/disableofficial', (req, res) => {
 //   admin(req, res, async userData => {

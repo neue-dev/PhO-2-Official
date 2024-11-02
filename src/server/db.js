@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:53:41
- * @ Modified time: 2024-11-02 15:46:12
+ * @ Modified time: 2024-11-03 05:35:14
  * @ Description:
  * 
  * Handles db related queries and what not.
@@ -125,19 +125,13 @@ const flatten = ((_en) => (
 export const Query = (Model) => (
 	
 	// Extend the query
-	((query, query_promise, query_resolve, query_reject, query_id=null, query_queue=[]) => (
+	((query, query_promise, query_resolve, query_reject) => (
 
 		// Create a promise for the resolution of the query
 		query_promise = new Promise((resolve, reject) => 
 			(query_resolve = resolve, query_reject = reject)),
 
 		Object.assign(query, {
-
-			// Assign an id to the query
-			id: (id) => (
-				query_id = cast_id(id),
-				query
-			),
 
 			// Selects based on match, if field is null, all are selected
 			// An object with filters may be passed in, or a single field name with associated permitted values
@@ -158,51 +152,51 @@ export const Query = (Model) => (
 									? query.where(field).equals(null) 
 									: query.where(field).equals(cast_if_id(field, values[0])) 
 								: query.where(field).in(values)
-						: query_id 
-							? query.where('_id').equals(query_id)
-							: null,
+						
+						// Field is not defined, query doesn't change
+						: null,
 				query
 			),
 
 			// Creates a separate insert statement
 			insert: (...values) => (
-				query_queue.push(() => Model.insertMany(values)),
+				query_promise.then(() => Model.insertMany(values)),
 				query
 			),
-
+			
+			// Deletes documents
 			delete: () => (
-				query_id
-					? query_queue.push(() => Model.deleteOne({ _id: query_id }))
-					: console.error('ID has not been set.'),
+				query.deleteMany(),
 				query
 			),
 
 			// Creates a separate update statement
-			update: (value) => (
-				query_id 
-					?	query_queue.push(() => Model.updateOne({ _id: query_id }, value))
-					: console.error('ID has not been set.'),
+			update: (shape) => (
+				query.updateMany({ $set: flatten(shape) }),
 				query
 			),
 
 			// Runs the actual query
 			run: () => (
-				(query_queue.length 
-					? Promise.all([ query.exec(), ...query_queue.map(query => query()) ])
-					: query.exec()
-				).then(results => query_resolve(results)),
+				query.exec().then(results => query_resolve(results)),
 				query
 			),
 
 			// Checks if result is empty, and executes callback if true
 			result_is_empty: (f) => (
-				query_promise.then(results => (results.length ? null : f(), results)), 
+				query_promise.then(results => 
+					Array.isArray(results)
+						? (results.length ? null : f(), results)
+						: (results.acknowledged ? null : f(), results)), 
 				query
 			),
 
 			// Checks if result is not empty, and executes callback with results
 			result_is_not_empty: (f) => (
-				query_promise.then(results => (results.length ? f(results) : null, results)), 
+				query_promise.then(results => 
+					Array.isArray(results)
+						? (results.length ? f(results) : null, results)
+						: (results.acknowledged ? f(results) : null, results)),
 				query
 			),
 
@@ -317,13 +311,19 @@ export const Aggregate = (Model) => (
 
 			// Checks if result is empty, and executes callback if true
 			result_is_empty: (f) => (
-				aggregate_promise.then(results => (results.length ? null : f(), results)), 
+				aggregate_promise.then(results => 
+					Array.isArray(results)
+						? (results.length ? null : f(), results)
+						: (results.acknowledged ? null : f(), results)), 
 				aggregate
 			),
 
 			// Checks if result is not empty, and executes callback with results
 			result_is_not_empty: (f) => (
-				aggregate_promise.then(results => (results.length ? f(results) : null, results)), 
+				aggregate_promise.then(results => 
+					Array.isArray(results)
+						? (results.length ? f(results) : null, results)
+						: (results.acknowledged ? f(results) : null, results)), 
 				aggregate
 			),
 
@@ -366,15 +366,11 @@ export const QueryFactory = (() => {
 	 * @param	on_failure	On failure callback.
 	 */
 	_.update_if_exists = R.curry((Model, id, updates, on_success, on_failure) => (
-		Query(Model).id(id)
-			.select()
+		Query(Model)
+			.select({ _id: id })
+			.update(updates)
 			.result_is_empty(on_failure)
-			.result_is_not_empty(() => 
-				Query(Model).id(id)
-					.update(updates)
-					.then(on_success)
-					.run()
-				)
+			.result_is_not_empty(on_success)
 	));
 
 	/**
@@ -386,15 +382,11 @@ export const QueryFactory = (() => {
 	 * @param	on_failure	On failure callback.
 	 */
 	_.delete_if_exists = R.curry((Model, id, on_success, on_failure) => (
-		Query(Model).id(id)
-			.select()
-			.result_is_empty(on_failure)
-			.result_is_not_empty(() => 
-				Query(Model).id(id)
-					.delete()
-					.then(on_success)
-					.run()
-				)
+		Query(Model)
+			.select({ _id: id })
+			.delete()
+			.result_is_empty(r => (console.log(r), on_failure(r)))
+			.result_is_not_empty(on_success)
 	));
 
 	/**
@@ -407,12 +399,13 @@ export const QueryFactory = (() => {
 	 * @param	on_failure	On failure callback.
 	 */
 	_.insert_if_unique = R.curry((Model, filters, models, on_success, on_failure) => (
-		Query(Model).select(filters)
+		Query(Model)
+			.select(filters)
       .result_is_empty(() => 
 				Query(Model)
-				.insert(models)
-				.then(on_success)
-				.run())
+					.insert(models)
+					.then(on_success)
+					.run())
       .result_is_not_empty(on_failure)
 	));
 
