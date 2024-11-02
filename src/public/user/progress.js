@@ -7,31 +7,33 @@ const PROGRESS = (() => {
   
   // Inits the menu tabs, DO NOT REMOVE
   const tabs_menu = 
-    DOM.stateful_menu('progress-menu', DOM.select('.tabs-menu'))
+    DOM.stateful_menu(DOM.select('.tabs-menu'))
       .menu_on_selected(c => tabs.tabs_active_tab(c))
       .menu_selected_item('.problems');
 
   // Tables, labels and, modals
   const problems_label = DOM.select('.problems-label');
-  const problems_table = DOM.stateful_table('problems-table', DOM.select('.problems-table'));
-  const problems_modal = DOM.stateful_modal('problems-modal', DOM.select('.problems-modal'));
-  const problems_form = DOM.stateful_form('problems-form');
+  const problems_table = DOM.stateful_table(DOM.select('.problems-table'));
+  const problems_modal = DOM.stateful_modal(DOM.select('.problems-modal'));
+  const problems_form = DOM.stateful_form();
 
   const submissions_label = DOM.select('.submissions-label');
-  const submissions_table = DOM.stateful_table('submissions-table', DOM.select('.submissions-table'));
-  const submissions_modal = DOM.stateful_modal('submissions-modal', DOM.select('.submissions-modal'))
+  const submissions_table = DOM.stateful_table(DOM.select('.submissions-table'));
+  const submissions_modal = DOM.stateful_modal(DOM.select('.submissions-modal'))
 
   // Set up the modals
   problems_modal.modal_header('Problem Details');
   submissions_modal.modal_header('Submission Details');
 
   // Forms
-  problems_form.form_field('_id', { type: 'text' });
-  problems_form.form_field('answer', { type: 'text' }, { 
-    checker: Formatter.valid_submission_answer, 
-    mapper: Formatter.lift_submission_answer 
-  });
-  problems_form.select('.field._id').s({ display: 'none' })
+  problems_form
+    .form_field('_id', { type: 'text' })
+    .form_field('answer', { type: 'text' }, { 
+      checker: Formatter.valid_submission_answer, 
+      mapper: Formatter.lift_submission_answer 
+    })
+    .form_text('countdown', '')
+    .select('.field._id').s({ display: 'none' });
 
   // Search bar
   const search_bar = DOM.select('.search-bar')
@@ -87,7 +89,7 @@ const PROGRESS = (() => {
   const td_view_button = 
     C.new(() => td_auto_right().append(buttons().append(view_button())))
 
-  // Count submissions
+  // Problem submission helper methods
   const problem_submissions = (problem) => 
     PHO2.submissions().filter(submission => submission.problem_id === problem._id)
 
@@ -98,10 +100,26 @@ const PROGRESS = (() => {
     problem_submissions(problem)
       .filter(submission => submission.verdict === 'correct').length > 0
 
+  // Submission cooldown helpers
+  const submissions_cooldown = () => 
+    parseInt(PHO2.config().SUBMISSION_COOLDOWN.toString())
+
+  const submissions_elapsed = () =>
+    parseInt(Time.now() - PHO2.user().last_submit)
+
+  const submissions_countdown = () =>
+    Math.abs(submissions_cooldown() - submissions_elapsed())
+
+  const submission_locked = () =>
+    submissions_elapsed() <= submissions_cooldown()
+
+  // Handles clicks on the problems table
   const problems_table_handler = (problem) => (
     problems_form.form_clear(),
     problems_form.form_field_value('_id', problem._id),
     problems_form.select('.field.answer')
+      .s(problem_submissions_verdict(problem) ? { display: 'none' } : { display: 'block' }),
+    problems_form.select('.text.countdown')
       .s(problem_submissions_verdict(problem) ? { display: 'none' } : { display: 'block' }),
     problems_modal.modal_header(problem.name),
     problems_modal.modal_clear(),
@@ -114,6 +132,7 @@ const PROGRESS = (() => {
       problems_modal.modal_open()
   )
 
+  // Handles clicks on the submissions table
   const submissions_table_handler = (submission) => (
     submissions_modal.modal_header(submission.problem_code.number + submission.problem_code.alpha + ' ' + submission.problem_name),
     submissions_modal.modal_clear(),
@@ -214,16 +233,30 @@ const PROGRESS = (() => {
       .then(() => problems_table.table_map(problems_table.mapper))
   }
 
+  // Save config data
+  function load_config() {
+    return X.request('./user/configlist', 'POST')
+      .then(({ config }) => PHO2.config(
+        config.reduce((a, p) => (a[p.key] = p.value, a), {})))
+  }
+
   // Save user data
   function load_user() {
     return X.request('./user/data', 'POST')
       .then((user) => PHO2.user(user))
-      .then(() => console.log(PHO2.user()))
   }
 
-  console.log(Time.millis_to_ms())
+  // Updates the cooldown 
+  function update_cooldown() {
+    submission_locked() 
+      ? problems_form.select('.text.countdown').t(submissions_countdown())
+      : problems_form.select('.text.countdown').s({ display: 'none' })
+  }
 
   // Load the stuffs
-  load_user();
-  load_submissions().then(() => load_problems())
+  load_user()
+    .then(() => load_config())
+    .then(() => setInterval(update_cooldown, 1000))
+  load_submissions()
+    .then(() => load_problems())
 })()

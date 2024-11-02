@@ -32,19 +32,19 @@ const LEADERBOARD = (() => {
     DOM.stateful_tabs('leaderboard-tabs', DOM.select('.tabs'));
     
   const tabs_menu = 
-    DOM.stateful_menu('leaderboard-menu', DOM.select('.tabs-menu'))
+    DOM.stateful_menu(DOM.select('.tabs-menu'))
       .menu_on_selected(c => tabs.tabs_active_tab(c))
       .menu_selected_item('.all');
 
   // Labels and Tables
   const all_label = DOM.select('.all-label');
-  const all_table = DOM.stateful_table('all-table', DOM.select('.all-table'));
+  const all_table = DOM.stateful_table(DOM.select('.all-table'));
 
   const junior_label = DOM.select('.junior-label');
-  const junior_table = DOM.stateful_table('junior-table', DOM.select('.junior-table'));
+  const junior_table = DOM.stateful_table(DOM.select('.junior-table'));
   
   const senior_label = DOM.select('.senior-label');
-  const senior_table = DOM.stateful_table('senior-table', DOM.select('.senior-table'));
+  const senior_table = DOM.stateful_table(DOM.select('.senior-table'));
 
   // Search bar
   const search_bar = DOM.select('.search-bar')

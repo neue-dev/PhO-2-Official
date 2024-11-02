@@ -33,36 +33,36 @@ const CONFIG = (() => {
   
   // Inits the menu tabs, DO NOT REMOVE
   const tabs_menu = 
-    DOM.stateful_menu('config-menu', DOM.select('.tabs-menu'))
+    DOM.stateful_menu(DOM.select('.tabs-menu'))
       .menu_on_selected(c => tabs.tabs_active_tab(c))
       .menu_selected_item('.config');
 
   // Labels, Tables and Modals
   const config_label = DOM.select('.config-label');
-  const config_table = DOM.stateful_table('config-table', DOM.select('.config-table'));
-  const config_modal = DOM.stateful_modal('config-modal', DOM.select('.config-modal'));
+  const config_table = DOM.stateful_table(DOM.select('.config-table'));
+  const config_modal = DOM.stateful_modal(DOM.select('.config-modal'));
 
   const users_label = DOM.select('.users-label');
-  const users_table = DOM.stateful_table('users-table', DOM.select('.users-table'));
-  const users_modal = DOM.stateful_modal('users-modal', DOM.select('.users-modal'));
+  const users_table = DOM.stateful_table(DOM.select('.users-table'));
+  const users_modal = DOM.stateful_modal(DOM.select('.users-modal'));
   
   const problems_label = DOM.select('.problems-label');
-  const problems_table = DOM.stateful_table('problems-table', DOM.select('.problems-table'));
-  const problems_modal = DOM.stateful_modal('problems-modal', DOM.select('.problems-modal'));
+  const problems_table = DOM.stateful_table(DOM.select('.problems-table'));
+  const problems_modal = DOM.stateful_modal(DOM.select('.problems-modal'));
 
   // Global buttons
   const users_new = new_button();
   const problems_new = new_button();
 
   // Modal forms
-  const config_form = DOM.stateful_form('config-form')
+  const config_form = DOM.stateful_form()
     .form_field('_id', { type: 'text' })
     .form_field('Key', { type: 'text' })
     .form_field('Value', { type: 'text' }, { mapper: { 'datetime-local': (value) => Time.timestamp_from_datestr(value) } })
       .select('.field._id').s({ display: 'none' }).parent()
       .select('.field.key').s({ display: 'none' }).parent()
 
-  const users_form = DOM.stateful_form('users-form')
+  const users_form = DOM.stateful_form()
     .form_field('_id', { type: 'text' })
     .form_field('Username', { type: 'text' })
     .form_field('Password', { type: 'text' })
@@ -70,7 +70,7 @@ const CONFIG = (() => {
     .form_field('Category', { type: 'select', options: [ 'junior', 'senior' ] })
       .select('.field._id').s({ display: 'none' }).parent()
 
-  const problems_form = DOM.stateful_form('problems-form')
+  const problems_form = DOM.stateful_form()
     .form_field('_id', { type: 'text' })
     .form_field('Name', { key: 'problem-name', type: 'text' })
     .form_field('Code', { key: 'problem-code', type: 'text' }, { 

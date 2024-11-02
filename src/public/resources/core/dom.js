@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-02 17:32:53
+ * @ Modified time: 2024-11-03 03:04:39
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -13,6 +13,13 @@ const DOM = (() => {
 
 	// Interface
 	const _ = {};
+
+	/**
+	 * Generates a random id for us
+	 * 
+	 * @return	A unique valid id string. 
+	 */
+	const random_id = () => '__' + crypto.randomUUID()
 
 	/**
 	 * A conciser and more expressive syntax for decorating elements.
@@ -311,11 +318,10 @@ const DOM = (() => {
 	 * 	menu_selected_item()		Get-setter for selected item.
 	 * 	menu_on_selected()			Sets what to do after an item gets selected.
 	 * 
-	 * @param id		Identifier for the element and its store in localStorage. 
 	 * @param menu	The element (probably a div containing the items) to decorate. 
 	 * @return			The decorated element.
 	 */
-	_.stateful_menu = (id, menu) => (
+	_.stateful_menu = (menu) => (
 		
 		// Extends the menu
 		((menu) => (
@@ -362,9 +368,11 @@ const DOM = (() => {
 
 		// Pass in the element
 		))(
-			menu
-				? stateful(menu, id)
-				: stateful(element('div').c('menu'), id)
+			((id) => (
+				menu
+					? stateful(menu, id)
+					: stateful(element('div').c('menu'), id)
+			))(random_id())
 		)
 	)
 
@@ -378,11 +386,10 @@ const DOM = (() => {
 	 * 	table_sort()			Sorts the rows according to a comparator that works on the data.
 	 * 	table_filter()		Applies a filter to the table.		
 	 * 
-	 * @param id			Identifier for the element and its store in localStorage. 
-	 * @param table		The element (probably a table element of sorts) to decorate. 
+	 * @param table		The element (probably a table element of sorts) to decorate, or null to create a new one. 
 	 * @return				The decorated element.
 	 */
-	_.stateful_table = (id, table) => (
+	_.stateful_table = (table) => (
 
 		// Extends the table
 		((table) => (
@@ -468,9 +475,11 @@ const DOM = (() => {
 
 		// Pass the element
 		))(
-			table 
-				? stateful(table, id)
-				: stateful(element('table').c('table'), id)
+			((id) => (
+				table 
+					? stateful(table, id)
+					: stateful(element('table').c('table'), id)
+			))(random_id())
 		)
 	)
 	
@@ -487,11 +496,10 @@ const DOM = (() => {
 	 * 	modal_append()				Append content to the body of the modal.
 	 * 	modal_clear()					Clears the body of the modal.
 	 * 
-	 * @param id 			An id for the modal.
-	 * @param modal 	The element to use.
+	 * @param modal 	The element to use (or null to generate a new one).
 	 * @return				Returns a new modal. 
 	 */
-	_.stateful_modal = (id, modal) => (
+	_.stateful_modal = (modal) => (
 		
 		// Extend the modal
 		((modal) => (
@@ -581,9 +589,11 @@ const DOM = (() => {
 			
 		// Pass the element
 		))(
-			modal 
-				? stateful(modal, id)
-				: stateful(element('div').c('modal'), id)
+			((id) => (
+				modal 
+					? stateful(modal, id)
+					: stateful(element('div').c('modal'), id)
+			))(random_id())
 		)
 	)
 
@@ -597,11 +607,10 @@ const DOM = (() => {
 	 * 	form_submit()				Submits the form.
 	 * 	form_clear()				Clears field values.
 	 * 
-	 * @param id 		The id of the form.
-	 * @param form 	The form element.
+	 * @param form 	The form element (or null to create a new one).
 	 * @return			The stateful form.
 	 */
-	_.stateful_form = (id, form) => (
+	_.stateful_form = (form) => (
 
 		// Extend the form
 		((form) => (
@@ -655,6 +664,12 @@ const DOM = (() => {
 					))(
 						form.select(`.input.${name}`)
 					)
+				),
+
+				// Adds text to the form
+				form_text: (c, text) => (
+					form.append(element('div').c('text', c).t(text)),
+					form
 				),
 
 				// Adds new fields
@@ -731,9 +746,10 @@ const DOM = (() => {
 
 					// Check that all fields are valid
 					Array.from(form.children).every(child => 
+						(console.log(child.classList, child.cis('field', 'req')),
 						child.cis('field', 'req')
 							? form.form_field_value(child.select('.input').d()) != null
-							: true)
+							: true))
 
 						// Remove warning if it exists, make request
 						? (form.remove('.form.warning'), X.request(target, 'POST', 
@@ -764,11 +780,13 @@ const DOM = (() => {
 				form
 			})
 
-		// Pass in the element
+		// Pass in a randomly-generated if + the element
 		))(
-			form 
-				? stateful(form, id)
-				: stateful(element('form').c('ui', 'form'), id)
+			((id) => (
+				form 
+					? stateful(form, id)
+					: stateful(element('form').c('ui', 'form'), id)
+			))(random_id())
 		)
 	)
 

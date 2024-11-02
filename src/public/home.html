@@ -61,7 +61,7 @@
     <script src="/pho2/trademark.js"></script>
     <script>
 
-      const login_form = DOM.stateful_form('login-form', DOM.select('.login-form'));
+      const login_form = DOM.stateful_form(DOM.select('.login-form'));
       const login_button = DOM.select('.login-button');
 
       login_form.form_field('Username', { type: 'text', placeholder: '...' })
