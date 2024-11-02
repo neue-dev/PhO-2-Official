@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-01 08:08:47
+ * @ Modified time: 2024-11-02 17:32:53
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -696,8 +696,8 @@ const DOM = (() => {
 											: (mapper(field.value)))))
 								.catch((err) => (
 									container.select('.warning')
-										? null
-										: container.append(element('div').t(err).c('warning')),
+										? field.value ? null : container.remove('.warning')
+										: field.value && container.append(element('div').t(err).c('warning')),
 									form.state(name, null)))
 						)), 
 						

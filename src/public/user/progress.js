@@ -113,13 +113,15 @@ const PROGRESS = (() => {
 
   const problems_table_handler = (problem) => (
     problems_form.form_field_value('_id', problem._id),
+    problems_form.select('.field.answer')
+      .s(problem_submissions_verdict(problem) ? { display: 'none' } : { display: 'block' }),
     problems_modal.modal_header(problem.name),
     problems_modal.modal_clear(),
     problems_modal.modal_append(
       problems_form, br(),
       label().t(`${problem_submissions_count(problem)} submissions`),
-      label().t(`${problem_submissions_verdict(problem) ? 'correct' : 'wrong'}`)
-        .c(problem_submissions_verdict(problem) ? 'green' : 'red')
+      label().t(`${problem_submissions_verdict(problem) ? 'correct' : problem_submissions_count(problem) === 0 ? '' : 'wrong'}`)
+        .c(problem_submissions_verdict(problem) ? 'green' : problem_submissions_count(problem) === 0 ? 'hidden' : 'red')
         .c(problem_submissions_verdict(problem) ? 'default' : 'basic')),
       problems_modal.modal_open()
   )
@@ -148,7 +150,13 @@ const PROGRESS = (() => {
     tr_hoverable()
       .listen('click', () => problems_table_handler(problem))
       .append(
-        td_auto_label({ '.label': { t: problem.code.number + problem.code.alpha } }),
+        td_auto_label({ '.label': { 
+          t: problem.code.number + problem.code.alpha,
+          c: problem_submissions_verdict(problem) 
+            ? [ 'green' ] : problem_submissions_count(problem) === 0
+            ? [ 'default' ]
+            : [ 'red', 'basic' ] 
+        } }),
         td_auto().t(problem.name),
         td_auto().t(problem.points),
         td_auto()
