@@ -290,6 +290,7 @@ const CONFIG = (() => {
   // Set up the global buttons
   users_new.listen('click', () => (
     users_form.form_clear(),
+    users_form.form_field_value('_id', '-'),
     users_form.select('.field.password').c('req'),
     users_modal.modal_header('create new user'),
     users_modal.modal_action_hide('delete'),
@@ -300,6 +301,7 @@ const CONFIG = (() => {
 
   problems_new.listen('click', () => (
     problems_form.form_clear(),
+    problems_form.form_field_value('_id', '-'),
     problems_modal.modal_header('create new problem'),
     problems_modal.modal_action_hide('delete'),
     problems_modal.modal_action_hide('apply'),

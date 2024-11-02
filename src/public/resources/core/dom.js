@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-03 04:38:06
+ * @ Modified time: 2024-11-03 06:08:10
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -697,19 +697,23 @@ const DOM = (() => {
 						// Input field event listener
 						field.listen('input', (e) => (
 							
-							// Check for invalid input
-							checker(field.value)
-								.then(() => (
-									container.remove('.warning'),
-									form.state(name, 
-										typeof mapper === 'object'
-											? (mapper[field.type] ?? ((value) => value))(field.value)
-											: (mapper(field.value)))))
-								.catch((err) => (
-									container.select('.warning')
-										? field.value ? null : container.remove('.warning')
-										: field.value && container.append(element('div').t(err).c('warning')),
-									form.state(name, null)))
+							// Empty field
+							(field.value.trim() === '' || !field.value)
+								? form.state(name, null)
+							
+								// Check for invalid input
+								: checker(field.value)
+									.then(() => (
+										container.remove('.warning'),
+										form.state(name, 
+											typeof mapper === 'object'
+												? (mapper[field.type] ?? ((value) => value))(field.value)
+												: (mapper(field.value)))))
+									.catch((err) => (
+										container.select('.warning')
+											? field.value ? null : container.remove('.warning')
+											: field.value && container.append(element('div').t(err).c('warning')),
+										form.state(name, null)))
 						)), 
 						
 						// Return form
@@ -741,8 +745,9 @@ const DOM = (() => {
 				form_submit: (target) => (
 
 					// Check that all fields are valid
-					Array.from(form.children).every(child => 
-						(child.cis('field', 'req')
+					Array.from(form.children).every(child => (
+						child.uc('required'), 
+						child.cis('field', 'req')
 							? form.form_field_value(child.select('.input').d()) != null
 							: true))
 
@@ -751,14 +756,19 @@ const DOM = (() => {
 								
 								// Create payload for request
 								Array.from(form.children).reduce((accumulator, child) => (
-									child.cis('field', 'req') 
-										? { ...accumulator, [child.select('.input').d()]: form.form_field_value(child.select('.input').d()) }
+									child.cis('field') 
+										? { ...accumulator, 
+												[child.select('.input').d()]: 
+													!child.cis('req') 
+														? form.form_field_value(child.select('.input').d()) || ''
+														: form.form_field_value(child.select('.input').d()) }
 										: accumulator
 								), {})
 							))
 
 						// Reject submission action
-						: (Promise.reject('Some fields are invalid.'))
+						: (Array.from(form.children).every(child => child.cis('field', 'req') && child.c('required')),
+							Promise.reject('Some fields are missing or invalid.'))
 				),
 
 				// Clears the input values of the form
