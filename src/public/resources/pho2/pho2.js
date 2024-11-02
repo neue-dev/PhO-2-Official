@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 06:26:15
- * @ Modified time: 2024-11-01 11:22:49
+ * @ Modified time: 2024-11-02 18:57:12
  * @ Description:
  * 
  * Utilities for managing the front-end of the website.
@@ -78,6 +78,14 @@ const PHO2 = (() => {
 	 * @return					The saved scores.
 	 */
 	_.scores = (scores) => DOM.store('scores', scores)
+
+	/**
+	 * Saves user data.
+	 * 
+	 * @param user	The data to save. 
+	 * @return			The data current stored by it.
+	 */
+	_.user = (user) => DOM.store('user', user)
 
 	/**
 	 * Returns details about the contest time.

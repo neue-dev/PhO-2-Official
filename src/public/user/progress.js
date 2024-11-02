@@ -25,16 +25,6 @@ const PROGRESS = (() => {
   problems_modal.modal_header('Problem Details');
   submissions_modal.modal_header('Submission Details');
 
-  // Forms
-  problems_form
-    .form_field('_id', { type: 'text' })
-    .form_field('answer', { type: 'text' }, { 
-      checker: Formatter.valid_submission_answer, 
-      mapper: Formatter.lift_submission_answer 
-    })
-    .form_text('countdown', '')
-    .select('.field._id').s({ display: 'none' });
-
   // Search bar
   const search_bar = DOM.select('.search-bar')
 
@@ -113,6 +103,22 @@ const PROGRESS = (() => {
   const submission_locked = () =>
     submissions_elapsed() <= submissions_cooldown()
 
+  // Interval for the cooldown
+  let submission_interval = 0;
+  const submission_set_interval = () => submission_interval = setInterval(update_cooldown, 1000);
+  const submission_clear_interval = () => clearInterval(submission_interval);
+
+  // Forms
+  problems_form
+    .form_field('_id', { type: 'text' })
+    .form_field('answer', { type: 'text' }, { 
+      checker: Formatter.valid_submission_answer, 
+      mapper: Formatter.lift_submission_answer 
+    })
+    .form_text('countdown', '')
+    .select('.text.countdown').append(div().c('ui', 'header', 'massive', 'red', 'text')).parent()
+    .select('.field._id').s({ display: 'none' });
+
   // Handles clicks on the problems table
   const problems_table_handler = (problem) => (
     problems_form.form_clear(),
@@ -123,13 +129,16 @@ const PROGRESS = (() => {
       .s(problem_submissions_verdict(problem) ? { display: 'none' } : { display: 'block' }),
     problems_modal.modal_header(problem.name),
     problems_modal.modal_clear(),
+    problems_modal.select('.action.submit')
+      .s(problem_submissions_verdict(problem) ? { display: 'none' } : { display: 'inline-block' }),
     problems_modal.modal_append(
       problems_form, br(),
       label().t(`${problem_submissions_count(problem)} submissions`),
       label().t(`${problem_submissions_verdict(problem) ? 'correct' : problem_submissions_count(problem) === 0 ? '' : 'wrong'}`)
         .c(problem_submissions_verdict(problem) ? 'green' : problem_submissions_count(problem) === 0 ? 'hidden' : 'red')
         .c(problem_submissions_verdict(problem) ? 'default' : 'basic')),
-      problems_modal.modal_open()
+    problems_modal.modal_open(),
+    problem_submissions_verdict(problem) || (submission_set_interval(), update_cooldown())
   )
 
   // Handles clicks on the submissions table
@@ -195,15 +204,18 @@ const PROGRESS = (() => {
     modal.select('.action.submit').c('blue')
   )
 
-  const action_close = (modal) => (
-    modal.modal_action('close', () => modal.modal_close()),
+  const action_close = (modal, callback) => (
+    modal.modal_action('close', () => (callback(), modal.modal_close())),
     modal.select('.action.close').c('black')
   )
 
   // Modal buttons
-  action_submit(problems_modal, problems_form, './user/submit', () => (load_problems(), load_submissions()))
-  action_close(problems_modal)
-  action_close(submissions_modal)
+  action_submit(problems_modal, problems_form, './user/submit', 
+    () => (load_user(), load_submissions(), load_problems(), submission_clear_interval()))
+  action_close(problems_modal, 
+    () => submission_clear_interval())
+  action_close(submissions_modal, 
+    () => true)
   
   // Set up the tables and their props
   problems_table.table_header('Problem', '', 'Points')
@@ -246,17 +258,24 @@ const PROGRESS = (() => {
       .then((user) => PHO2.user(user))
   }
 
-  // Updates the cooldown 
+  // Updates the cooldown display
   function update_cooldown() {
-    submission_locked() 
-      ? problems_form.select('.text.countdown').t(submissions_countdown())
-      : problems_form.select('.text.countdown').s({ display: 'none' })
+    submission_locked()
+      ? problems_form
+          .select('.text.countdown').s({ display: 'block' }).parent()
+          .select('.field.answer').s({ display: 'none' }).parent()
+          .select('.text.countdown').select('div').t(Time.millis_to_ms(submissions_countdown())) &&
+        problems_modal.select('.action.submit').c('disabled')
+      : problems_form
+          .select('.text.countdown').s({ display: 'none' }).parent()
+          .select('.field.answer').s({ display: 'block' }) &&
+        problems_modal  
+          .select('.action.submit').uc('disabled')
   }
 
   // Load the stuffs
   load_user()
     .then(() => load_config())
-    .then(() => setInterval(update_cooldown, 1000))
   load_submissions()
     .then(() => load_problems())
 })()

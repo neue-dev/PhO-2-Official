@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 1970-01-01 08:00:00
- * @ Modified time: 2024-11-02 19:19:31
+ * @ Modified time: 2024-11-02 19:31:02
  * @ Description:
  * 
  * Handles time representations and what not.
@@ -23,6 +23,13 @@ const Time = (() => {
 		number %= mod,
 		`${number < 10 ? '0' + number : number}`	
 	)
+
+	/**
+	 * Returns the current timestamp.
+	 * 
+	 * @return	The current timestamp. 
+	 */
+	_.now = () => new Date().getTime()
 
 	/**
 	 * Converts milliseconds into minutes and seconds.

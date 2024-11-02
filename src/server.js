@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 08:26:47
- * @ Modified time: 2024-11-02 07:54:36
+ * @ Modified time: 2024-11-02 19:11:26
  * @ Description:
  * 
  * The main thread on the server.
@@ -58,6 +58,7 @@ const SERVER = (() => {
     '/core/dom.js',
     '/core/component.js',
     '/core/x.js',
+    '/core/time.js',
 
     // Pho2 js files
     '/pho2/pho2.js',

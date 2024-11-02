@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-03 03:21:33
+ * @ Modified time: 2024-11-03 04:38:06
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -517,10 +517,6 @@ const DOM = (() => {
 
 			// Build the structure of the modal
 			modal.append(
-
-				// Close icon
-				element('i').c('close', 'icon')
-					.listen('click', () => modal.modal_close()),
 
 				// Header
 				element('div').c('ui', 'header', 'huge', 'text'),
