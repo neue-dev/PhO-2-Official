@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 08:26:47
- * @ Modified time: 2024-11-02 01:31:10
+ * @ Modified time: 2024-11-02 07:54:36
  * @ Description:
  * 
  * The main thread on the server.
@@ -89,8 +89,8 @@ const SERVER = (() => {
   _.init_database = () => {
 
     // Database init
+    mongoose.set('strictQuery', true);
     mongoose.connect(DATABASE_URL);
-    mongoose.set('strictQuery', false);
 
     // Get the connection
     const database = mongoose.connection;
