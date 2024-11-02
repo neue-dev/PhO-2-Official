@@ -36,26 +36,10 @@ const userSchema = new mongoose.Schema({
       message: 'Status must be a valid string.',
     },
   },
-  score: {
-    type: Number,
-    default: 0,
-  },
-  attempts: {
-    type: Array,
-    default: [],
-  },
-  isMuted: {
+  muted: {
     type: Boolean,
     default: false,
   },
-  lastSubmit: {
-    type: Number,
-    default: 0,
-  },
-  lastMessage: {
-    type: Number,
-    default: 0,
-  }
 }, { collection: 'users' });
 
 export const User = mongoose.model('User', userSchema)

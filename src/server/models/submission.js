@@ -33,15 +33,9 @@ const submissionSchema = new mongoose.Schema({
     required: true,
     type: ObjectId,
   },
-  username: {
-    type: String,
-  },
   problem_id: {
     required: true,
     type: ObjectId,
-  },
-  problemCodeName: {
-    type: String,
   },
   answer: {
     required: true,
