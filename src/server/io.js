@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:33:05
- * @ Modified time: 2024-11-02 11:03:11
+ * @ Modified time: 2024-11-02 16:33:34
  * @ Description:
  * 
  * Handles server IO responsibilities.
@@ -105,7 +105,8 @@ const success = (res) =>
  * @returns 
  */
 export const io = (f) => 
-	(req, res, ...args) => f({ ...req, get: get(req) }, { ...res, success: success(res), failure: failure(res) }, ...args)
+	(req, res, ...args) => 
+		(req.get = get(req), res.success = success(res), res.failure = failure(res), f(req, res, ...args))
 
 
 	
