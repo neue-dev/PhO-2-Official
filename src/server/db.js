@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:53:41
- * @ Modified time: 2024-11-03 08:14:52
+ * @ Modified time: 2024-11-03 09:19:22
  * @ Description:
  * 
  * Handles db related queries and what not.
@@ -16,7 +16,7 @@ import mongoose, { mongo } from 'mongoose'
  * @param id	A possible id. 
  * @return		A definite mongoose object id.
  */
-const cast_id = (id) => typeof id === 'object' ? id : new mongoose.Types.ObjectId(id)
+const cast_id = (id) => id.constructor && id.constructor.name === 'ObjectId' ? id : new mongoose.Types.ObjectId(id)
 
 /**
  * Similar to the helper above, except it casts based on the field name.
@@ -28,7 +28,9 @@ const cast_id = (id) => typeof id === 'object' ? id : new mongoose.Types.ObjectI
 const cast_if_id = (field, id) => 
 	typeof field === 'string' 
 		? field.includes('_id') ? cast_id(id) : id
-		: id;
+		: field.constructor && field.constructor.name === 'ObjectId'
+			? field
+			: Object.keys(field).reduce((acc, key) => (acc[key] = key.includes('_id') ? cast_id(field[key]) : field[key], acc), {});
 
 /**
  * A predicate builder that makes it easier to deal with mongodb.
@@ -102,7 +104,7 @@ const flatten = ((_en) => (
 		((out) => (
 			out = [],
 			Object.keys(obj).map(key => 
-				typeof obj[key] !== 'object' || Array.isArray(obj[key])
+				!obj[key].constructor || obj[key].constructor.name !== 'Object' || Array.isArray(obj[key])
 					? out.push({ key, value: obj[key] })
 					: out = out
 						.concat(_en(obj[key])
@@ -153,12 +155,12 @@ export const Query = (Model) => (
 
 				// If it's an array, we do an or
 				Array.isArray(field)
-					? query.or(field.map(f => flatten(f)))
+					? query.or(field.map(f => cast_id_if(flatten(f))))
 					: field 
 
 						// If it's an object
 						? typeof field === 'object'
-							? query.find(flatten(field))
+							? query.find(cast_if_id(flatten(field)))
 
 							// It's not an object, we're enumerating values
 							: values.length <= 1
@@ -297,7 +299,9 @@ export const Aggregate = (Model) => (
 
 			// Filters the values of the ROWS
 			filter: (field, value) => (
-				aggregate.match({ [field]: cast_if_id(field, value) }),
+				field.constructor && field.constructor.name === 'Object' 
+					? aggregate.match(cast_if_id(flatten(field)))
+					: aggregate.match({ [field]: cast_if_id(field, value) }),
 				aggregate
 			),
 
@@ -489,93 +493,6 @@ export const Fields = () => (
 		))
 	)
 )
-
-// ! asdasdajsdgagsdgasd
-// ! old
-
-/**
- * Creates a new entry in the database.
- * 
- * @param model		The model to instantiate. 
- * @param	db			The collection to modify.
- * @param	params	The params for creating the document.
- * @return				The created document.
- */
-export const create = async (model, db, params) => (
-	await (new model({
-		_id: new mongoose.Types.ObjectId(),
-		...params,
-	}, { collection: db })).save()
-)
-
-/**
- * Returns a thenable that gives the document we requested.
- * 
- * @param db	The db to query. 
- * @param id 	The id of the document OR a set of parameters to match.
- * @return		A promise for the document/s.
- */
-export const select = async (db, id) => (
-	typeof id !== 'object' 
-		? await db.findOne({ _id: mongoose.Types.ObjectId(id) })
-		: await db.find(id)
-)
-
-/**
- * Updates a database entry.
- * 
- * @param db 				The db to update.
- * @param id				The key to match. 
- * @param changes 	The changes to do.
- * @return					The modified document.
- */
-export const update = async (db, id, changes) => (
-	
-	// Update based on changes
-	(async (changes) => (
-		typeof id !== 'object'
-			? await db.updateOne({ _id: mongoose.Types.ObjectId(id) }, changes)
-			: await db.updateMany(id, changes)
-	
-	// Filter props that are empty or null
-	))(
-		Object.keys(changes).reduce((acc, cur) => 
-			cur != null && cur != undefined 
-				? (acc[cur] = changes[cur], acc)  
-				: (acc), 
-			{}
-		)
-	)
-)
-
-/**
- * Deletes a particular document.
- * 
- * @param db	The db to query. 
- * @param id 	The id of the document OR a set of parameters to match.
- * @return		A promise for deletion of the documents.
- */
-export const drop = async (db, id) => (
-	typeof id !== 'object' 
-		? await db.deleteOne({ _id: mongoose.Types.ObjectId(id) })
-		: await db.deleteMany(id)
-)
-
-/**
- * Wraps a function around a null check 
- * 
- * @param	f				The function to wrap.
- * @param	error		The error to throw.
- * @return				The wrapped function.
- */
-export const safe = (f, error) => (
-	(...args) => (
-		args.every(arg => arg !== null && arg !== undefined)
-			? Promise.resolve(f(...args))
-			: Promise.reject({ error })
-	)
-)
-
 
 export default {
 	Predicate,
