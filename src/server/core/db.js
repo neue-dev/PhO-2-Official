@@ -1,13 +1,12 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:53:41
- * @ Modified time: 2024-11-03 10:40:19
+ * @ Modified time: 2024-11-03 11:15:53
  * @ Description:
  * 
  * Handles db related queries and what not.
  */
 
-import * as R from 'ramda'
 import mongoose, { mongo } from 'mongoose'
 
 /**
@@ -391,20 +390,53 @@ export const QueryFactory = (() => {
 	const _ = {}
 
 	/**
+	 * Makes it easier to deal with promises.
+	 * 
+	 * @return	Promise, resolve(), reject(). 
+	 */
+	const create_promise = () => {
+		
+		// Resolver and rejecter
+		let promise_resolve = null;
+		let promise_reject = null;
+
+		// The promise
+		let promise = new Promise((resolve, reject) => {
+			promise_resolve = resolve;
+			promise_reject = reject;
+		})
+
+		// Return an array to be destructured
+		return [ promise, promise_resolve, promise_reject ];
+	}
+
+	/**
+	 * Encapsulates in our functions in a 'promise'.
+	 * 
+	 * @param f	The function to wrap.	 
+	 * @return	A promisified function.
+	 */
+	const promisify = (f) => 
+		(...args) =>
+			f(create_promise(), ...args)
+
+	/**
 	 * Updates an entry with the given changes if it exists in the database.
 	 * 
 	 * @param Model				The model to use.	 
 	 * @param id 					The id of the entry.
 	 * @param	updates			The updates to push.
 	 * @param	on_success	On success callback.
-	 * @param	on_failure	On failure callback.
+	 * @return						A promise for the query.
 	 */
-	_.update_if_exists = R.curry((Model, id, updates, on_success, on_failure) => (
+	_.update_if_exists = promisify(([ promise, resolve, reject ], Model, id, updates) => (
 		Query(Model)
 			.select({ _id: id })
 			.update(updates)
-			.result_is_empty(on_failure)
-			.result_is_not_empty(on_success)
+			.result_is_empty((results) => reject('Update: entry does not exist.'))
+			.result_is_not_empty((results) => resolve(results))
+			.run(),
+		promise
 	));
 
 	/**
@@ -412,15 +444,15 @@ export const QueryFactory = (() => {
 	 * 
 	 * @param Model				The model to use.	 
 	 * @param id 					The id of the entry.
-	 * @param	on_success	On success callback.
-	 * @param	on_failure	On failure callback.
 	 */
-	_.delete_if_exists = R.curry((Model, id, on_success, on_failure) => (
+	_.delete_if_exists = promisify(([ promise, resolve, reject ], Model, id) => (
 		Query(Model)
 			.select({ _id: id })
 			.delete()
-			.result_is_empty(r => (console.log(r), on_failure(r)))
-			.result_is_not_empty(on_success)
+			.result_is_empty((results) => reject('Delete: entry does not exist.'))
+			.result_is_not_empty((results) => resolve(results))
+			.run(),
+		promise
 	));
 
 	/**
@@ -429,18 +461,18 @@ export const QueryFactory = (() => {
 	 * @param Model				The model to use.	 
 	 * @param	filters			The filters to use.
 	 * @param models 			The models to insert.
-	 * @param	on_success	On success callback.
-	 * @param	on_failure	On failure callback.
 	 */
-	_.insert_if_unique = R.curry((Model, filters, models, on_success, on_failure) => (
+	_.insert_if_unique = promisify(([ promise, resolve, reject ], Model, filters, models) => (
 		Query(Model)
 			.select(filters)
       .result_is_empty(() => 
 				Query(Model)
 					.insert(models)
-					.then(on_success)
+					.then((results) => resolve(results))
 					.run())
-      .result_is_not_empty(on_failure)
+      .result_is_not_empty((results) => reject('Insert: entries have conflicting key values.'))
+			.run(),
+		promise
 	));
 
 	return {

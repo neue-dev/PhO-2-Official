@@ -104,12 +104,8 @@ user_router.post('/data', user(io((req, res, user) => {
     })
 
   // Get last submission timestamp
-  PHO2.user_last_submission(user).then(last_submission =>
-    res.json({
-      username: user.username, category: user.category,
-      last_submit: last_submission.length ? last_submission[0].timestamp : 0, 
-    }))
-    .run()
+  PHO2.user_last_submit(user).then(last_submit => 
+    res.json({ username: user.username, category: user.category, last_submit: last_submit }))
 })));
 
 /**
@@ -255,10 +251,10 @@ user_router.post('/submit', user(io((req, res, user) => {
       let attempts = 0;
 
       // Grab last_submit
-      PHO2.user_last_submission(user).then(last_submission => {
+      PHO2.user_last_submit(user).then(last_submit => {
 
         // Update the last submit
-        CACHE.users[user_id].last_submit = last_submission.length ? last_submission[0].timestamp : 0;
+        CACHE.users[user_id].last_submit = last_submit;
 
         // Cooldown check
         if(timestamp - CACHE.users[user_id].last_submit < cooldown)
@@ -298,7 +294,6 @@ user_router.post('/submit', user(io((req, res, user) => {
           })
           .run()
       })
-      .run()
     })
     .run()
     .catch(res.failure())

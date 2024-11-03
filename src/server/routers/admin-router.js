@@ -75,16 +75,15 @@ admin_router.post('/registeruser', admin(io((req, res, user) => {
   const { username, password, category, status } = req.get('user-');
   const new_user = { username, password, category, status, isAdmin: false }
 
-  // We gotta hash the password first
-  bcrypt.hash(password, SALT_ROUNDS).then(hash =>
-    new_user.password = hash,
+  const insert_query = () => 
+    QueryFactory.insert_if_unique(User, { username }, new_user)
+      .then(res.success({ message: 'User created successfully.'}))
+      .catch(res.failure({ status: 400, error: 'Username taken.' }))
 
-    QueryFactory.insert_if_unique(User, { username })(new_user)
-      (res.success({ message: 'User created successfully.'}))
-      (res.failure({ status: 400, error: 'Username taken.' }))
-      .run()
-      .catch(res.failure())
-  )
+  // We gotta hash the password first
+  bcrypt.hash(password, SALT_ROUNDS)
+    .then(hash => (new_user.password = hash, insert_query()))
+    .catch(res.failure())
 })))
 
 /**
@@ -95,11 +94,9 @@ admin_router.post('/registerproblem', admin(io((req, res, user) => {
   const new_problem = { name, type, status, code, answer, tolerance, points }
 
   // Create the problem
-  QueryFactory.insert_if_unique(Problem, [ { name }, { code } ])(new_problem)
-    (res.success({ message: 'Problem created successfully.'}))
-    (res.failure({ status: 400, error: 'Problem name or code already exists.' }))
-    .run()
-    .catch(res.failure())
+  QueryFactory.insert_if_unique(Problem, [ { name }, { code } ], new_problem)
+    .then(res.success({ message: 'Problem created successfully.'}))
+    .catch(res.failure({ status: 400, error: 'Problem name or code already exists.' }))
 })));
 
 /**
@@ -143,11 +140,9 @@ admin_router.post('/editconfig', admin(io((req, res, user) => {
     Env.set(key, value)
   )
 
-  QueryFactory.update_if_exists(Config)(_id)(changes)
-    (succeed_and_update)
-    (res.failure({ status: 400, error: 'Parameter does not exist.' }))
-    .run()
-    .catch(res.failure())
+  QueryFactory.update_if_exists(Config, _id, changes)
+    .then(succeed_and_update)
+    .catch(res.failure({ status: 400, error: 'Parameter does not exist.' }))
 })))
 
 /**
@@ -157,11 +152,9 @@ admin_router.post('/editproblem', admin(io((req, res, user) => {
   const { _id, name, type, code, answer, tolerance, points, status } = req.get('problem-');
   const changes = { name, type, code, answer, tolerance, points, status };
 
-  QueryFactory.update_if_exists(Problem)(_id)(changes)
-    (res.success({ message: 'Problem updated successfully.' }))
-    (res.failure({ status: 400, error: 'Problem does not exist.' }))
-    .run()
-    .catch(res.failure())
+  QueryFactory.update_if_exists(Problem, _id, changes)
+    .then(res.success({ message: 'Problem updated successfully.' }))
+    .catch(res.failure({ status: 400, error: 'Problem does not exist.' }))
 })));
 
 /**
@@ -173,20 +166,18 @@ admin_router.post('/edituser', admin(io((req, res, user) => {
   
   // Update query
   const update_query = (changes) =>
-    QueryFactory.update_if_exists(User)(_id)(changes)
-      (res.success({ message: 'User updated successfully.' }))
-      (res.failure({ status: 400, error: 'User does not exist.' }))
-      .run().catch(res.failure())  
+    QueryFactory.update_if_exists(User, _id, changes)
+      .then(res.success({ message: 'User updated successfully.' }))
+      .catch(res.failure({ status: 400, error: 'User does not exist.' }))
 
   // Update without password
   if(!password || password === '')
     return update_query(changes)
 
   // Update with a password
-  bcrypt.hash(password, SALT_ROUNDS).then(hash => (
-    changes.password = hash,
-    update_query(changes)
-  ))
+  bcrypt.hash(password, SALT_ROUNDS)
+    .then(hash => (changes.password = hash, update_query(changes)))
+    .catch(res.failure())
 })));
 
 /**
@@ -196,10 +187,8 @@ admin_router.post('/deleteuser', admin(io((req, res, user) => {
   const { _id } = req.get('user-');
 
   QueryFactory.delete_if_exists(User, _id)
-    (res.success({ message: 'User deleted successfully.' }))
-    (res.failure({ status: 400, error: 'User does not exist.' }))
-    .run()
-    .catch(res.failure())
+    .then(res.success({ message: 'User deleted successfully.' }))
+    .catch(res.failure({ status: 400, error: 'User does not exist.' }))
 })));
 
 /**
@@ -209,10 +198,8 @@ admin_router.post('/deleteproblem', admin(io((req, res, user) => {
   const { _id } = req.get('problem-');
 
   QueryFactory.delete_if_exists(Problem, _id)
-    (res.success({ message: 'Problem deleted successfully.' }))
-    (res.failure({ status: 400, error: 'Problem does not exist.' }))
-    .run()
-    .catch(res.failure())
+    .then(res.success({ message: 'Problem deleted successfully.' }))
+    .catch(res.failure({ status: 400, error: 'Problem does not exist.' }))
 })));
 
 /**
