@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:33:05
- * @ Modified time: 2024-11-03 09:38:59
+ * @ Modified time: 2024-11-03 10:24:56
  * @ Description:
  * 
  * Handles server IO responsibilities.
@@ -15,8 +15,9 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
 // Utils
+// Always update __dirname when moving this file around
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(path.join(__filename, '..'));
+const __dirname = dirname(path.join(__filename, '../..'));
 
 // Constants
 export const SERVER_PUBLIC_URL = __dirname + '/public/resources'
