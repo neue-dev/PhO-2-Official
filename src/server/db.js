@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:53:41
- * @ Modified time: 2024-11-03 05:35:14
+ * @ Modified time: 2024-11-03 08:14:52
  * @ Description:
  * 
  * Handles db related queries and what not.
@@ -117,6 +117,20 @@ const flatten = ((_en) => (
 ))()
 
 /**
+ * Creates a function representation to be passed to mongoose.
+ * 
+ * @param f			The function to use. Must be declared using function() {} syntax.
+ * @param args	The args of the function from the collection.
+ * @return			A new function represenation object.
+ */
+const create_func = (f, args) => ({ 
+	$function: { 
+		body: f.toString(), lang: 'js', 
+		args: args.map(arg => typeof arg === 'string' ? `$${arg}` : arg)
+	}
+}) 
+
+/**
  * Creates a decorated query object with our custom helper methods.
  * 
  * @param Model		The model to query. 
@@ -171,8 +185,18 @@ export const Query = (Model) => (
 			),
 
 			// Creates a separate update statement
-			update: (shape) => (
-				query.updateMany({ $set: flatten(shape) }),
+			update: (field, f, args) => (
+
+				// The field parameter actually represents a shape
+				(f === undefined || f === null)
+					? (query.updateMany({ $set: flatten(field) }), query)
+					
+					// Otherwise, we have either have just a value for the field or a js function to use for mapping
+					: (args === undefined || args === null) 
+						? (query.updateMany({ $set: { [field]: f } }))
+						: (query.updateMany({}, [ { $set: { [field]: create_func(f, args) } } ])),
+				
+				// Return the query
 				query
 			),
 
@@ -277,6 +301,12 @@ export const Aggregate = (Model) => (
 				aggregate
 			),
 
+			// Adds a single field to the output, based on the execution of the callback f
+			field: (field, f, args) => (
+				aggregate.addFields({ [field]: create_func(f, args) }),
+				aggregate
+			),
+
 			// Groups documents by the given key, specifies new keys to generate
 			group: (field, retains=[], aggregates={}) => (
 				field === null 
@@ -302,7 +332,7 @@ export const Aggregate = (Model) => (
 				aggregate.project({ ['_' + Model.collection.name]: false }),
 				aggregate
 			),
-			
+
 			// Specifies the shape of the output
 			rename: (mapping) => (
 				aggregate._project(rename_fields(mapping)),
