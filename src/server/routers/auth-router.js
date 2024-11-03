@@ -1,12 +1,11 @@
-import 'dotenv/config'
-
 import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-import { generate_token, refresh_token } from '../auth.js';
+import { generate_token, refresh_token } from '../pho2/auth.js';
 import { User } from '../models/user.js';
 
+import { Env } from '../core/env.js';
 
 export const auth_router = express.Router();
 
@@ -98,7 +97,7 @@ auth_router.post('/token', (req, res) => {
       error: "The refresh token could not be found.",
     }).status(403);
 
-  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+  jwt.verify(refreshToken, Env.get('REFRESH_TOKEN_SECRET'), (err, user) => {
     if(err) 
       return res.json({
         message: "Refresh token invalid.",

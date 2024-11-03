@@ -3,19 +3,21 @@ import 'dotenv/config'
 import express from 'express';
 import mongoose from 'mongoose';
 
-import { PHO2 } from '../pho2.js';
-import { io, fail, succeed } from '../io.js'
-import { Aggregate, Fields, Predicate, Query } from '../db.js'
-import { authorized_user_fail } from '../auth.js';
-import { check_answer } from '../check.js';
-
-export const user_router = express.Router();
+import { PHO2 } from '../pho2/pho2.js';
+import { io, fail, succeed } from '../core/io.js'
+import { Aggregate, Fields, Predicate, Query } from '../core/db.js'
+import { authorized_user_fail } from '../pho2/auth.js';
+import { check_answer } from '../pho2/check.js';
 
 import { User } from '../models/user.js';
 import { Config } from '../models/config.js';
 import { Problem } from '../models/problem.js';
 import { Submission } from '../models/submission.js';
 import { Message } from '../models/message.js';
+
+import { Env } from '../core/env.js';
+
+export const user_router = express.Router();
 
 // Possibly bad idea, but we're gonna cache some stuff here
 // ! move the score_update_interval to the config!!
@@ -88,7 +90,7 @@ user_router.post('/data', user(io((req, res, user) => {
 
   // Current timestamp and cooldown
   const timestamp = new Date().getTime();
-  const cooldown = process.env.SUBMISSION_COOLDOWN;
+  const cooldown = Env.get_int('SUBMISSION_COOLDOWN');
 
   // Check cache
   if(!CACHE.users[user._id])
@@ -223,10 +225,10 @@ user_router.post('/submit', user(io((req, res, user) => {
   // Grab timestamp
   const user_id = user._id;
   const timestamp = now();
-  const cooldown = parseInt(process.env.SUBMISSION_COOLDOWN.toString())
-  const max_attempts = parseInt(process.env.SUBMISSION_ATTEMPTS.toString())
-  const elims_start = parseInt(process.env.CONTEST_ELIMS_START.toString())
-  const elims_end = parseInt(process.env.CONTEST_ELIMS_END.toString())
+  const cooldown = Env.get_int('SUBMISSION_COOLDOWN')
+  const max_attempts = Env.get_int('SUBMISSION_ATTEMPTS')
+  const elims_start = Env.get_int('CONTEST_ELIMS_START')
+  const elims_end = Env.get_int('CONTEST_ELIMS_END')
 
   // Is in contest period
   if(timestamp < elims_start || timestamp > elims_end)

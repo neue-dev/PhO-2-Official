@@ -1,13 +1,11 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 08:26:47
- * @ Modified time: 2024-11-02 19:11:26
+ * @ Modified time: 2024-11-03 09:42:20
  * @ Description:
  * 
  * The main thread on the server.
  */
-
-import 'dotenv/config'
 
 import express from 'express';
 import mongoose from 'mongoose';
@@ -19,8 +17,9 @@ import { admin_router } from './server/routers/admin-router.js';
 import { user_router } from './server/routers/user-router.js';
 
 import { Config } from './server/models/config.js';
-import { send_file, write_file, redirect, SERVER_PUBLIC_URL } from './server/io.js'
-import { authorized_redirect, authorized_user_redirect } from './server/auth.js';
+import { send_file, write_file, redirect, SERVER_PUBLIC_URL } from './server/core/io.js'
+import { authorized_redirect, authorized_user_redirect } from './server/pho2/auth.js';
+import { Env } from './server/core/env.js';
 
 const SERVER = (() => {
 
@@ -28,8 +27,8 @@ const SERVER = (() => {
   const _ = {};
 
   // Server config
-  const DATABASE_URL = process.env.DATABASE_URL
-  const SERVER_PORT = process.env.SERVER_PORT
+  const DATABASE_URL = Env.get('DATABASE_URL')
+  const SERVER_PORT = Env.get('SERVER_PORT')
 
   // Middleware
   const MIDDLEWARE = [
@@ -79,8 +78,8 @@ const SERVER = (() => {
   ]
 
   // Helper functions
-  const during_elims = () => ((now) => (now > process.env.CONTEST_ELIMS_START && now < process.env.CONTEST_ELIMS_END))(Date.now())
-  const during_finals = () => ((now) => (now > process.env.CONTEST_FINALS_START && now < process.env.CONTEST_FINALS_START))(Date.now())
+  const during_elims = () => ((now) => (now > Env.get('CONTEST_ELIMS_START') && now < Env.get('CONTEST_ELIMS_END')))(Date.now())
+  const during_finals = () => ((now) => (now > Env.get('CONTEST_FINALS_START') && now < Env.get('CONTEST_FINALS_END')))(Date.now())
 
   /**
    * Initializes the database.
@@ -111,7 +110,7 @@ const SERVER = (() => {
       const config = await Config.find();
 
       // Update the environment variables accordingly
-      config.map(parameter => process.env[parameter.key] = parameter.value)
+      config.map(parameter => Env.set(parameter.key, parameter.value))
     }); 
   }
 
@@ -140,8 +139,8 @@ const SERVER = (() => {
     // Dashboard
     app.get('/dashboard', authorized_user_redirect((req, res, user) => (
       user.isAdmin
-        ? write_file(res, './public/admin/dashboard.html', { CONTEST_FORUM_URL: process.env.CONTEST_FORUM_URL })
-        : send_file(res, './public/user/dashboard.html', { CONTEST_FORUM_URL: process.env.CONTEST_FORUM_URL })
+        ? write_file(res, './public/admin/dashboard.html', { CONTEST_FORUM_URL: Env.get('CONTEST_FORUM_URL') })
+        : send_file(res, './public/user/dashboard.html', { CONTEST_FORUM_URL: Env.get('CONTEST_FORUM_URL') })
     )))
 
     // Config and progress pages
@@ -154,14 +153,14 @@ const SERVER = (() => {
     // Problems
     app.get('/problems', authorized_user_redirect((req, res, user) => (
       during_elims() || user.isAdmin
-        ? write_file(res, './public/problems.html', { CONTEST_PROBLEMS_URL: process.env.CONTEST_PROBLEMS_URL })
+        ? write_file(res, './public/problems.html', { CONTEST_PROBLEMS_URL: Env.get('CONTEST_PROBLEMS_URL') })
         : send_file(res, './public/error/unavailable-problems.html')
     )));
 
     // Finals
     app.get('/finals', authorized_user_redirect((req, res, user) => (
       during_finals() || user.isAdmin
-        ? write_file(res, './public/finals.html', { CONTEST_FINALS_URL: process.env.CONTEST_FINALS_URL })
+        ? write_file(res, './public/finals.html', { CONTEST_FINALS_URL: Env.get('CONTEST_FINALS_URL') })
         : send_file(res, './public/error/unavailable-finals.html')
     )));
 

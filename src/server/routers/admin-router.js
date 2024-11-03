@@ -6,10 +6,10 @@ import bcrypt from 'bcrypt';
 // The router to use
 export const admin_router = express.Router();
 
-import { io } from '../io.js'
-import { Query, QueryFactory } from '../db.js'
-import { authorized_user_fail } from '../auth.js';
-import { check_answer } from '../check.js';
+import { io } from '../core/io.js'
+import { Query, QueryFactory } from '../core/db.js'
+import { authorized_user_fail } from '../pho2/auth.js';
+import { check_answer } from '../pho2/check.js';
 
 import { User } from '../models/user.js';
 import { Config } from '../models/config.js';

@@ -1,19 +1,18 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:20:42
- * @ Modified time: 2024-11-03 05:30:29
+ * @ Modified time: 2024-11-03 09:43:18
  * @ Description:
  * 
  * Deals with auth-related tasks.
  */
 
-import 'dotenv/config'
-
 import jwt from 'jsonwebtoken';
 
-import { send_file, fail, succeed, SERVER_HOME_URL } from './io.js';
-import { User } from './models/user.js';
+import { send_file, fail, succeed, SERVER_HOME_URL } from '../core/io.js';
+import { User } from '../models/user.js';
 
+import { Env } from '../core/env.js';
 
 /**
  * Generates a new token for the session
@@ -21,7 +20,7 @@ import { User } from './models/user.js';
  * @param user  The user to generate it for. 
  * @return      The new token. 
  */
-export const generate_token = (user) => jwt.sign({ _id: user._id, }, process.env.ACCESS_TOKEN_SECRET);
+export const generate_token = (user) => jwt.sign({ _id: user._id, }, Env.get('ACCESS_TOKEN_SECRET'));
 
 /**
  * Refreshes a token.
@@ -29,7 +28,7 @@ export const generate_token = (user) => jwt.sign({ _id: user._id, }, process.env
  * @param user  The user who owns the token. 
  * @return      The refreshed token.
  */
-export const refresh_token = (user) => jwt.sign({ _id: user._id, }, process.env.REFRESH_TOKEN_SECRET);
+export const refresh_token = (user) => jwt.sign({ _id: user._id, }, Env.get('REFRESH_TOKEN_SECRET'));
 
 /**
  * Wraps a function around an authorization check.
@@ -93,7 +92,7 @@ const authorized_user_decorator = (func, fail) => (
     try {
 
       // We retrieve the access token dynamically for possibility of hot-swapping
-      req.user = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+      req.user = jwt.verify(accessToken, Env.get('ACCESS_TOKEN_SECRET'));
 
       // Look for user in database and execute appropriate action
       // We don't use our API to avoid coupling io.js to db.js

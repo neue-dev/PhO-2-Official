@@ -1,19 +1,19 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 1970-01-01 08:00:00
- * @ Modified time: 2024-11-02 18:13:26
+ * @ Modified time: 2024-11-03 09:45:00
  * @ Description:
  * 
  * Stores a number of queries relevant only to the domain.
  */
 
-import 'dotenv/config'
+import { Aggregate, Fields, Predicate, Query } from '../core/db.js'
 
-import { Aggregate, Fields, Predicate, Query } from './db.js'
+import { Problem } from '../models/problem.js';
+import { Submission } from '../models/submission.js';
+import { User } from '../models/user.js';
 
-import { Problem } from './models/problem.js';
-import { Submission } from './models/submission.js';
-import { User } from './models/user.js';
+import { Env } from '../core/env.js';
 
 export const PHO2 = (() => {
 	
@@ -29,8 +29,8 @@ export const PHO2 = (() => {
 	_.user_last_submission = (user) => (
 		Aggregate(Submission)
 			.filter('user_id', user._id)
-			.filter('timestamp', Predicate().lt(parseInt(process.env.CONTEST_ELIMS_END.toString())))
-			.filter('timestamp', Predicate().ge(parseInt(process.env.CONTEST_ELIMS_START.toString())))
+			.filter('timestamp', Predicate().lt(Env.get_int('CONTEST_ELIMS_END')))
+			.filter('timestamp', Predicate().ge(parseInt(Env.get_int('CONTEST_ELIMS_START'))))
 			.group('user_id', [], Fields().field('timestamp').max('timestamp'))
 	)
 
