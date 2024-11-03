@@ -211,7 +211,7 @@ const PROGRESS = (() => {
 
   // Modal buttons
   action_submit(problems_modal, problems_form, './user/submit', 
-    () => (load_user(), load_submissions(), load_problems(), submission_clear_interval()))
+    () => (load_user(), load_submissions().then(() => load_problems()), submission_clear_interval()))
   action_close(problems_modal, 
     () => submission_clear_interval())
   action_close(submissions_modal, 

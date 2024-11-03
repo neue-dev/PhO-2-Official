@@ -119,6 +119,16 @@ const CONFIG = (() => {
       .c('red', 'basic', 'left', 'floated')
   )
 
+  const action_recheck = (modal, form, target, callback) => (
+    modal.modal_action('recheck', () => 
+      form.form_submit(target)
+        .then(() => callback())
+        .then(() => modal.modal_close())
+        .catch(alert)),
+    modal.select('.action.recheck')
+      .c('orange', 'basic', 'left', 'floated')
+  )
+
   // Modal buttons
   action_delete(users_modal, users_form, './admin/deleteuser', load_users)
   action_delete(problems_modal, problems_form, './admin/deleteproblem', load_problems)
@@ -133,6 +143,8 @@ const CONFIG = (() => {
 
   action_create(users_modal, users_form, './admin/registeruser', load_users)
   action_create(problems_modal, problems_form, './admin/registerproblem', load_problems)
+  
+  action_recheck(problems_modal, problems_form, './admin/recheckproblem', load_problems)
 
   // Set up the modals
   config_modal
