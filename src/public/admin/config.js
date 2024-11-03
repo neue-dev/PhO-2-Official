@@ -85,13 +85,12 @@ const CONFIG = (() => {
     .form_field('Points', { type: 'text' })
       .select('.field._id').s({ display: 'none' }).parent()
 
-  // ! handle with toasts
   const action_apply = (modal, form, target, callback) => (
     modal.modal_action('apply', () => 
       form.form_submit(target)
         .then(() => callback())
         .then(() => modal.modal_close())
-        .catch(alert)),
+        .catch((error) => DOM.toast({ title: error, label: 'error' }))),
     modal.select('.action.apply').c('black')
   )
 
@@ -105,7 +104,7 @@ const CONFIG = (() => {
       form.form_submit(target)
         .then(() => callback())
         .then(() => modal.modal_close())
-        .catch(alert)),
+        .catch((error) => DOM.toast({ title: error, label: 'error' }))),
     modal.select('.action.create').c('blue')
   )
 
@@ -114,7 +113,7 @@ const CONFIG = (() => {
       form.form_submit(target)
         .then(() => callback())
         .then(() => modal.modal_close())
-        .catch(alert)),
+        .catch((error) => DOM.toast({ title: error, label: 'error' }))),
     modal.select('.action.delete')
       .c('red', 'basic', 'left', 'floated')
   )
@@ -124,7 +123,7 @@ const CONFIG = (() => {
       form.form_submit(target)
         .then(() => callback())
         .then(() => modal.modal_close())
-        .catch(alert)),
+        .catch((error) => DOM.toast({ title: error, label: 'error' }))),
     modal.select('.action.recheck')
       .c('orange', 'basic', 'left', 'floated')
   )
