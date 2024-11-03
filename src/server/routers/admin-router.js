@@ -1,5 +1,3 @@
-import 'dotenv/config'
-
 import express from 'express';
 import bcrypt from 'bcrypt';
 
@@ -15,6 +13,8 @@ import { User } from '../models/user.js';
 import { Config } from '../models/config.js';
 import { Problem } from '../models/problem.js';
 import { Submission } from '../models/submission.js';
+
+import { Env } from '../core/env.js';
 
 const SALT_ROUNDS = 10;
 
@@ -136,9 +136,15 @@ admin_router.post('/submissionlog', admin((req, res, user) =>
 admin_router.post('/editconfig', admin(io((req, res, user) => {
   const { _id, key, value } = req.get('config-');
   const changes = { /*key,*/ value };
+  
+  // Callback for success
+  const succeed_and_update = () => (
+    res.success({ message: 'Parameter updated successfully.' })(),
+    Env.set(key, value)
+  )
 
   QueryFactory.update_if_exists(Config)(_id)(changes)
-    (res.success({ message: 'Parameter updated successfully.' }))
+    (succeed_and_update)
     (res.failure({ status: 400, error: 'Parameter does not exist.' }))
     .run()
     .catch(res.failure())
@@ -252,11 +258,11 @@ admin_router.post('/recheckproblem', admin(io((req, res, user) => {
       Query(Submission)
         .select({ problem_id: _id })
         .update('verdict', checker, [ 'answer.mantissa', 'answer.exponent' ])
-        .then(console.log)
+        .then(res.success({ message: 'Successfully rechecked problem.'}))
         .run()
     })
     .run()
-    .catch(console.error)
+    .catch(res.failure())
 })));
 
 export default {

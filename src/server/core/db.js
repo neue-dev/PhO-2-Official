@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:53:41
- * @ Modified time: 2024-11-03 09:19:22
+ * @ Modified time: 2024-11-03 10:40:19
  * @ Description:
  * 
  * Handles db related queries and what not.
@@ -155,7 +155,7 @@ export const Query = (Model) => (
 
 				// If it's an array, we do an or
 				Array.isArray(field)
-					? query.or(field.map(f => cast_id_if(flatten(f))))
+					? query.or(field.map(f => cast_if_id(flatten(f))))
 					: field 
 
 						// If it's an object
