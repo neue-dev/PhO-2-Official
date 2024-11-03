@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-03 06:08:10
+ * @ Modified time: 2024-11-03 13:40:22
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -42,7 +42,7 @@ const DOM = (() => {
 	const fluent = (element) => (
 		
 		// Add the methods to the object
-		decorate(element, {
+		element && decorate(element, {
 
 			// Fluent get-setter for attributes
 			a: (attribute, value) => (
@@ -512,7 +512,7 @@ const DOM = (() => {
 
 			// The dimmer parent
 			))(
-				element('div').c('ui', 'dimmer', 'modals', 'page', 'transition')
+				element('div').c('ui', 'dimmer', 'modal-bg', 'modals', 'page', 'transition')
 			),
 
 			// Build the structure of the modal
@@ -790,6 +790,66 @@ const DOM = (() => {
 					? stateful(form, id)
 					: stateful(element('form').c('ui', 'form'), id)
 			))(random_id())
+		)
+	)
+	
+	/**
+	 * A toast element.
+	 * Automatically removes itself from the dom afterwards.
+	 * 
+	 * @param param		Check out the function signature... 
+	 * @return				Creates a toast.
+	 */
+	_.toast = ({ 
+		title='', 
+		message='', 
+		label=null,
+		label_color='red',
+		duration=3333, 
+		in_animation='fly up', 
+		out_animation='fade left' 
+	} = {}) => (
+		
+		((toast, toast_container) => (
+
+			// Set the in anim
+			toast
+				.c(...in_animation.split(' '), 'in'),
+			
+			// Timeout for closing anim
+			setTimeout(() => 
+				(toast
+					.uc(...in_animation.split(' '), 'in')
+					.c(...out_animation.split(' '), 'out'),
+
+				// Timeout for dom removal
+				setTimeout(() => toast_container.removeChild(toast), 1000)), duration),
+			
+			// Append to container
+			toast_container.appendChild(toast),
+
+			// The toast itself
+			toast
+			
+		// The toast and its container
+		))(
+			// Create the toast itself
+			element('div').c('floating', 'toast-box', 'transition', 'visible').s({ width: '24rem' }).append(
+				element('div').c('negative', 'ui', 'toast', 'visible').append(
+					element('div').c('content').append(
+						element('div').c('item').append(
+							element('div').c('ui', 'header').t(title),
+							label 
+								? element('div').c('ui', 'horizontal', 'label', label_color).t(label)
+								: element('div')),
+						element('div').c('message').t(message)))),
+
+			// Use existing container or create one
+			_.select('.toast-container') || 
+			((container) => (
+				document.body.appendChild(container),
+				container.s({ padding: '4rem'})
+			))(element('div').c('bottom', 'right', 'ui', 'toast-container'))  
 		)
 	)
 
