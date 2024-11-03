@@ -71,7 +71,7 @@ body {
   width: calc(50vw - 10rem) !important;
 }
 
-.content {
+.login.content {
   padding: 8em !important;
   height: calc(100vh - 10rem) !important;
 }

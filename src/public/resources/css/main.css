@@ -9,6 +9,7 @@
 * {
   transition: 0.1s;
   box-sizing: border-box;
+  text-overflow: ellipsis;
 }
 
 html, body, .container, .card {
@@ -85,7 +86,7 @@ input:-webkit-autofill:active{
 }
 
 /* Modals */
-.dimmer {
+.ui.dimmer.modal-bg {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -93,6 +94,7 @@ input:-webkit-autofill:active{
   height: 100vh !important;
   padding-left: 50vw !important;
   padding-top: 44vh !important;
+  pointer-events: all;
 }
 
 .ui.modal.visible.active {

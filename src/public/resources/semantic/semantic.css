@@ -1430,7 +1430,7 @@ input::selection {
 
 /* Tablet Or Below */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.stackable.buttons {
     flex-direction: column;
     width: 100%;
@@ -5456,7 +5456,7 @@ input::selection {
 
 /* Mobile */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.ui.ui.container:not(.fluid) {
     width: auto;
     margin-left: 1em;
@@ -5478,7 +5478,7 @@ input::selection {
 
 /* Tablet */
 
-@media only screen and (min-width: 768px) and (max-width: 991.98px) {
+@media only screen and (min-width: 600px) and (max-width: 991.98px) {
   .ui.ui.ui.container:not(.fluid) {
     width: 723px;
     margin-left: auto;
@@ -5557,7 +5557,7 @@ input::selection {
 
 /* Wide Container */
 
-@media only screen and (min-width: 768px) and (max-width: 991.98px) {
+@media only screen and (min-width: 600px) and (max-width: 991.98px) {
   .ui.ui.ui.wide.container {
     width: 867.6px;
   }
@@ -5614,7 +5614,7 @@ input::selection {
   overscroll-behavior: none;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.scrolling.container.short {
     max-height: 11.25em;
   }
@@ -5652,7 +5652,7 @@ input::selection {
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.scrolling.container.short {
     max-height: 13.5em;
   }
@@ -5910,7 +5910,7 @@ input::selection {
 
 /* Inside grid */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.stackable.grid .ui.vertical.divider,
   .ui.grid .stackable.row .ui.vertical.divider {
     display: table;
@@ -44033,7 +44033,7 @@ ol.ui.suffixed.list li::before,
   overscroll-behavior: none;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.scrolling.segment.short {
     max-height: 11.25em;
   }
@@ -44075,7 +44075,7 @@ ol.ui.suffixed.list li::before,
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.scrolling.segment.short {
     max-height: 13.5em;
   }
@@ -44518,7 +44518,7 @@ ol.ui.suffixed.list li::before,
 
 /* Mobile (Default) */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.steps:not(.unstackable) {
     display: inline-flex;
     overflow: visible;
@@ -46968,7 +46968,7 @@ ol.ui.suffixed.list li::before,
 
 /* Swap to full width on mobile */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.form .fields {
     flex-wrap: wrap;
     margin-bottom: 0;
@@ -47362,7 +47362,7 @@ ol.ui.suffixed.list li::before,
            Page Grid
     ------------------------- */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.page.grid {
     width: auto;
     padding-left: 0;
@@ -47372,7 +47372,7 @@ ol.ui.suffixed.list li::before,
   }
 }
 
-@media only screen and (min-width: 768px) and (max-width: 991.98px) {
+@media only screen and (min-width: 600px) and (max-width: 991.98px) {
   .ui.page.grid {
     width: auto;
     margin-left: 0;
@@ -47701,7 +47701,7 @@ ol.ui.suffixed.list li::before,
 
 /* Mobile Sizing Combinations */
 
-@media only screen and (min-width: 320px) and (max-width: 767.98px) {
+@media only screen and (min-width: 320px) and (max-width: 599.98px) {
   .ui.grid > .row > [class*="one wide mobile"].column,
   .ui.grid > .column.row > [class*="one wide mobile"].column,
   .ui.grid > [class*="one wide mobile"].column,
@@ -47817,7 +47817,7 @@ ol.ui.suffixed.list li::before,
 
 /* Tablet Sizing Combinations */
 
-@media only screen and (min-width: 768px) and (max-width: 991.98px) {
+@media only screen and (min-width: 600px) and (max-width: 991.98px) {
   .ui.grid > .row > [class*="one wide tablet"].column,
   .ui.grid > .column.row > [class*="one wide tablet"].column,
   .ui.grid > [class*="one wide tablet"].column,
@@ -48775,7 +48775,7 @@ ol.ui.suffixed.list li::before,
 
 /* Mobile */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui[class*="mobile reversed"].grid,
   .ui[class*="mobile reversed"].grid > .row,
   .ui.grid > [class*="mobile reversed"].row {
@@ -48822,7 +48822,7 @@ ol.ui.suffixed.list li::before,
 
 /* Tablet */
 
-@media only screen and (min-width: 768px) and (max-width: 991.98px) {
+@media only screen and (min-width: 600px) and (max-width: 991.98px) {
   .ui[class*="tablet reversed"].grid,
   .ui[class*="tablet reversed"].grid > .row,
   .ui.grid > [class*="tablet reversed"].row {
@@ -48918,7 +48918,7 @@ ol.ui.suffixed.list li::before,
 
 /* Tablet Only */
 
-@media only screen and (min-width: 768px) and (max-width: 991.98px) {
+@media only screen and (min-width: 600px) and (max-width: 991.98px) {
   .ui.doubling.grid {
     width: auto;
   }
@@ -49035,7 +49035,7 @@ ol.ui.suffixed.list li::before,
 
 /* Mobile Only */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.grid > .doubling.row,
   .ui.doubling.grid > .row {
     margin: 0 !important;
@@ -49145,7 +49145,7 @@ ol.ui.suffixed.list li::before,
           Stackable
     -------------------- */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   body > .ui.stackable.grid,
   .ui:not(.segment):not(.grid) .ui.stackable.grid {
     width: auto;
@@ -49232,7 +49232,7 @@ ol.ui.suffixed.list li::before,
 
 /* Mobile Only Hide */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.ui.ui[class*="tablet only"].grid:not(.mobile),
   .ui.ui.ui.grid > [class*="tablet only"].row:not(.mobile),
   .ui.ui.ui.grid > [class*="tablet only"].column:not(.mobile),
@@ -49264,7 +49264,7 @@ ol.ui.suffixed.list li::before,
 
 /* Tablet Only Hide */
 
-@media only screen and (min-width: 768px) and (max-width: 991.98px) {
+@media only screen and (min-width: 600px) and (max-width: 991.98px) {
   .ui.ui.ui[class*="mobile only"].grid:not(.tablet),
   .ui.ui.ui.grid > [class*="mobile only"].row:not(.tablet),
   .ui.ui.ui.grid > [class*="mobile only"].column:not(.tablet),
@@ -49876,7 +49876,7 @@ ol.ui.suffixed.list li::before,
     Container
 --------------- */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.menu > .ui.container {
     width: 100% !important;
     margin-left: 0 !important;
@@ -49884,7 +49884,7 @@ ol.ui.suffixed.list li::before,
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.menu:not(.secondary):not(.text):not(.tabular):not(.borderless) > .container > .item:not(.right):not(.borderless):first-child {
     border-left: 1px solid rgba(34, 36, 38, 0.1);
   }
@@ -50858,7 +50858,7 @@ Floated Menu / Item
         Stackable
     --------------- */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.stackable.menu {
     flex-direction: column;
   }
@@ -51680,7 +51680,7 @@ Floated Menu / Item
   background-color: #fff;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.stackable.grid .ui.fluid.vertical.pointing.menu .active.item::after {
     display: none;
   }
@@ -52908,7 +52908,7 @@ Floated Menu / Item
 
 /* Responsive */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.table:not(.unstackable) {
     width: 100%;
     padding: 0;
@@ -53283,7 +53283,7 @@ Floated Menu / Item
       Scrolling
     --------------- */
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.scrolling.table.short > tbody {
     max-height: 8.99978571em;
   }
@@ -53531,7 +53531,7 @@ Floated Menu / Item
   overscroll-behavior: none;
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.overflowing.table.short {
     max-height: 13.49967857em;
   }
@@ -57054,7 +57054,7 @@ Floated Menu / Item
   display: none;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.mobile.ad {
     display: block;
   }
@@ -58879,7 +58879,7 @@ a.ui.basic.inverted.black.card:hover,
 
 /* Mobile Only */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.two.doubling.cards {
     margin-left: 0;
     margin-right: 0;
@@ -58982,7 +58982,7 @@ a.ui.basic.inverted.black.card:hover,
 
 /* Tablet Only */
 
-@media only screen and (min-width: 768px) and (max-width: 991.98px) {
+@media only screen and (min-width: 600px) and (max-width: 991.98px) {
   .ui.two.doubling.cards {
     margin-left: 0;
     margin-right: 0;
@@ -59087,7 +59087,7 @@ a.ui.basic.inverted.black.card:hover,
           Stackable
     -------------------- */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.stackable.cards {
     display: block !important;
   }
@@ -60856,7 +60856,7 @@ a.inverted.ui.card:hover,
 
 /* Tablet Only */
 
-@media only screen and (min-width: 768px) and (max-width: 991.98px) {
+@media only screen and (min-width: 600px) and (max-width: 991.98px) {
   .ui.items > .item {
     margin: 1em 0;
   }
@@ -60873,7 +60873,7 @@ a.inverted.ui.card:hover,
 
 /* Mobile Only */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.items:not(.unstackable) > .item {
     flex-direction: column;
     margin: 2em 0;
@@ -61017,7 +61017,7 @@ a.inverted.ui.card:hover,
        Unstackable
     ---------------- */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.unstackable.items > .item > .image,
   .ui.unstackable.items > .item > .image > img {
     width: 125px !important;
@@ -61654,7 +61654,7 @@ a.inverted.ui.card:hover,
         Stackable
     --------------- */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.stackable.statistics {
     width: auto;
     margin-left: 0 !important;
@@ -64393,7 +64393,7 @@ select.ui.dropdown {
   padding: 0.78571429rem 1.14285714rem;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.selection.dropdown.short .menu {
     max-height: 6.01071429rem;
   }
@@ -64415,7 +64415,7 @@ select.ui.dropdown {
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.selection.dropdown.short .menu {
     max-height: 8.01428571rem;
   }
@@ -64720,13 +64720,13 @@ select.ui.dropdown {
   backface-visibility: hidden;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.search.dropdown:not(.unlimited) .menu {
     max-height: 8.01428571rem;
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.search.dropdown:not(.unlimited) .menu {
     max-height: 10.68571429rem;
   }
@@ -65473,7 +65473,7 @@ select.ui.dropdown {
   }
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.scrolling.dropdown .menu,
   .ui.dropdown .scrolling.menu {
     max-height: 10.28571429rem;
@@ -65485,7 +65485,7 @@ select.ui.dropdown {
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.scrolling.dropdown .menu,
   .ui.dropdown .scrolling.menu {
     max-height: 15.42857143rem;
@@ -66228,7 +66228,7 @@ select.ui.dropdown {
 
 @font-face {
   font-family: Dropdown;
-  src: url("data:application/font-woff;base64,d09GRk9UVE8AAASEAAsAAAAABwQAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABDRkYgAAAC5AAAAU8AAAHrSr22AUZGVE0AAARQAAAAHAAAAByNrZ/TR0RFRgAABDQAAAAcAAAAIAAnABhPUy8yAAABYAAAAEIAAABgTadXCGNtYXAAAAKEAAAAVAAAAWQFcOKQaGVhZAAAAQgAAAAyAAAANg+j805oaGVhAAABPAAAABsAAAAkAwcBDWhtdHgAAARsAAAAFgAAAB4EAQASbWF4cAAAAVgAAAAGAAAABgAIUABuYW1lAAABpAAAAN8AAAG2rSbAM3Bvc3QAAALYAAAADAAAACAAAwAAeJxjYGRgYADiKjtG3nh+m68M3EwMIHCBwT0CRN9PyHYCUp6Mqox5QJqDASwNAMNOBrgAAHicY2BkYGB88P8BkFRlYACTjAyogB0AWWsDFgAAAFAAAAgAAHicY2Bm+Mg4gYGVgYHRhzGNgYHBHUp/ZZBkaGFABYwCSJyANNcUBgcGhg+3GB/8fwCUfMCgAFIDV6AAhIwAUbEMSQAAeJx1zTEKwkAUBNBJjIoKIggW2mwvBEVvIAgiNhY2VjEuQUh2YY2FeACPYOltvIH3cZJ8ywQS3p/d+QEwwAce/o8v9tDGUOzTU3GDXokD+ihuooeHuMX8Je5ijC9bXtCRP1T20Kcq+/RE3KAX4oDeipsYIRa3mD/FXSzxLtZeeGyR8bUwHGObWUvsoZHghhQRHEed3NLI1d+vyw/c43DleZErzBFixli768UaNQ9n9d11OedsJdxiyk0RZ40zsxPu/G7K7k66IUvW5CrRRrso12d1uqtNbHfcF+IHrnU+mwB4nGNgYGBmgGAZBkYGEIgD8hjBfBYGJyDNxcDBwASEjAwKH279//v/P1iVwofrYDbj/8dgPkQvGwMPkGRhYAWy2MHCbEDMxIAXMOOXHvIAAINhDt14nGNgZsALAAB9AAR4nE2Pv0rEQBCHZ3J7d4vGqEcOFaKC/zolZ6OWwmElNj6ClYWmyivcblyzE+RaK8EHsPMxBBtrwUdwA1fobpI7ZWBYfux8fD8ExgAR+fVVcpMkt4AeIAzLLSi3sdzxyt1WucqU31I+25iDtcvej1Kzh99V7+a19NoRPC1GAEsRvCxHwCP87MG8I7WgDRwWoAcrEMGmnT3YT+N0kB7G6Vk8PHLr2K0Tt04HB3FjMhUCQIESM7xDhfeYA3dcz5IZdOAcHuAD14MgeAu+zTNTRV5oTUR5obgZdwpVZFqQzEfKTiaE4JNwEralHGUuErnQNjE2oYxUwS0ldBTSxI3L7cOyKo60ib0lezSl1Rw+GXdq1pQiH03SdzKka4ymosLQTMcedSuIlEJUMqNcUi0jdIP5Ysb++leqLtSI/NWSTS0xq0WyYajQXPSVP/cLitO4NgB4nGNgZGBg4AFiAQYJBiYgzQLEIJoRggEFbQBAAAAAAQAAAADeTO04AAAAANAAR1gAAAAA32BrQnicY2BAAEYQVoVghu0MQgwMAAc/ARcAAA==") format("woff");
+  src: url("data:application/font-woff;base64,d09GRk9UVE8AAASEAAsAAAAABwQAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABDRkYgAAAC5AAAAU8AAAHrSr22AUZGVE0AAARQAAAAHAAAAByNrZ/TR0RFRgAABDQAAAAcAAAAIAAnABhPUy8yAAABYAAAAEIAAABgTadXCGNtYXAAAAKEAAAAVAAAAWQFcOKQaGVhZAAAAQgAAAAyAAAANg+j805oaGVhAAABPAAAABsAAAAkAwcBDWhtdHgAAARsAAAAFgAAAB4EAQASbWF4cAAAAVgAAAAGAAAABgAIUABuYW1lAAABpAAAAN8AAAG2rSbAM3Bvc3QAAALYAAAADAAAACAAAwAAeJxjYGRgYADiKjtG3nh+m68M3EwMIHCBwT0CRN9PyHYCUp6Mqox5QJqDASwNAMNOBrgAAHicY2BkYGB88P8BkFRlYACTjAyogB0AWWsDFgAAAFAAAAgAAHicY2Bm+Mg4gYGVgYHRhzGNgYHBHUp/ZZBkaGFABYwCSJyANNcUBgcGhg+3GB/8fwCUfMCgAFIDV6AAhIwAUbEMSQAAeJx1zTEKwkAUBNBJjIoKIggW2mwvBEVvIAgiNhY2VjEuQUh2YY2FeACPYOltvIH3cZJ8ywQS3p/d+QEwwAce/o8v9tDGUOzTU3GDXokD+ihuooeHuMX8Je5ijC9bXtCRP1T20Kcq+/RE3KAX4oDeipsYIRa3mD/FXSzxLtZeeGyR8bUwHGObWUvsoZHghhQRHEed3NLI1d+vyw/c43DleZErzBFixli600UaNQ9n9d11OedsJdxiyk0RZ40zsxPu/G7K7k66IUvW5CrRRrso12d1uqtNbHfcF+IHrnU+mwB4nGNgYGBmgGAZBkYGEIgD8hjBfBYGJyDNxcDBwASEjAwKH279//v/P1iVwofrYDbj/8dgPkQvGwMPkGRhYAWy2MHCbEDMxIAXMOOXHvIAAINhDt14nGNgZsALAAB9AAR4nE2Pv0rEQBCHZ3J7d4vGqEcOFaKC/zolZ6OWwmElNj6ClYWmyivcblyzE+RaK8EHsPMxBBtrwUdwA1fobpI7ZWBYfux8fD8ExgAR+fVVcpMkt4AeIAzLLSi3sdzxyt1WucqU31I+25iDtcvej1Kzh99V7+a19NoRPC1GAEsRvCxHwCP87MG8I7WgDRwWoAcrEMGmnT3YT+N0kB7G6Vk8PHLr2K0Tt04HB3FjMhUCQIESM7xDhfeYA3dcz5IZdOAcHuAD14MgeAu+zTNTRV5oTUR5obgZdwpVZFqQzEfKTiaE4JNwEralHGUuErnQNjE2oYxUwS0ldBTSxI3L7cOyKo60ib0lezSl1Rw+GXdq1pQiH03SdzKka4ymosLQTMcedSuIlEJUMqNcUi0jdIP5Ysb++leqLtSI/NWSTS0xq0WyYajQXPSVP/cLitO4NgB4nGNgZGBg4AFiAQYJBiYgzQLEIJoRggEFbQBAAAAAAQAAAADeTO04AAAAANAAR1gAAAAA32BrQnicY2BAAEYQVoVghu0MQgwMAAc/ARcAAA==") format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -67292,14 +67292,14 @@ body.pushable > .pusher {
 
 /* Modal Width */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.modal:not(.fullscreen) {
     width: 95%;
     margin: 0;
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.modal:not(.fullscreen) {
     width: 88%;
     margin: 0;
@@ -67356,7 +67356,7 @@ body.pushable > .pusher {
 
 /* Mobile */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.modal > .header {
     padding: 0.75rem 1rem;
   }
@@ -67528,7 +67528,7 @@ body.pushable > .pusher {
   bottom: 5vh;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .modals.dimmer .ui.top.aligned.modal {
     top: 1rem;
   }
@@ -67665,14 +67665,14 @@ body.pushable > .pusher {
   font-size: 1.3em;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.mini.modal {
     width: 95%;
     margin: 0;
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.mini.modal {
     width: 35.2%;
     margin: 0;
@@ -67704,14 +67704,14 @@ body.pushable > .pusher {
   font-size: 1.3em;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.tiny.modal {
     width: 95%;
     margin: 0;
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.tiny.modal {
     width: 52.8%;
     margin: 0;
@@ -67743,14 +67743,14 @@ body.pushable > .pusher {
   font-size: 1.3em;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.small.modal {
     width: 95%;
     margin: 0;
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.small.modal {
     width: 70.4%;
     margin: 0;
@@ -67782,14 +67782,14 @@ body.pushable > .pusher {
   font-size: 1.6em;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.large.modal {
     width: 95%;
     margin: 0;
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.large.modal {
     width: 88%;
     margin: 0;
@@ -67821,14 +67821,14 @@ body.pushable > .pusher {
   font-size: 1.6em;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.big.modal {
     width: 95%;
     margin: 0;
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.big.modal {
     width: 88%;
     margin: 0;
@@ -67860,14 +67860,14 @@ body.pushable > .pusher {
   font-size: 1.6em;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.huge.modal {
     width: 95%;
     margin: 0;
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.huge.modal {
     width: 88%;
     margin: 0;
@@ -67899,14 +67899,14 @@ body.pushable > .pusher {
   font-size: 1.8em;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.massive.modal {
     width: 95%;
     margin: 0;
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.massive.modal {
     width: 88%;
     margin: 0;
@@ -68783,7 +68783,7 @@ a.ui.nag {
   width: 550px;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   [data-tooltip][data-variation~="fixed"]::after {
     width: 250px;
   }
@@ -69342,7 +69342,7 @@ a.ui.nag {
   width: 550px;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.wide.popup,
   .ui[class*="very wide"].popup {
     max-width: 250px;
@@ -72634,7 +72634,7 @@ a.ui.nag {
   backface-visibility: hidden;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.scrolling.search > .results {
     max-height: 12.17714286em;
   }
@@ -72644,7 +72644,7 @@ a.ui.nag {
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.scrolling.search > .results {
     max-height: 18.26571429em;
   }
@@ -72679,7 +72679,7 @@ a.ui.nag {
   max-height: none;
 }
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.search.short > .results {
     max-height: 12.17714286em;
   }
@@ -72697,7 +72697,7 @@ a.ui.nag {
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   .ui.search.short > .results {
     max-height: 18.26571429em;
   }
@@ -72813,7 +72813,7 @@ a.ui.nag {
       Mobile
 --------------- */
 
-@media only screen and (max-width: 767.98px) {
+@media only screen and (max-width: 599.98px) {
   .ui.search .results {
     max-width: calc(100vw - 2rem);
   }
