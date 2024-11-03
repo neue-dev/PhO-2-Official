@@ -35,6 +35,40 @@ const admin = (f) => (
 )
 
 /**
+ * Generates an answer checker function (string) for a specific problem.
+ * 
+ * @param problem   The problem to create the function for. 
+ * @return          The checker (as a string).
+ */
+const problem_checker = (problem) => {
+
+  // The template function
+  function checker(mantissa, exponent) {
+    
+    const user_mantissa = mantissa;
+    const user_exponent = exponent;
+    
+    const tolerance = "TOLERANCE";
+    const key_mantissa = "KEY.MANTISSA";
+    const key_exponent = "KEY.EXPONENT";
+  
+    const ratio = user_mantissa / key_mantissa;
+    const magnitude = Math.pow(10, user_exponent - key_exponent);
+  
+    // Why tf did I need to return strings...
+    if (Math.abs(ratio * magnitude - 1) > tolerance + Math.pow(tolerance, 3))
+      return 'wrong';
+    return 'correct';
+  }
+
+  // Return the function as a string
+  return checker.toString()
+    .replace('"KEY.MANTISSA"', problem.answer.mantissa) 
+    .replace('"KEY.EXPONENT"', problem.answer.exponent)
+    .replace('"TOLERANCE"', problem.tolerance) 
+}
+
+/**
  * Registers new users.
  */
 admin_router.post('/registeruser', admin(io((req, res, user) => {
@@ -199,161 +233,31 @@ admin_router.post('/disableofficial', admin(io((req, res) => {
     .catch(res.failure())
 })));
 
-// admin_router.post('/recheckproblem', async(req, res) => {
-//   admin(req, res, async userData => {
-//     const { name } = req.body;
-//     const problem = await Problem.findOne({ name: name });
+/**
+ * Rechecks problems.
+ */
+admin_router.post('/recheckproblem', admin(io((req, res, user) => {
+  const { _id } = req.get('problem-');
+  
+  // Query for problem first
+  Query(Problem)
+    .select({ _id })
+    .result_is_not_empty(problems => {
 
-//     // Check if problem exists
-//     if(problem) {
-//       try {
+      // Grab the problem and the answer key
+      const problem = problems[0];
+      const checker = problem_checker(problem);
 
-//         // Recheck pertinent submissions
-//         const submissions = await Submission.find({ problem_id: problem._id });
-
-//         // Reset user verdicts first
-//         await User.updateMany(
-//           { attempts: { $exists: true } },
-//           { $set: { 
-//             "attempts.$[attempt].verdict": false,
-//           }},
-//           { arrayFilters: [
-//             { "attempt.problem_id": problem._id, }
-//           ]}
-//         );
-        
-//         // Reset all submissions
-//         await Submission.updateMany(
-//           { problem_id: problem._id },
-//           { $set: { verdict: 'wrong' } });
-          
-//         // Sort submissions
-//         submissions.sort((a, b) => a.timestamp - b.timestamp );
-        
-//         // Redo the verdicts
-//         submissions.forEach(submission => {
-//           (async() => {
-            
-//             // The answer was correct
-//             if(checkAnswer(submission.answer, problem.answer, problem.tolerance)){
-//               await Submission.updateOne(
-//                 { _id: submission._id },
-//                 { $set: { verdict: 'correct' } });
-            
-//               await User.updateOne(
-//                 { _id: submission.user_id },
-//                 { $set: { 
-//                   "attempts.$[attempt].verdict": true,
-//                 }},
-//                 { arrayFilters: [
-//                   { "attempt.problem_id": problem._id, }
-//                 ]}
-//               );
-//             }
-//           })()
-//         });
-
-//         return res.json({
-//           message: 'Problem rechecked.'
-//         }).status(200);
-//       } catch(err) {
-//         return res.json({
-//           error: 'Something went wrong. Try again.'
-//         }).status(500);
-//       }
-//     } else {
-//       return res.json({
-//         error: 'Problem to be rechecked does not exist.'
-//       }).status(401);
-//     }
-//   })
-// });
-
-// // Score related routes
-// admin_router.post('/updatescores', (req, res) => {
-//   admin(req, res, async userData => {
-//     const users = await User.find({});
-//     const problems = await Problem.find({});
-//     const submissions = await Submission.find({});
-
-//     const crossCheckTable = {};
-//     const problemNumbers = {};
-//     const baseScores = {};
-//     const newScores = {};
-
-//     let problemNumber = 0;
-//     problems.sort((a, b) => {
-//       if(parseInt(a.code.number) == parseInt(b.code.number))
-//         return `${a.code.alpha}`.localeCompare(b.code.alpha);
-//       return parseInt(a.code.number) - parseInt(b.code.number);
-//     });
-
-//     problems.forEach(problem => {
-//       baseScores[problem._id.toString()] = problem.points;
-//       problemNumbers[problem._id.toString()] = problem.code.number;
-//     });
-
-//     submissions.forEach(submission => {
-//       if(!crossCheckTable[submission.problem_id.toString()])
-//         crossCheckTable[submission.problem_id.toString()] = {};
-//       if(!crossCheckTable[submission.problem_id.toString()][submission.user_id.toString()])
-//         crossCheckTable[submission.problem_id.toString()][submission.user_id.toString()] = {
-//           verdict: false,
-//           wrong: 0,
-//           timestamp: Number.POSITIVE_INFINITY,
-//         };
-
-//       if(submission.verdict == 'correct'){
-//         crossCheckTable[submission.problem_id.toString()][submission.user_id.toString()].verdict = true;
-//         if(submission.timestamp < crossCheckTable[submission.problem_id.toString()][submission.user_id.toString()].timestamp)
-//           crossCheckTable[submission.problem_id.toString()][submission.user_id.toString()].timestamp = submission.timestamp;
-//       }
-//     });
-
-//     submissions.forEach(submission => {
-//       if(submission.verdict == 'wrong'){
-//         if(submission.timestamp < crossCheckTable[submission.problem_id.toString()][submission.user_id.toString()].timestamp)
-//           crossCheckTable[submission.problem_id.toString()][submission.user_id.toString()].wrong++;
-//       }
-//     });
-
-//     let problemids = Object.keys(crossCheckTable)
-//     problemids.forEach(problem => {
-//       let userids = Object.keys(crossCheckTable[problem]);
-//       userids.forEach(user => {
-//         if(!newScores[user]) newScores[user] = 0;
-//         if(crossCheckTable[problem][user].verdict){
-//           if(crossCheckTable[problem][user].timestamp > process.env.CONTEST_ELIMS_START && crossCheckTable[problem][user].timestamp < process.env.CONTEST_ELIMS_END){
-//             newScores[user] += baseScores[problem] * 
-//               Math.pow(2, -crossCheckTable[problem][user].wrong / 2) * 
-//               Math.pow(2, -(crossCheckTable[problem][user].timestamp - process.env.CONTEST_ELIMS_START) / (process.env.CONTEST_ELIMS_END - process.env.CONTEST_ELIMS_START)) * 
-//               Math.pow(2, 2 * problemNumbers[problem] / 30);
-//           }
-//         }
-//       })
-//     })
-
-//     try {
-//       users.forEach(user => {
-//         (async() => {
-//           if(Object.keys(newScores).includes(user._id.toString())){
-//             await User.updateOne(
-//               { _id: user._id },
-//               { $set: { score: newScores[user._id.toString()], }});
-//           }
-//         })();
-//       });
-
-//       return res.json({
-//         message: 'Scores updated.'
-//       }).status(200);
-//     } catch(err) {
-//       return res.json({
-//         error: 'Something went wrong. Try again.'
-//       }).status(500);
-//     }
-//   });
-// })
+      // Update the submissions
+      Query(Submission)
+        .select({ problem_id: _id })
+        .update('verdict', checker, [ 'answer.mantissa', 'answer.exponent' ])
+        .then(console.log)
+        .run()
+    })
+    .run()
+    .catch(console.error)
+})));
 
 export default {
   admin_router

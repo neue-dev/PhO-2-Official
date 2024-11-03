@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 
 import { PHO2 } from '../pho2.js';
 import { io, fail, succeed } from '../io.js'
-import { Aggregate, Fields, Predicate, Query, select, create, update, drop, safe, QueryFactory } from '../db.js'
+import { Aggregate, Fields, Predicate, Query } from '../db.js'
 import { authorized_user_fail } from '../auth.js';
 import { check_answer } from '../check.js';
 
@@ -284,7 +284,7 @@ user_router.post('/submit', user(io((req, res, user) => {
               .result_is_empty(() => {
 
                 // Save the submission
-                const verdict = check_answer(answer, answer_key, tolerance) ? 'correct' : 'wrong';
+                const verdict = check_answer(answer, answer_key, tolerance);
                 const submission = { user_id: user_id, problem_id: _id, answer, verdict, timestamp };
 
                 Query(Submission)
