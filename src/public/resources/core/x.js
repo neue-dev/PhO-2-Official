@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 17:51:10
- * @ Modified time: 2024-10-29 17:51:51
+ * @ Modified time: 2024-11-03 15:18:32
  * @ Description:
  * 
  * Handles cross (x) requests and other network matters.
@@ -46,14 +46,14 @@ const X = (() => {
 
 			// Bad request perhaps
 			if(this.status !== 200)
-				return promise_reject(`Request failed with status ${this.status}`);
+				return promise_reject(JSON.parse(this.responseText))
 
 			// Grab data
 			let data = JSON.parse(this.responseText);
 			
 			// Bad parse
 			if(data.error)
-				return promise_reject(`Failed to parse response.`);
+				return promise_reject({ error: 'Failed to parse response' });
 
 			// Resolve the promise with the data
 			return promise_resolve(data);

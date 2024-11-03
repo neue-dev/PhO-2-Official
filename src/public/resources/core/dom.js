@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-03 13:40:22
+ * @ Modified time: 2024-11-03 15:27:33
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -696,6 +696,9 @@ const DOM = (() => {
 						
 						// Input field event listener
 						field.listen('input', (e) => (
+
+							// Remove existing warnings
+							form.select('.form.warning') && form.select('.form.warning').t(''),
 							
 							// Empty field
 							(field.value.trim() === '' || !field.value)
@@ -768,6 +771,9 @@ const DOM = (() => {
 
 						// Reject submission action
 						: (Array.from(form.children).every(child => child.cis('field', 'req') && child.c('required')),
+							form.select('.form.warning')
+								? form.select('.form.warning').t('Some fields are missing or invalid.')
+								: form.append(element('div').c('form', 'warning').t('Some fields are missing or invalid.')),
 							Promise.reject('Some fields are missing or invalid.'))
 				),
 
@@ -816,17 +822,20 @@ const DOM = (() => {
 			toast
 				.c(...in_animation.split(' '), 'in'),
 			
-			// Timeout for closing anim
-			setTimeout(() => 
-				(toast
-					.uc(...in_animation.split(' '), 'in')
-					.c(...out_animation.split(' '), 'out'),
+			!title || title.trim().length === 0
+				? null
+				
+				// Timeout for out anims
+				: (setTimeout(() => 
+					(toast
+						.uc(...in_animation.split(' '), 'in')
+						.c(...out_animation.split(' '), 'out'),
 
-				// Timeout for dom removal
-				setTimeout(() => toast_container.removeChild(toast), 1000)), duration),
+					// Timeout for dom removal
+					setTimeout(() => toast_container.removeChild(toast), 1000)), duration),
 			
-			// Append to container
-			toast_container.appendChild(toast),
+					// Append to container
+					toast_container.appendChild(toast)),
 
 			// The toast itself
 			toast

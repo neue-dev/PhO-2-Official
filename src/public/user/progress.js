@@ -200,7 +200,7 @@ const PROGRESS = (() => {
       form.form_submit(target)
         .then(() => callback())
         .then(() => modal.modal_close())
-        .catch((error) => DOM.toast(error))),
+        .catch(({ error }) => DOM.toast({ title: error, label: 'error' }))),
     modal.select('.action.submit').c('blue')
   )
 
