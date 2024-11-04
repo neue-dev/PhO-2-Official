@@ -185,8 +185,8 @@ const CONFIG = (() => {
   const enable_official_button = DOM.select('.enable-official-button')
   const disable_official_button = DOM.select('.disable-official-button')
   
-  enable_official_button.listen('click', () => (X.request('./admin/enableofficial', 'POST').then(load_problems), tabs.tabs_active_tab('.problems')))
-  disable_official_button.listen('click', () => (X.request('./admin/disableofficial', 'POST').then(load_problems), tabs.tabs_active_tab('.problems')))
+  enable_official_button.listen('click', () => (X.request('./admin/enableofficial', 'POST').then(load_problems), tabs.tabs_active_tab('.problems'), tabs_menu.menu_selected_item('.problems')))
+  disable_official_button.listen('click', () => (X.request('./admin/disableofficial', 'POST').then(load_problems), tabs.tabs_active_tab('.problems'), tabs_menu.menu_selected_item('.problems')))
 
   // Keybinds 
   DOM.keybind({ ctrlKey: true, keyCode: 'f' }, () => search_bar.focus())
