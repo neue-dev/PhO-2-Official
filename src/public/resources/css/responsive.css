@@ -1,0 +1,24 @@
+@media screen and (max-width: 800px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+
+  .cards {
+    max-width: calc(100vw) !important;
+  }
+
+  .card {
+    max-width: calc(100vw - 2vw) !important;
+    width: 100% !important;
+  }
+
+  .tabs {
+    max-width: calc(100vw - 2vw) !important;
+    width: 100% !important;
+  }
+
+  .ui.table {
+    max-width: calc(100vw - 2vw) !important;
+  }
+}
+

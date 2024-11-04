@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>(PhO)&#178;</title>
+
+    <link href="./css/main.css" rel="stylesheet">
+    <link href="./css/responsive.css" rel="stylesheet">
+
+    <!-- Overrides -->
+    <style type="text/css">
+      html, body, .container, .card {
+        padding: 2em;
+        letter-spacing: -0.025em;
+      }
+
+      span {
+        white-space: nowrap;
+      }      
+
+      .header {
+        letter-spacing: -0.06em;
+      }
+    </style>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <!-- Semantic -->
+    <link href="./semantic/semantic.css" rel="stylesheet">
+    <script src="./semantic/semantic.js"></script>
+    
+    <!-- Pho2 Utils -->
+    <script src="/core/x.js"></script>
+    <script src="/core/dom.js"></script>
+    <script src="/core/time.js"></script>
+    <script src="/core/component.js"></script>
+    <script src="/pho2/pho2.js"></script>
+    <script src="/pho2/formatter.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="ui content">
+        <span class=" ui header huge text">
+          Config
+        </span>
+				<br><br>
+				<div class="ui breadcrumb">
+					<a class="section" href="/dashboard">Dashboard</a>
+					<i class="right arrow icon divider"></i>
+					<div class="active section">Config</div>
+				</div>
+      </div>
+      <br><br>
+
+      <div class="ui basic cards">
+        <div class="ui vertical menu card" style="margin: 0 2rem 2rem 0;">
+          <div class="item">
+            <div class="ui transparent icon input">
+              <input class="search-bar" type="text" placeholder="Search current table...">
+              <i class="search icon"></i>
+            </div>
+          </div>
+          <div class="tabs-menu">
+            <a class="item active" href="config">
+              Contest Parameters
+              <div class="ui label config-label">0</div>
+            </a>
+            <a class="item" href="users">
+              Users
+              <div class="ui label users-label">0</div>
+            </a>
+            <a class="item" href="problems">
+              Problems
+              <div class="ui label problems-label">0</div>
+            </a>
+          </div>
+          <div class="ui divider"></div>
+          <div class="ui basic card">
+            <div class="ui right labeled icon red button enable-official-button">
+              enable official problems
+              <i class="eye outline icon"></i>
+            </div>
+            <div class="ui right labeled icon black button disable-official-button">
+              disable official problems
+              <i class="eye slash icon"></i>
+            </div>
+          </div>
+          <br>
+          <div class="ui item">
+						<a href="/dashboard" onclick="window.close()">
+							<div class="ui animated blue right floated button" tabindex="0">
+								<div class="visible content">return</div>
+								<div class="hidden content">
+									<i class="left arrow icon"></i>
+								</div>
+							</div>
+						</a>
+						<br><br>
+					</div>
+        </div>  
+        <div class="tabs">
+          <div class="ui tab segment config active" style="margin-top: 0;" data-tab="config">
+            <table class="ui single line table config-table">
+  
+            </table>
+          </div>
+          <div class="ui tab segment users" style="margin-top: 0;" data-tab="users">
+            <table class="ui single line table users-table">
+  
+            </table>      
+          </div>
+          <div class="ui tab segment problems" style="margin-top: 0;" data-tab="problems">
+            <table class="ui single line table problems-table">
+  
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ui modal config-modal"></div>
+    <div class="ui modal users-modal"></div>
+    <div class="ui modal problems-modal"></div>
+
+    <script src="/setup.js"></script>
+    <script src="/config.js"></script>
+
+    <!-- Trademark -->
+    <script src="/pho2/trademark.js"></script>  
+  </body>
+</html>

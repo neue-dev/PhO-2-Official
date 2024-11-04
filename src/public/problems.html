@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>(PhO)&#178;</title>
+
+    <link rel="stylesheet" href="/css/responsive.css">
+
+    <!-- Overrides -->
+    <style type="text/css">
+      html, body, .container, .card {
+        padding: 2em;
+        letter-spacing: -0.025em;
+      }
+
+      span {
+        white-space: nowrap;
+      }      
+
+      .header {
+        letter-spacing: -0.06em;
+      }
+
+      iframe {
+        position: fixed;
+        top: 0;
+        left: 0;
+      }
+
+      .problems-container {
+        position: fixed;
+      }
+    </style>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <!-- Semantic -->
+    <link href="./semantic/semantic.css" rel="stylesheet">
+    <script src="./semantic/semantic.js"></script>
+    
+    <!-- Pho2 Utils -->
+    <script src="/core/x.js"></script>
+    <script src="/core/dom.js"></script>
+    <script src="/pho2/pho2.js"></script>
+  </head>
+
+  <body>
+    <iframe class="main-content problems" width="100%" height="100%" frameBorder="0" src="{{CONTEST_PROBLEMS_URL}}"></iframe>
+    <div class="container problems-container hide-on-mobile">
+      <div style="z-index: 1;" class="ui content">
+        <span class=" ui header huge text">
+          Problems
+        </span>
+				<br><br>
+				<div class="ui breadcrumb">
+					<a class="section" href="/dashboard">Dashboard</a>
+					<i class="right arrow icon divider"></i>
+					<div class="active section">Problems</div>
+				</div>
+      </div>
+    </div>
+
+    <script src="/setup.js"></script>
+  </body>
+</html>

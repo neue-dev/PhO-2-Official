@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>(PhO)&#178;</title>
+
+    <link rel="stylesheet" href="/css/responsive.css">
+
+    <!-- Overrides -->
+    <style type="text/css">
+      html, body, .container, .card {
+        padding: 2em;
+        letter-spacing: -0.025em;
+      }
+
+      span {
+        white-space: nowrap;
+      }      
+
+      .header {
+        letter-spacing: -0.06em;
+      }
+
+      iframe {
+        position: fixed;
+        top: 0;
+        left: 0;
+      }
+
+      .problems-container {
+        position: fixed;
+      }
+    </style>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <!-- Semantic -->
+    <link href="./semantic/semantic.css" rel="stylesheet">
+    <script src="./semantic/semantic.js"></script>
+    
+    <!-- Pho2 Utils -->
+    <script src="/core/x.js"></script>
+    <script src="/core/dom.js"></script>
+    <script src="/pho2/pho2.js"></script>
+  </head>
+
+  <body>
+    <div class="container problems-container">
+      <div style="z-index: 1;" class="ui content">
+        <span class=" ui header huge text">
+          Problems
+        </span>
+				<br><br>
+				<div class="ui breadcrumb">
+					<a class="section" href="/dashboard">Dashboard</a>
+					<i class="right arrow icon divider"></i>
+					<div class="active section">Problems</div>
+				</div>
+      </div>
+      <br>
+
+      <div class="ui warning message">
+        <i class="warning icon"></i>
+        The problems are currently not available.
+      </div>
+
+      <div class="ui content">
+        <img class="ui centered medium image" src="/pho-2-official-icon-dark">
+      </div>
+
+      <div class="ui content">
+        <div class="ui divider"></div>
+        <a href="/dashboard" onclick="window.close()">
+          <div class="ui animated right floated blue button" tabindex="0">
+            <div class="visible content">return</div>
+            <div class="hidden content">
+              <i class="left arrow icon"></i>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <script src="/setup.js"></script>
+  </body>
+</html>

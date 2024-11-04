@@ -1,0 +1,166 @@
+@font-face {
+  font-family: landingTitleFont;
+  src: url(/resources/fonts/Helvetica-Bold.ttf);
+}
+
+@keyframes intro-bg {
+  from { 
+    opacity: 0; 
+    background-position: 69% 69%;
+  }
+  
+  to {  
+    background-position: center;
+  }
+}
+
+@keyframes intro-title {
+  from { 
+    opacity: 0; 
+    transform: translateX(150%);
+  }
+  
+  to { 
+    opacity: 1; 
+    transform: translateX(0%);
+  }
+}
+
+* {
+  transition: width 0s, height 0s, font-size 0s !important;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+}
+
+body {
+  background-color: #000000 !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  transition: 0s !important;
+  animation-name: intro-bg;
+  animation-duration: 0.5s;
+}
+
+.fixed-image {
+  animation: intro-bg 0.3s ease-in-out;
+}
+
+.fixed-image.pho2-bg {
+  opacity: 0.4;
+  min-height: 100vh;
+  aspect-ratio: 16 / 9;
+}
+
+.fixed-image.pho2-icon {
+  left: 25vw;
+  top: 50vh;
+  width: 27vw;
+  transform: translate(-50%, -50%);
+}
+
+.cards {
+  animation: intro-bg 1s ease-in-out;
+}
+
+.card {
+  position: absolute;
+  top: 50vh;
+  transform: translateY(-50%);
+  width: calc(50vw - 10rem) !important;
+}
+
+.ui.cards > .card > .login.content {
+  padding: 4em !important;
+}
+
+.landing-title {
+  transition: 0s !important;
+  transition: 0s !important;
+  animation-name: intro-title;
+  animation-duration: 0.33s;
+  animation-delay: 0.25s;
+  transition-timing-function: ease-out;
+}
+
+.landing-subtitle {
+  transition: 0s !important;
+  transition: 0s !important;
+  animation-name: intro-title;
+  animation-duration: 0.33s;
+  animation-delay: 0.5s;
+  animation-timing-function: ease-in-out;
+}
+
+div.card.hide-on-mobile {
+  width: 50vw !important;
+}
+
+.bg-photo {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.input-field {
+  margin-top: 2vh;
+}
+
+.username-input {
+  opacity: 0;
+  animation-name: intro-field;
+  animation-duration: 0.25s;
+  animation-delay: 0.3s;
+  animation-timing-function: ease-in-out;
+}
+
+.password-input {
+  opacity: 0;
+  animation-name: intro-field;
+  animation-duration: 0.25s;
+  animation-delay: 0.42s;
+  animation-timing-function: ease-in-out;
+}
+
+.field-buttons-container {
+  opacity: 0;
+  animation-name: intro-field;
+  animation-duration: 0.25s;
+  animation-delay: 0.54s;
+  animation-timing-function: ease-in-out;
+}
+
+.fields-container {
+  position: absolute;
+  width: 25vw;
+  top: 54vh;
+  left: 12vw;
+}
+
+.field-buttons-container {
+  position: absolute;
+  width: 25vw;
+  top: 78vh;
+  left: 12vw;
+}
+
+@media screen and (max-width: 800px) {
+  .ui.cards > .card > .login.content {
+    padding: 1.5rem !important;
+    padding-top: 2.5rem !important;
+    padding-bottom: 2.5rem !important;
+  }
+  
+  .cards {
+    width: 100vw !important;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .cards {
+    padding: 3rem;  
+  }
+}

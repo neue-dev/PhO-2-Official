@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>(PhO)&#178;</title>
+    <link rel="icon" type="image/x-icon" href="/pho-2-official-icon">
+
+    <!-- General CSS styling -->
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+
+    <!-- Overrides -->
+    <style type="text/css">
+      .col.login-card {
+        min-height: 100vh;
+      }
+      
+      .col.content-card {
+        min-height: 100vh;
+        padding:0;
+      } 
+    </style>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <!-- Semantic -->
+    <link href="./semantic/semantic.css" rel="stylesheet">
+    <script src="./semantic/semantic.js"></script>
+
+    <!-- Pho2 Utils -->
+    <script src="/core/x.js"></script>
+    <script src="/core/dom.js"></script>
+    <script src="/pho2/pho2.js"></script>
+    <script src="/core/preload.js"></script>
+  </head>
+
+  <body>
+    <!-- <img class="bg-photo" width="1000" src="/pho-2-official-icon"> -->
+    <!-- <img class="bg-photo" src="/pho-2-official-bg"> -->
+    <div class="ui cards" style="visibility: hidden;">
+      <div class="card hide-on-mobile" style="visibility: hidden;"></div>
+      <div class="card">
+        <div class="ui login content">
+          <span class=" ui header huge text">
+            login
+          </span>
+          <br>
+          Only registered participants can login.
+          <br><br><br><br>
+
+          <div>
+            <div class="ui form login-form"></div><br><br>
+            <button class="ui black button login-button">Login</button>
+          </div>
+      </div>
+    </div>
+
+
+    <script src="/pho2/trademark.js"></script>
+    <script>
+      const cards = document.querySelector('.ui.cards')
+      const login_form = DOM.stateful_form(DOM.select('.login-form'));
+      const login_button = DOM.select('.login-button');
+
+      // Preloader
+      Preload
+        .queue("https://i.imgur.com/nU2Y45z.jpeg", { c: 'fixed-image pho2-bg' })
+        .queue("https://i.pinimg.com/564x/38/90/fb/3890fb0fe66d46366aa0642f4072375a.jpg", { c: 'fixed-image pho2-icon' })
+        .then(() => cards.style.visibility = 'visible')
+
+      // Form field
+      login_form.form_field('Username', { type: 'text', placeholder: '...' })
+      login_form.form_field('Password', { type: 'password', placeholder: '...' })
+      login_form.form_clear();
+      
+      // Submission routes
+      const login = () => 
+        login_form.form_submit('./auth/login')
+          .then(() => location.href = './dashboard')
+          .catch(() => DOM.toast({ title: 'Invalid login.', label: 'error' }))
+
+      login_form.form_on_enter('./auth/login', login)
+      login_button.listen('click', login)
+
+    </script>
+  </body>
+</html> 

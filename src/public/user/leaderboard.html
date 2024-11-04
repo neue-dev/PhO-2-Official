@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>(PhO)&#178;</title>
+
+    <link href="./css/main.css" rel="stylesheet">
+    <link href="./css/responsive.css" rel="stylesheet">
+
+    <!-- Overrides -->
+    <style type="text/css">
+      html, body, .container, .card {
+        padding: 2em;
+        letter-spacing: -0.025em;
+      }
+
+      span {
+        white-space: nowrap;
+      }      
+
+      .header {
+        letter-spacing: -0.06em;
+      }
+    </style>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <!-- Semantic -->
+    <link href="./semantic/semantic.css" rel="stylesheet">
+    <script src="./semantic/semantic.js"></script>
+    
+    <!-- Pho2 Utils -->
+    <script src="/core/x.js"></script>
+    <script src="/core/dom.js"></script>
+    <script src="/core/component.js"></script>
+    <script src="/pho2/pho2.js"></script>
+    <script src="/pho2/formatter.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="ui content">
+        <span class=" ui header huge text">
+          Leaderboard
+        </span>
+				<br><br>
+				<div class="ui breadcrumb">
+					<a class="section" href="/dashboard">Dashboard</a>
+					<i class="right arrow icon divider"></i>
+					<div class="active section">Config</div>
+				</div>
+      </div>
+      <br><br>
+
+      <div class="ui basic cards">
+        <div class="ui vertical menu card" style="margin: 0 2rem 2rem 0;">
+          <div class="item">
+            <div class="ui transparent icon input">
+              <input class="search-bar" type="text" placeholder="Search current table...">
+              <i class="search icon"></i>
+            </div>
+          </div>
+          <div class="tabs-menu">
+            <a class="item active" href="all">
+              All Teams
+              <div class="ui label all-label">0</div>
+            </a>
+            <a class="item" href="junior">
+              Junior Category
+              <div class="ui label junior-label">0</div>
+            </a>
+            <a class="item" href="senior">
+              Senior Category
+              <div class="ui label senior-label">0</div>
+            </a>
+          </div>
+          <div class="card">
+            <img class="ui centered medium image" width="200" src="/pho-2-official-icon-dark">
+          </div>
+          <div class="ui item">
+						<a href="/dashboard" onclick="window.close()">
+							<div class="ui animated blue right floated button" tabindex="0">
+								<div class="visible content">return</div>
+								<div class="hidden content">
+									<i class="left arrow icon"></i>
+								</div>
+							</div>
+						</a>
+						<br><br>
+					</div>
+        </div>  
+        <div class="tabs">
+          <div class="ui tab segment all active" style="margin-top: 0;" data-tab="all">
+            <table class="ui single line table all-table">
+  
+            </table>
+          </div>
+          <div class="ui tab segment junior" style="margin-top: 0;" data-tab="junior">
+            <table class="ui single line table junior-table">
+  
+            </table>      
+          </div>
+          <div class="ui tab segment senior" style="margin-top: 0;" data-tab="senior">
+            <table class="ui single line table senior-table">
+  
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/leaderboard.js"></script>  
+    <script src="/setup.js"></script>
+
+    <!-- Trademark -->
+    <script src="/pho2/trademark.js"></script>  
+  </body>
+</html>
