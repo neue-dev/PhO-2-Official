@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 08:26:47
- * @ Modified time: 2024-11-04 08:55:35
+ * @ Modified time: 2024-11-04 09:51:50
  * @ Description:
  * 
  * The main thread on the server.
@@ -184,6 +184,13 @@ const SERVER = (() => {
       user.isAdmin
         ? send_file(res, './public/admin/config.js')
         : send_file(res, './public/user/progress.js')
+    )))
+
+    // Setup resources
+    app.get('/setup.js', authorized_user_redirect((req, res, user) => (
+      user.isAdmin
+        ? send_file(res, './public/admin/setup.js')
+        : send_file(res, './public/user/setup.js')
     )))
 
     // Leaderboard resources
