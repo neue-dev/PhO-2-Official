@@ -17,6 +17,14 @@ html, body, .container, .card {
   letter-spacing: -0.025em;
 }
 
+.fixed-image {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 135vw;
+  z-index: -1;
+}
+
 body {
   overflow-y: scroll;
 }

@@ -9,8 +9,7 @@
     background-position: 69% 69%;
   }
   
-  to { 
-    opacity: 1; 
+  to {  
     background-position: center;
   }
 }
@@ -27,18 +26,6 @@
   }
 }
 
-@keyframes intro-field {
-  from { 
-    opacity: 0;
-    transform: translate(-100%, 0); 
-  }
-  
-  to { 
-    opacity: 1; 
-    transform: translate(0, 0); 
-  }
-}
-
 * {
   transition: width 0s, height 0s, font-size 0s !important;
   animation-direction: normal;
@@ -46,12 +33,7 @@
 }
 
 body {
-  background-image: url("/pho-2-official-bg");
-  background-repeat: no-repeat;
-  background-position: center; 
-  background-size: cover; 
-  background-color: #ffffff;
-
+  background-color: #000000 !important;
   position: fixed;
   top: 0;
   left: 0;
@@ -63,17 +45,36 @@ body {
   animation-duration: 0.5s;
 }
 
+.fixed-image {
+  animation: intro-bg 0.3s ease-in-out;
+}
+
+.fixed-image.pho2-bg {
+  opacity: 0.4;
+  min-height: 100vh;
+  aspect-ratio: 16 / 9;
+}
+
+.fixed-image.pho2-icon {
+  left: 25vw;
+  top: 50vh;
+  width: 27vw;
+  transform: translate(-50%, -50%);
+}
+
 .cards {
-  padding: 4rem;  
+  animation: intro-bg 1s ease-in-out;
 }
 
 .card {
+  position: absolute;
+  top: 50vh;
+  transform: translateY(-50%);
   width: calc(50vw - 10rem) !important;
 }
 
-.login.content {
-  padding: 8em !important;
-  height: calc(100vh - 10rem) !important;
+.ui.cards > .card > .login.content {
+  padding: 4em !important;
 }
 
 .landing-title {
@@ -147,21 +148,19 @@ div.card.hide-on-mobile {
 }
 
 @media screen and (max-width: 800px) {
-  .content {
-    padding: 4rem !important;
+  .ui.cards > .card > .login.content {
+    padding: 1.5rem !important;
+    padding-top: 2.5rem !important;
+    padding-bottom: 2.5rem !important;
   }
-
+  
   .cards {
-    padding: 2rem;  
+    width: 100vw !important;
   }
 }
 
 @media screen and (max-width: 1024px) {
-  .content {
-    padding: 4rem !important;
-  }
-
-  .card {
-    width: calc(100vw - 4rem) !important;
+  .cards {
+    padding: 3rem;  
   }
 }

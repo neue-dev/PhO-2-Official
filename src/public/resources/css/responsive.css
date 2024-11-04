@@ -4,21 +4,21 @@
   }
 
   .cards {
-    max-width: calc(100vw - 8rem) !important;
+    max-width: calc(100vw) !important;
   }
 
   .card {
-    max-width: calc(100vw - 8rem) !important;
+    max-width: calc(100vw - 2vw) !important;
     width: 100% !important;
   }
 
   .tabs {
-    max-width: calc(100vw - 8rem) !important;
+    max-width: calc(100vw - 2vw) !important;
     width: 100% !important;
   }
 
   .ui.table {
-    max-width: calc(100vw - 8rem) !important;
+    max-width: calc(100vw - 2vw) !important;
   }
 }
 
