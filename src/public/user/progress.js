@@ -193,6 +193,7 @@ const PROGRESS = (() => {
     tr_hoverable()
       .listen('click', () => submissions_table_handler(submission))
       .append(
+        td_auto_label({ '.label': { t: Time.interval_to_since(Time.now() - submission.timestamp) }}),
         td_auto_label({ '.label': { t: submission.problem_code.number + submission.problem_code.alpha }}),
         td_auto().t(submission.answer.mantissa + ' &times; 10').append(sup().t(submission.answer.exponent)),
         td_auto_label({ 
@@ -288,4 +289,8 @@ const PROGRESS = (() => {
     .then(() => load_config())
   load_submissions()
     .then(() => load_problems())
+
+  // Interval for updating time display of submissions without making internet request
+  // Update every minute
+  setInterval(() => submissions_table.table_map(submissions_table.mapper), 60000)
 })()
