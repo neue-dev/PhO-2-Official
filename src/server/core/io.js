@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:33:05
- * @ Modified time: 2024-11-03 15:11:02
+ * @ Modified time: 2024-11-04 09:00:26
  * @ Description:
  * 
  * Handles server IO responsibilities.
@@ -52,7 +52,7 @@ export const read_file = (file) => Promise.resolve(fs.readFileSync(file, 'utf-8'
  */
 export const write_file = (res, file, mustaches) => 
   read_file(file)
-    .then(data => res.write(mustache.render(data, mustaches)))
+    .then(data => (res.write(mustache.render(data, mustaches)), res.end()))
 
 /**
  * Redirects the client to the given path.
