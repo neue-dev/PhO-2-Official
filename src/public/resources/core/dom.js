@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-03 15:27:33
+ * @ Modified time: 2024-11-04 09:37:43
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -233,6 +233,24 @@ const DOM = (() => {
 					? Array.from(element.childNodes).map(child => element_text(child)).join(' ')
 					: ''
 	)
+
+	/**
+	 * Returns an array containing the props of the promise.
+	 * 
+	 * @return	The promise, resolver, and rejecter.
+	 */
+	const create_promise = () => {
+
+		// Promise deets
+		let on_resolve = null
+		let on_reject = null
+		const promise = new Promise((resolve, reject) => (
+			on_resolve = resolve,
+			on_reject = reject
+		))
+
+		return [ promise, on_resolve, on_reject ];
+	}
 
 	/**
 	 * Basic element factory methods.
@@ -600,6 +618,7 @@ const DOM = (() => {
 	 * 	form_field_value()	Get-setter for field values.
 	 * 	form_field_type()		Get-setter for field types.
 	 * 	form_field()				Adds a new field to the form.
+	 * 	form_on_enter()			Adds an on_enter callback to each input.
 	 * 	form_submit()				Submits the form.
 	 * 	form_clear()				Clears field values.
 	 * 
@@ -742,6 +761,16 @@ const DOM = (() => {
 						// Fields are required by default
 						element('div').c('field', 'req')
 					)
+				),
+
+				// Sets a submit for each field when enter is pressed
+				form_on_enter: (target, callback) => (
+					(Array.from(form.children).map(child => 
+						child.cis('field')
+							? child.select('.input').listen('keydown', 
+								e => e.keyCode === 13 ? callback() : null)
+							: null)),
+					form
 				),
 
 				// Submits the form
@@ -890,8 +919,8 @@ const DOM = (() => {
 			
 			// Check if every provided key is pressed
 			Object.keys(keys).every(key => 
-				keys[key].charCodeAt 
-					? e[key] === keys[key].toUpperCase().charCodeAt(0)
+				e[key].toUpperCase
+					? e[key].toUpperCase() === keys[key].toUpperCase()
 					: e[key])
 
 				// If so, evxecute callback and prevent default
