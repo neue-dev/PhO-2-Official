@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 export const admin_router = express.Router();
 
 import { io } from '../core/io.js'
-import { Query, QueryFactory } from '../core/db.js'
+import { Aggregate, Predicate, Query, QueryFactory } from '../core/db.js'
 import { authorized_user_fail } from '../pho2/auth.js';
 import { check_answer } from '../pho2/check.js';
 
@@ -123,9 +123,29 @@ admin_router.post('/problemlist', admin((req, res, user) =>
 /**
  * Grabs a list of ALL submissions.
  */
-admin_router.post('/submissionlog', admin((req, res, user) => 
-  Query(Submission).select().then(submissions => res.json({ submissions })).run()
-));
+admin_router.post('/submissionlog', admin(io((req, res, user) => 
+  
+  // Wow we're using a 'join' LMAO
+  Aggregate(Submission)
+    .join(User, 'user_id', '_id', 'user', [ 'username' ])
+    .join(Problem, 'problem_id', '_id', 'problem', [ 'name', 'code' ])
+    
+    // Filter deleted users and problems
+    .filter('user_username', Predicate().ne())
+    .filter('problem_code', Predicate().ne())
+
+    // Remap problem code
+    .field('p_codestring', function(code) { return code.number + '' + code.alpha }, [ 'problem_code' ])
+    
+    // Exclude fields then rename them
+    .project({ _id: false, user_id: false, problem_id: false, problem_code: false, __v: false })
+    .rename({ user_username: 'username', problem_name: 'problem', p_codestring: 'code', verdict: 'verdict', timestamp: 'timestamp' })
+
+    // Yes
+    .then(submissions => res.json({ submissions }))
+    .run()
+    .catch(res.failure())
+)));
 
 /**
  * Updates config variables.
