@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-04 11:46:19
+ * @ Modified time: 2024-11-04 13:17:15
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -15,11 +15,24 @@ const DOM = (() => {
 	const _ = {};
 
 	/**
+	 * Generates a decent random uuid.
+	 * Usable in secure contexts.
+	 * Lifted from https://stackoverflow.com/questions/105034/how-do-i-create-a-guid-uuid
+	 * 
+	 * @return	A new uuid, v4. 
+	 */
+	const uuidv4 = () => ( 
+		"10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+			(+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
+		)
+	)
+
+	/**
 	 * Generates a random id for us
 	 * 
 	 * @return	A unique valid id string. 
 	 */
-	const random_id = () => '__' + crypto.randomUUID()
+	const random_id = () => '__' + uuidv4()
 
 	/**
 	 * A conciser and more expressive syntax for decorating elements.
@@ -424,7 +437,7 @@ const DOM = (() => {
 				// Get-setter for the table data
 				table_data: (data) => (
 					data != null
-						? (data = data.map(d => ({ ...d, __id: '__' + crypto.randomUUID() })),
+						? (data = data.map(d => ({ ...d, __id: random_id() })),
 							table.state('data', data), 
 							table.state('view', data.map(d => ({ ...d, __visible: true }))), 
 							table)
