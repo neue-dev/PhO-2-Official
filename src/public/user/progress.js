@@ -118,44 +118,51 @@ const PROGRESS = (() => {
       mapper: Formatter.lift_submission_answer 
     })
     .form_text('countdown', '')
-    .select('.text.countdown').append(div().c('ui', 'header', 'massive', 'red', 'text')).parent()
-    .select('.field._id').s({ display: 'none' });
+    .form_field_hide('_id')
+    .select('.text.countdown').append(div().c('ui', 'header', 'massive', 'red', 'text'))
 
   // Handles clicks on the problems table
   const problems_table_handler = (problem) => (
-    problems_form.form_clear(),
-    problems_form.form_field_value('_id', problem._id),
-    problems_form.select('.field.answer')
-      .s(problem_submissions_verdict(problem) ? { display: 'none' } : { display: 'block' }),
-    problems_form.select('.text.countdown')
-      .s(problem_submissions_verdict(problem) ? { display: 'none' } : { display: 'block' }),
-    problems_modal.modal_header(problem.name),
-    problems_modal.modal_clear(),
-    problems_modal.select('.action.submit')
-      .s(problem_submissions_verdict(problem) ? { display: 'none' } : { display: 'inline-block' }),
-    problems_modal.modal_append(
-      problems_form, br(),
-      label().t(`${problem_submissions_count(problem)} submissions`),
-      label().t(`${problem_submissions_verdict(problem) ? 'correct' : problem_submissions_count(problem) === 0 ? '' : 'wrong'}`)
-        .c(problem_submissions_verdict(problem) ? 'green' : problem_submissions_count(problem) === 0 ? 'hidden' : 'red')
-        .c(problem_submissions_verdict(problem) ? 'default' : 'basic')),
-    problems_modal.modal_open(),
+    problems_form
+      .form_clear()
+      .form_field_value('_id', problem._id),
+    problem_submissions_verdict(problem) 
+      ? problems_form.form_field_hide('answer').select('.text.countdown').s({ display: 'block' })
+      : problems_form.form_field_show('answer').select('.text.countdown').s({ display: 'none' }),
+    
+    problems_modal
+      .modal_header(problem.name)
+      .modal_clear(),
+    problem_submissions_verdict(problem)
+      ? problems_modal.modal_action_hide('submit')
+      : problems_modal.modal_action_show('submit'),
+    
+    problems_modal
+      .modal_append(
+        problems_form, br(),
+        label().t(`${problem_submissions_count(problem)} submissions`),
+        label().t(`${problem_submissions_verdict(problem) ? 'correct' : problem_submissions_count(problem) === 0 ? '' : 'wrong'}`)
+          .c(problem_submissions_verdict(problem) ? 'green' : problem_submissions_count(problem) === 0 ? 'hidden' : 'red')
+          .c(problem_submissions_verdict(problem) ? 'default' : 'basic'))
+      .modal_open(),
+
     problem_submissions_verdict(problem) || (submission_set_interval(), update_cooldown())
   )
 
   // Handles clicks on the submissions table
   const submissions_table_handler = (submission) => (
-    submissions_modal.modal_header(submission.problem_code.number + submission.problem_code.alpha + ' ' + submission.problem_name),
-    submissions_modal.modal_clear(),
-    submissions_modal.modal_append(
-      br(),
-      span().t(submission.answer.mantissa + ' &times; 10').append(sup().t(submission.answer.exponent))
-        .c('ui', 'header', 'huge', 'text'), br(), br(), br(),
-      label().t(Time.timestamp_to_mdy_hms(submission.timestamp)),
-      label().t(submission.verdict)
-        .c(submission.verdict === 'correct' ? 'green' : 'red' )
-        .c(submission.verdict === 'correct' ? 'default' : 'basic' )),
-    submissions_modal.modal_open()
+    submissions_modal
+      .modal_header(submission.problem_code.number + submission.problem_code.alpha + ' ' + submission.problem_name)
+      .modal_clear()
+      .modal_append(
+        br(),
+        span().t(submission.answer.mantissa + ' &times; 10').append(sup().t(submission.answer.exponent))
+          .c('ui', 'header', 'huge', 'text'), br(), br(), br(),
+        label().t(Time.timestamp_to_mdy_hms(submission.timestamp)),
+        label().t(submission.verdict)
+          .c(submission.verdict === 'correct' ? 'green' : 'red' )
+          .c(submission.verdict === 'correct' ? 'default' : 'basic' ))
+      .modal_open()
   )
 
   // Comparators
@@ -200,6 +207,7 @@ const PROGRESS = (() => {
   const action_submit = (modal, form, target, callback) => (
     modal.modal_action('submit', () => 
       form.form_submit(target)
+        .then(({ message }) => DOM.toast({ title: message }))
         .then(() => callback())
         .then(() => modal.modal_close())
         .catch(({ error }) => DOM.toast({ title: error, label: 'error' }))),
@@ -264,13 +272,13 @@ const PROGRESS = (() => {
   function update_cooldown() {
     submission_locked()
       ? problems_form
+          .form_field_hide('answer')
           .select('.text.countdown').s({ display: 'block' }).parent()
-          .select('.field.answer').s({ display: 'none' }).parent()
           .select('.text.countdown').select('div').t(Time.millis_to_ms(submissions_countdown())) &&
         problems_modal.select('.action.submit').c('disabled')
       : problems_form
-          .select('.text.countdown').s({ display: 'none' }).parent()
-          .select('.field.answer').s({ display: 'block' }) &&
+          .form_field_show('answer')
+          .select('.text.countdown').s({ display: 'none' }) &&
         problems_modal  
           .select('.action.submit').uc('disabled')
   }

@@ -155,6 +155,7 @@ admin_router.post('/editconfig', admin(io((req, res, user) => {
   const changes = { /*key,*/ value };
   
   // Callback for success
+  // ! refactor this so the key is not required!
   const succeed_and_update = () => (
     res.success({ message: 'Parameter updated successfully.' })(),
     Env.set(key, value)

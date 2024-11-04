@@ -59,8 +59,8 @@ const CONFIG = (() => {
     .form_field('_id', { type: 'text' })
     .form_field('Key', { type: 'text' })
     .form_field('Value', { type: 'text' }, { mapper: { 'datetime-local': (value) => Time.timestamp_from_datestr(value) } })
-      .select('.field._id').s({ display: 'none' }).parent()
-      .select('.field.key').s({ display: 'none' }).parent()
+    .form_field_hide('_id')  
+    .form_field_hide('key')
 
   const users_form = DOM.stateful_form()
     .form_field('_id', { type: 'text' })
@@ -68,7 +68,7 @@ const CONFIG = (() => {
     .form_field('Password', { type: 'text' })
     .form_field('Status', { type: 'select', options: [ 'participating', 'spectating', 'disqualified' ] })
     .form_field('Category', { type: 'select', options: [ 'junior', 'senior' ] })
-      .select('.field._id').s({ display: 'none' }).parent()
+    .form_field_hide('_id')
 
   const problems_form = DOM.stateful_form()
     .form_field('_id', { type: 'text' })
@@ -83,11 +83,12 @@ const CONFIG = (() => {
     .form_field('Type', { type: 'select', options: [ 'official', 'debug' ] })
     .form_field('Status', { type: 'select', options: [ 'active', 'disabled' ] })
     .form_field('Points', { type: 'text' })
-      .select('.field._id').s({ display: 'none' }).parent()
+    .form_field_hide('_id')
 
   const action_apply = (modal, form, target, callback) => (
     modal.modal_action('apply', () => 
       form.form_submit(target)
+        .then(({ message }) => DOM.toast({ title: message }))
         .then(() => callback())
         .then(() => modal.modal_close())
         .catch(({ error }) => DOM.toast({ title: error, label: 'error' }))),
@@ -102,6 +103,7 @@ const CONFIG = (() => {
   const action_create = (modal, form, target, callback) => (
     modal.modal_action('create', () =>
       form.form_submit(target)
+        .then(({ message }) => DOM.toast({ title: message }))
         .then(() => callback())
         .then(() => modal.modal_close())
         .catch(({ error }) => DOM.toast({ title: error, label: 'error' }))),
@@ -111,6 +113,7 @@ const CONFIG = (() => {
   const action_delete = (modal, form, target, callback) => (
     modal.modal_action('delete', () => 
       form.form_submit(target)
+        .then(({ message }) => DOM.toast({ title: message }))
         .then(() => callback())
         .then(() => modal.modal_close())
         .catch(({ error }) => DOM.toast({ title: error, label: 'error' }))),
@@ -121,6 +124,7 @@ const CONFIG = (() => {
   const action_recheck = (modal, form, target, callback) => (
     modal.modal_action('recheck', () => 
       form.form_submit(target)
+        .then(({ message }) => DOM.toast({ title: message }))
         .then(() => callback())
         .then(() => modal.modal_close())
         .catch(({ error }) => DOM.toast({ title: error, label: 'error' }))),
@@ -185,8 +189,19 @@ const CONFIG = (() => {
   const enable_official_button = DOM.select('.enable-official-button')
   const disable_official_button = DOM.select('.disable-official-button')
   
-  enable_official_button.listen('click', () => (X.request('./admin/enableofficial', 'POST').then(load_problems), tabs.tabs_active_tab('.problems'), tabs_menu.menu_selected_item('.problems')))
-  disable_official_button.listen('click', () => (X.request('./admin/disableofficial', 'POST').then(load_problems), tabs.tabs_active_tab('.problems'), tabs_menu.menu_selected_item('.problems')))
+  enable_official_button.listen('click', () => (
+    X.request('./admin/enableofficial', 'POST')
+      .then(({ message }) => DOM.toast({ title: message }))
+      .then(load_problems), 
+    tabs.tabs_active_tab('.problems'), 
+    tabs_menu.menu_selected_item('.problems')))
+
+  disable_official_button.listen('click', () => (
+    X.request('./admin/disableofficial', 'POST')
+      .then(({ message }) => DOM.toast({ title: message }))
+      .then(load_problems), 
+    tabs.tabs_active_tab('.problems'), 
+    tabs_menu.menu_selected_item('.problems')))
 
   // Keybinds 
   DOM.keybind({ ctrlKey: true, key: 'f' }, () => search_bar.focus())
@@ -195,45 +210,55 @@ const CONFIG = (() => {
 
   // Handles clicks of config table rows
   const config_table_handler = (parameter) => (
-    config_form.form_clear(),
-    config_form.form_field_value('_id', parameter._id),
-    config_form.form_field_value('key', parameter.key),
-    config_form.form_field_type('value', parameter.type),
-    config_form.form_field_value('value', parameter.value),
-    config_modal.modal_header(parameter.key),
-    config_modal.modal_open()
+    config_form
+      .form_clear()
+      .form_field_value('_id', parameter._id)
+      .form_field_value('key', parameter.key)
+      .form_field_type('value', parameter.type)
+      .form_field_value('value', parameter.value),
+    
+    config_modal
+      .modal_header(parameter.key)
+      .modal_open()
   )
 
   // Handles clicks of problem table rows
   const problems_table_handler = (problem) => (
-    problems_form.form_clear(),
-    problems_form.form_field_value('_id', problem._id),
-    problems_form.form_field_value('problem-name', problem.name),
-    problems_form.form_field_value('type', problem.type),
-    problems_form.form_field_value('status', problem.status),
-    problems_form.form_field_value('problem-code', problem.code.number + problem.code.alpha),
-    problems_form.form_field_value('answer', problem.answer.mantissa + 'e' + problem.answer.exponent),    
-    problems_form.form_field_value('tolerance', problem.tolerance),
-    problems_form.form_field_value('points', problem.points),
-    problems_modal.modal_header(problem.name),
-    problems_modal.modal_action_hide('create'),
-    problems_modal.modal_action_show('delete'),
-    problems_modal.modal_action_show('apply'),
-    problems_modal.modal_open()
+    problems_form
+      .form_clear()
+      .form_field_value('_id', problem._id)
+      .form_field_value('problem-name', problem.name)
+      .form_field_value('type', problem.type)
+      .form_field_value('status', problem.status)
+      .form_field_value('problem-code', problem.code.number + problem.code.alpha)
+      .form_field_value('answer', problem.answer.mantissa + 'e' + problem.answer.exponent)
+      .form_field_value('tolerance', problem.tolerance)
+      .form_field_value('points', problem.points),
+    
+    problems_modal.modal_header(problem.name)
+      .modal_action_hide('create')
+      .modal_action_show('delete')
+      .modal_action_show('apply')
+      .modal_open()
   )
 
   // Handles clicks of user table rows
   const users_table_handler = (user) => (
-    users_form.form_clear(),
-    users_form.form_field_value('_id', user._id),
-    users_form.form_field_value('username', user.username),
-    users_form.form_field_value('status', user.status),
-    users_form.form_field_value('category', user.category),
-    users_form.select('.field.password').uc('req'),
-    users_modal.modal_header(user.username),
-    users_modal.modal_action_hide('create'),
-    users_modal.modal_action_show('delete'),
-    users_modal.modal_action_show('apply'),
+    users_form
+      .form_clear()
+      .form_field_value('_id', user._id)
+      .form_field_value('username', user.username)
+      .form_field_value('status', user.status)
+      .form_field_value('category', user.category)
+      .form_field_show('status')
+      .select('.field.password').uc('req'),
+    
+    users_modal
+      .modal_header(user.username)
+      .modal_action_hide('create')
+      .modal_action_show('delete')
+      .modal_action_show('apply'),
+    
     user.isAdmin 
       ? users_modal.modal_action_hide('delete') 
       : null,
@@ -309,24 +334,32 @@ const CONFIG = (() => {
 
   // Set up the global buttons
   users_new.listen('click', () => (
-    users_form.form_clear(),
-    users_form.form_field_value('_id', '-'),
-    users_form.select('.field.password').c('req'),
-    users_modal.modal_header('create new user'),
-    users_modal.modal_action_hide('delete'),
-    users_modal.modal_action_hide('apply'),
-    users_modal.modal_action_show('create'),
-    users_modal.modal_open()
+    users_form
+      .form_clear()
+      .form_field_value('_id', '-')
+      .form_field_value('status', 'participating')
+      .form_field_hide('status')
+      .select('.field.password').c('req'),
+    
+    users_modal
+      .modal_header('create new user')
+      .modal_action_hide('delete')
+      .modal_action_hide('apply')
+      .modal_action_show('create')
+      .modal_open()
   ))
 
   problems_new.listen('click', () => (
-    problems_form.form_clear(),
-    problems_form.form_field_value('_id', '-'),
-    problems_modal.modal_header('create new problem'),
-    problems_modal.modal_action_hide('delete'),
-    problems_modal.modal_action_hide('apply'),
-    problems_modal.modal_action_show('create'),
-    problems_modal.modal_open()
+    problems_form
+      .form_clear()
+      .form_field_value('_id', '-'),
+
+    problems_modal
+      .modal_header('create new problem')
+      .modal_action_hide('delete')
+      .modal_action_hide('apply')
+      .modal_action_show('create')
+      .modal_open()
   ))
 
   // Set up the tables
