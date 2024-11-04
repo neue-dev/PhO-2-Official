@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-04 09:37:43
+ * @ Modified time: 2024-11-04 11:46:19
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -581,12 +581,14 @@ const DOM = (() => {
 
 				modal_action_show: (action) => (
 					modal.select(`.action.${action}`)
-						.s({ display: 'inline-block' })
+						.s({ display: 'inline-block' }),
+					modal
 				),
 
 				modal_action_hide: (action) => (
 					modal.select(`.action.${action}`)
-						.s({ display: 'none' })
+						.s({ display: 'none' }),
+					modal
 				),
 
 				// Add elements to the body of the modal
@@ -632,6 +634,16 @@ const DOM = (() => {
 
 			// Add methods
 			decorate(form, {
+
+				form_field_hide: (name) => (
+					form.select(`.field.${name}`).s({ display: 'none' }),
+					form
+				),
+
+				form_field_show: (name) => (
+					form.select(`.field.${name}`).s({ display: 'block' }),
+					form
+				),
 
 				// Get-setter for field values
 				form_field_value: (name, value) => (
@@ -811,7 +823,8 @@ const DOM = (() => {
 					Array.from(form.children).map(child => 
 						child.cis('field') 
 							? form.form_field_value(child.select('.input').d(), null)
-							: true)
+							: true),
+					form
 				),
 				
 				// Return form
@@ -902,7 +915,7 @@ const DOM = (() => {
 		fluent(
 			selector instanceof Element || selector instanceof HTMLElement
 				? selector
-				: document.querySelector(selector) ?? console.error(`Element ${selector} not found by selector.`)
+				: document.querySelector(selector) ?? console.warn(`Element ${selector} not found by selector.`)
 		);
 
 	/**
