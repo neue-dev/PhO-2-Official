@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 17:51:10
- * @ Modified time: 2024-11-03 15:18:32
+ * @ Modified time: 2024-11-04 10:15:50
  * @ Description:
  * 
  * Handles cross (x) requests and other network matters.
@@ -11,6 +11,24 @@ const X = (() => {
 
 	// Interface
 	const _ = {};
+
+	/**
+	 * A download helper function.
+	 * Adopted from my old code from god knows where.
+	 * 
+	 * @param filename	The filename to save. 
+	 * @param text			The content of the file.
+	 */
+	const download = (filename, text) => {
+
+		let a = document.createElement('a');
+		a.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+		a.setAttribute('download', filename);
+		a.style.display = 'none';
+	
+		document.body.appendChild(a); a.click();
+		document.body.removeChild(a);
+	}
 
 	/**
 	 * Creates a request for the specific resource.
@@ -64,6 +82,19 @@ const X = (() => {
 			promise_resolve = resolve;
 			promise_reject = reject;
 		})
+	}
+
+	/**
+	 * Downloads the file with the given filename.
+	 * 
+	 * @param	url				The location of the file.
+	 * @param	filename	The name to save.
+	 * @param	mapper		Maps the data to the representation in the file.
+	 */
+	_.download = (url, filename, mapper=((data) => JSON.stringify(data))) => {
+		X.request(url, 'POST', {}).then(data => (
+			download(filename, mapper(data))
+		))
 	}
 
 	return {
