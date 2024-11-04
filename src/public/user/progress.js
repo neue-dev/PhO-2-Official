@@ -49,6 +49,8 @@ const PROGRESS = (() => {
 
   // Keybinds 
   DOM.keybind({ ctrlKey: true, keyCode: 'f' }, () => search_bar.focus())
+  DOM.keybind({ key: 'Escape' }, () => 
+    (problems_modal.modal_close(), submissions_modal.modal_close()))
 
   /**
    *  Reusable components and styles

@@ -66,19 +66,25 @@
       const login_form = DOM.stateful_form(DOM.select('.login-form'));
       const login_button = DOM.select('.login-button');
 
+      // Preloader
       Preload
         .queue("https://i.imgur.com/nU2Y45z.jpeg", { c: 'fixed-image pho2-bg' })
         .queue("https://i.pinimg.com/564x/38/90/fb/3890fb0fe66d46366aa0642f4072375a.jpg", { c: 'fixed-image pho2-icon' })
         .then(() => cards.style.visibility = 'visible')
 
+      // Form field
       login_form.form_field('Username', { type: 'text', placeholder: '...' })
       login_form.form_field('Password', { type: 'password', placeholder: '...' })
       login_form.form_clear();
-
-      login_button.listen('click', () => 
+      
+      // Submission routes
+      const login = () => 
         login_form.form_submit('./auth/login')
           .then(() => location.href = './dashboard')
-          .catch(() => DOM.toast({ title: 'Invalid login.', label: 'error' })))
+          .catch(() => DOM.toast({ title: 'Invalid login.', label: 'error' }))
+
+      login_form.form_on_enter('./auth/login', login)
+      login_button.listen('click', login)
 
     </script>
   </body>

@@ -189,7 +189,9 @@ const CONFIG = (() => {
   disable_official_button.listen('click', () => (X.request('./admin/disableofficial', 'POST').then(load_problems), tabs.tabs_active_tab('.problems'), tabs_menu.menu_selected_item('.problems')))
 
   // Keybinds 
-  DOM.keybind({ ctrlKey: true, keyCode: 'f' }, () => search_bar.focus())
+  DOM.keybind({ ctrlKey: true, key: 'f' }, () => search_bar.focus())
+  DOM.keybind({ key: 'Escape' }, () => 
+    (config_modal.modal_close(), problems_modal.modal_close(), users_modal.modal_close()))
 
   // Handles clicks of config table rows
   const config_table_handler = (parameter) => (
