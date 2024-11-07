@@ -6,15 +6,11 @@
 
     <title>(PhO)&#178;</title>
 
+    <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/responsive.css">
 
     <!-- Overrides -->
     <style type="text/css">
-      html, body, .container, .card {
-        padding: 2em;
-        letter-spacing: -0.025em;
-      }
-
       span {
         white-space: nowrap;
       }      
@@ -31,6 +27,18 @@
 
       .problems-container {
         position: fixed;
+      }
+      
+      @media only screen and (max-height: 690px) {
+        .ui.centered.medium.pho2-image {
+          display: none;
+        }
+
+        .ui.animated.return-button {
+          float: left !important;
+          margin-left: 0 !important;
+          margin-right: 0.25em !important;
+        }
       }
     </style>
 
@@ -68,13 +76,13 @@
       </div>
 
       <div class="ui content">
-        <img class="ui centered medium image" src="/pho-2-official-icon-dark">
+        <img class="ui centered medium image pho2-image" src="/pho-2-official-icon-dark">
       </div>
 
       <div class="ui content">
         <div class="ui divider"></div>
         <a href="/dashboard">
-          <div class="ui animated right floated blue button" tabindex="0">
+          <div class="ui animated right floated blue button return-button" tabindex="0">
             <div class="visible content">return</div>
             <div class="hidden content">
               <i class="left arrow icon"></i>
