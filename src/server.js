@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 08:26:47
- * @ Modified time: 2024-11-04 09:51:50
+ * @ Modified time: 2024-11-07 13:13:58
  * @ Description:
  * 
  * The main thread on the server.
@@ -61,11 +61,11 @@ const SERVER = (() => {
     '/core/preload.js',
 
     // Pho2 js files
-    '/pho2/pho2.js',
-    '/pho2/darkmode.js',
-    '/pho2/timer.js',
-    '/pho2/formatter.js',
-    '/pho2/trademark.js',
+    '/common/pho2.js',
+    '/common/darkmode.js',
+    '/common/timer.js',
+    '/common/formatter.js',
+    '/common/trademark.js',
   ]
 
   // Pho2 Images
