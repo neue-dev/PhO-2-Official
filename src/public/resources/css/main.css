@@ -33,6 +33,10 @@ span {
   white-space: nowrap;
 }      
 
+input:focus{
+  outline: none;
+}
+
 .header {
   letter-spacing: -0.06em;
 }
@@ -73,6 +77,43 @@ span {
   font-weight: bold;
 }
 
+/* Labels */
+.ui.label {
+  letter-spacing: -0.016em !important;
+}
+
+/* Palette stuff */
+.ui.palette.input {
+  background-color: transparent;
+  width: 100%;
+  font-size: 2em;
+  border: 0px solid;
+  outline: 0px solid transparent !important;
+}
+
+.ui.palette.input, 
+.ui.palette.input:focus, 
+.ui.palette.input:active
+.ui.palette.input:-webkit-autofill,
+.ui.palette.input:-webkit-autofill:hover, 
+.ui.palette.input:-webkit-autofill:focus, 
+.ui.palette.input:-webkit-autofill:active {
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.ui.modal.palette {
+  background-color: rgba(0, 0, 0, 0) !important;
+  top: 10vh;
+  transform: translateX(-50%) !important;
+  box-shadow: none !important;
+}
+
+.ui.modal.palette>* {
+  color: white !important;
+  font-family: monospace;
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+
 /* Inputs */
 input, input:focus, input:active {
   -webkit-box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) inset !important;
@@ -95,6 +136,7 @@ input:-webkit-autofill:active{
 
 /* Modals */
 .ui.dimmer.modal-bg {
+  background-color: rgba(5, 5, 10, 0.99) !important;
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
