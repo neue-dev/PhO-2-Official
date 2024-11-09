@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-04 13:17:15
+ * @ Modified time: 2024-11-09 14:05:02
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -160,6 +160,14 @@ const DOM = (() => {
 				href != null
 					? (element.href = href, element)
 					: (element.href)
+			),
+			
+			// Toggles an elements focus
+			toggle: () => (
+				document.activeElement === element
+					? element.blur()
+					: element.focus(),
+				element
 			),
 
 			// Renames the tag of a given element
@@ -560,7 +568,15 @@ const DOM = (() => {
 				
 			// Add methods to it
 			decorate(modal, {
-				
+
+				// Toggles open and close of modal
+				modal_toggle: () => (
+					modal.parent().cis('visible', 'active')
+						? modal.modal_close()
+						: modal.modal_open(),
+					modal
+				),
+
 				// Activates the modal (parent must be the dimmer)
 				modal_open: () => (
 					modal.parent().c('visible', 'active'),
@@ -955,6 +971,17 @@ const DOM = (() => {
 		)),
 
 		// Return api
+		_
+	)
+
+	/**
+	 * Appends an element to the DOM.
+	 * 
+	 * @param	element		The element to append.
+	 * @return					The api. 
+	 */
+	_.append = (element) => (
+		document.body.appendChild(element),
 		_
 	)
 
