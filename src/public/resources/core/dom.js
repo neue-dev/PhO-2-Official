@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-09 14:05:02
+ * @ Modified time: 2024-11-11 07:13:00
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -963,7 +963,7 @@ const DOM = (() => {
 			Object.keys(keys).every(key => 
 				e[key].toUpperCase
 					? e[key].toUpperCase() === keys[key].toUpperCase()
-					: e[key])
+					: e[key] === keys[key])
 
 				// If so, evxecute callback and prevent default
 				? (e.preventDefault(), callback(e))
@@ -983,6 +983,46 @@ const DOM = (() => {
 	_.append = (element) => (
 		document.body.appendChild(element),
 		_
+	)
+	
+	/**
+	 * Returns a cursor API for the given element.
+	 * 
+	 * @param	element		The element to give a cursor to.
+	 * @return					A range and selection object packaged together. 
+	 */
+	_.cursor = (element) => (
+		((range, selection, cursor={}) => (
+
+			// Decorate the range object
+			Object.assign(cursor, {
+				
+				// Makes the cursor go to the start of the element
+				start: () => (
+					range.setStart(element.childNodes[0], 0),
+					range.collapse(true),
+					selection.removeAllRanges(),
+					selection.addRange(range),
+					cursor
+				), 
+
+				// Makes the cursor go to the end of the object
+				end: () => (
+					range.setStart(element, element.childNodes.length), 
+					range.collapse(true),
+					selection.removeAllRanges(),
+					selection.addRange(range),
+					cursor
+				)
+			}),
+
+			cursor
+
+		// Create the range and selection objects
+		))(
+			document.createRange(),
+			document.getSelection()
+		)
 	)
 
 	/**
