@@ -98,7 +98,23 @@ input:focus{
 .ui.palette.input:-webkit-autofill:hover, 
 .ui.palette.input:-webkit-autofill:focus, 
 .ui.palette.input:-webkit-autofill:active {
-  -webkit-text-fill-color: rgba(255, 255, 255, 0.5) !important;
+  -webkit-text-fill-color: rgb(255, 255, 255) !important;
+}
+
+.ui.palette.input.shadow, 
+.ui.palette.input.shadow:focus, 
+.ui.palette.input.shadow:active
+.ui.palette.input.shadow:-webkit-autofill,
+.ui.palette.input.shadow:-webkit-autofill:hover, 
+.ui.palette.input.shadow:-webkit-autofill:focus, 
+.ui.palette.input.shadow:-webkit-autofill:active {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  z-index: -1;
+  -webkit-text-fill-color: rgb(100, 150, 255) !important;
+  opacity: 0.75;
 }
 
 .ui.modal.palette {
