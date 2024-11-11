@@ -1,10 +1,8 @@
 /* The main css file for general stylings */
 
 :root {
-  --black: 16, 16, 16;
-  --white: 255, 255, 255;
-  --black: 255, 255, 255;
   --white: 27, 28, 29;
+  --black: 255, 255, 255;
   --blue:  33, 133, 208;
   --green: 55, 255, 128;
 }
@@ -174,6 +172,24 @@ i.icon {
 .tooltip>.label {
   border: 0px !important;
   transform: translate(-1px, 1px);
+}
+
+/* Settings stuff */
+.ui.modal.settings-modal {
+  background-color: rgba(0, 0, 0, 0) !important;
+  border: none !important;
+  top: 10vh;
+  transform: translateX(-50%) !important;;
+}
+
+.ui.modal.settings-modal>* {
+  color: white !important;
+  font-family: monospace;
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+
+.ui.dimmer.modal-bg:has(.settings-modal) {
+  background-color: rgba(0, 0, 0, 0.16) !important; 
 }
 
 /* Palette stuff */
@@ -365,29 +381,37 @@ a.item.active>.ui.label {
 }
 
 /* Dark mode toggler */
-/* ! // ! fix this */
-/* .darkmode-toggle {
+.settings {
   position: fixed;
+  bottom: -153px; 
+  left: -32px;
   width: 256px;
   height: 256px;
-  padding: 50px;
-  left: -40px;
-  bottom: -169px;
   border-radius: 50%;
-  transition: 0.3s;
+  padding: 50px;
+  
+  font-size: 15px;
+  opacity: 0.4;
+  color: rgb(var(--black));
+  transition: 0.3s !important;
 }
 
-.darkmode-toggle:hover {
-  background-color: var(--fg1);
-  color: var(--bg2);
+.settings:hover {
+  background-color: rgba(var(--black), 1);
+  color: rgb(var(--blue));
   opacity: 1;
-  left: -20px;
+  cursor: pointer;
   transform: scale(1.2) rotate(5deg);
 }
 
-.darkmode-toggle:hover label {
-  color: var(--bg2);
-} */
+.settings:hover>div>.text {
+  opacity: 0;
+}
+
+.settings:hover>div>.icon {
+  background-color: rgba(0, 0, 0, 0) !important;
+  transform: translate(-60%, -25%) scale(3.2);
+}
 
 /* Trademark stuffs */
 .trademark {
@@ -406,7 +430,7 @@ a.item.active>.ui.label {
 }
 
 .trademark:hover {
-  background-color: rgba(var(--black), 0.5);
+  background-color: rgba(var(--black), 1);
   color: rgb(var(--blue));
   opacity: 1;
   transform: scale(1.2) rotate(-5deg);

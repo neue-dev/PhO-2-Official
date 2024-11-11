@@ -1,5 +1,13 @@
+/**
+ * @ Author: Mo David
+ * @ Create Time: 2024-11-04 13:45:48
+ * @ Modified time: 2024-11-11 18:07:14
+ * @ Description: 
+ * 
+ * yes
+ */
 
-(() => {
+const Trademark = (() => {
 
 	// Create the trademark
 	const trademark = DOM.link()
@@ -13,5 +21,5 @@
 		)
 
 	// Append the trademark
-	document.body.appendChild(trademark);
-})()
+	DOM.append(trademark);
+})();
