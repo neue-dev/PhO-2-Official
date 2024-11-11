@@ -184,20 +184,30 @@ admin_router.post('/editproblem', admin(io((req, res, user) => {
 admin_router.post('/edituser', admin(io((req, res, user) => {
   const { _id, username, password, category, status } = req.get('user-');
   const changes = { username, category, status }
-  
+
   // Update query
   const update_query = (changes) =>
     QueryFactory.update_if_exists(User, _id, changes)
       .then(res.success({ message: 'User updated successfully.' }))
       .catch(res.failure({ status: 400, error: 'User does not exist.' }))
 
+  // Check for duped usernames
+  const check_query = () => Aggregate(User)
+    .filter('username', username)
+    .filter('_id', Predicate().ne(_id))
+    .then((results) =>
+      results.length 
+        ? res.failure({ status: 403, error: 'Duplicate username.' })()
+        : update_query(changes))
+    .run()
+
   // Update without password
   if(!password || password === '')
-    return update_query(changes)
+    return check_query()
 
   // Update with a password
   bcrypt.hash(password, SALT_ROUNDS)
-    .then(hash => (changes.password = hash, update_query(changes)))
+    .then(hash => (changes.password = hash, check_query()))
     .catch(res.failure())
 })));
 

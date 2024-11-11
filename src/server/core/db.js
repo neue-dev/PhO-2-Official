@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:53:41
- * @ Modified time: 2024-11-03 11:15:53
+ * @ Modified time: 2024-11-11 16:28:30
  * @ Description:
  * 
  * Handles db related queries and what not.
@@ -15,7 +15,12 @@ import mongoose, { mongo } from 'mongoose'
  * @param id	A possible id. 
  * @return		A definite mongoose object id.
  */
-const cast_id = (id) => id.constructor && id.constructor.name === 'ObjectId' ? id : new mongoose.Types.ObjectId(id)
+const cast_id = (id) => 
+	id.constructor && id.constructor.name === 'ObjectId' 
+		? id 
+		: id.constructor && id.constructor.name === 'Object' 
+			? Object.keys(id).reduce((acc, key) => (acc[key] = cast_id(id[key]), acc), {})
+			: new mongoose.Types.ObjectId(id)
 
 /**
  * Similar to the helper above, except it casts based on the field name.
