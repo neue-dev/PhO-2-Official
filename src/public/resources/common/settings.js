@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-11 18:06:23
- * @ Modified time: 2024-11-11 21:15:54
+ * @ Modified time: 2024-11-11 21:56:02
  * @ Description:
  * 
  * Manages site settings.
@@ -57,9 +57,6 @@ const Settings = (() => {
 		)
 	)
 
-	settings_table.table_data(settings)
-	settings_table.table_map(settings_table.mapper)
-
 	// Setting triggers
 	settings_trigger.tooltip({ text: 'Customize site behaviour here.', label: 'ctrl + .'})
 	settings_trigger.listen('click', () => settings_modal.modal_open())
@@ -86,6 +83,12 @@ const Settings = (() => {
 	_.darkmode(DOM.setting('darkmode', true))
 	_.command_palette(DOM.setting('palette', true))
 	_.hide_answered(DOM.setting('answered', true))
+
+	// Needs to execute on the next frame because it checks the localStorage
+	setTimeout(() => (
+		settings_table.table_data(settings),
+		settings_table.table_map(settings_table.mapper)
+	))
 
 	return {
 		..._,
