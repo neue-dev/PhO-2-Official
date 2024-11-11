@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-11 18:06:23
- * @ Modified time: 2024-11-11 20:05:22
+ * @ Modified time: 2024-11-11 20:14:15
  * @ Description:
  * 
  * Manages site settings.
@@ -112,8 +112,8 @@ const Settings = (() => {
 	)
 
 	// Init the settings
-	_.set_darkmode(true)
-	_.set_palette(true)
+	_.set_darkmode(DOM.setting('darkmode', true))
+	_.set_palette(DOM.setting('palette', true))
 
 	return {
 		..._,

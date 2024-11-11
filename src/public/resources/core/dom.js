@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-11 19:47:52
+ * @ Modified time: 2024-11-11 20:14:26
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -1181,16 +1181,15 @@ const DOM = (() => {
 	 * 
 	 * @param	name		The name of the property to set.
 	 * @param	value		The value to set it to (optional).
-	 * @return				The value of the property or the api.
+	 * @return				The value last set to the property.
 	 */
 	_.setting = (name, value) => (
 		value !== undefined
 			? (storage[name] !== undefined
-				? (storage[name] = value, localStorage.setItem(name, JSON.stringify(value)))
+				? (storage[name] = value, localStorage.setItem(name, JSON.stringify(value)), value)
 				: localStorage.getItem(name) !== undefined
 					? (storage[name] = JSON.parse(localStorage.getItem(name)))
-					: (storage[name] = value, localStorage.setItem(name, JSON.stringify(value))),
-				_)
+					: (storage[name] = value, localStorage.setItem(name, JSON.stringify(value)), value))
 			: JSON.parse(localStorage.getItem(name))
 	)
 

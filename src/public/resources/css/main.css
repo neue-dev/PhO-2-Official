@@ -180,6 +180,8 @@ i.icon {
   padding: 0;
   background-color: rgba(0, 0, 0, 0) !important;
   color: rgb(var(--black)) !important;
+  border: 0px solid rgba(0, 0, 0, 0) !important;
+  margin: 0 !important;
 }
 
 .ui.modal.settings-modal>.ui.content {
