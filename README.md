@@ -7,6 +7,8 @@ The website may currently be viewed at <a href="http://pho-2-official.org/">pho-
 
 > Note to devs: the semantic library can be built using the command `npx gulp build` (inside the `libs/semantic/` folder), after which the resulting `libs/semantic/dist/` folder can be copied into the project as `src/public/semantic/`.
 
+Note to devs: the semantic library can be built using the command `npx gulp build` (inside the `libs/semantic/` folder), after which the resulting `libs/semantic/dist/` folder can be copied into the project as `src/public/semantic/`.
+
 <br>
 
 <p align="center">

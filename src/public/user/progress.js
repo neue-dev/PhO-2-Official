@@ -29,6 +29,7 @@ const PROGRESS = (() => {
   const search_bar = DOM.select('.search-bar')
 
   // Filter feature
+  search_bar.tooltip({ text: 'Filter the rows of the active table by the search term.', label: 'ctrl + f' })
   search_bar.listen('input', (e) => {
 
     // Grab the table
@@ -48,7 +49,7 @@ const PROGRESS = (() => {
   });
 
   // Keybinds 
-  DOM.keybind({ ctrlKey: true, keyCode: 'f' }, () => search_bar.focus())
+  DOM.keybind({ ctrlKey: true, key: 'f' }, () => search_bar.focus())
   DOM.keybind({ key: 'Escape' }, () => 
     (problems_modal.modal_close(), submissions_modal.modal_close()))
 
@@ -127,8 +128,8 @@ const PROGRESS = (() => {
       .form_clear()
       .form_field_value('_id', problem._id),
     problem_submissions_verdict(problem) 
-      ? problems_form.form_field_hide('answer').select('.text.countdown').s({ display: 'block' })
-      : problems_form.form_field_show('answer').select('.text.countdown').s({ display: 'none' }),
+      ? problems_form.form_field_hide('answer').select('.text.countdown').display('block')
+      : problems_form.form_field_show('answer').select('.text.countdown').display(false),
     
     problems_modal
       .modal_header(problem.name)
@@ -173,6 +174,10 @@ const PROGRESS = (() => {
   // Problem table mapper
   const problems_table_mapper = (problem) => (
     tr_hoverable()
+      .tooltip({ text: 
+        problem_submissions_verdict(problem) 
+          ? 'Click to view details.'
+          : 'Click to submit for this problem.' })
       .listen('click', () => problems_table_handler(problem))
       .append(
         td_auto_label({ '.label': { 
@@ -191,6 +196,7 @@ const PROGRESS = (() => {
   // Submission table mapper
   const submissions_table_mapper = (submission) => (
     tr_hoverable()
+      .tooltip({ text: 'Click to view details.' })
       .listen('click', () => submissions_table_handler(submission))
       .append(
         td_auto_label({ '.label': { t: Time.interval_to_since(Time.now() - submission.timestamp) }}),
@@ -249,7 +255,10 @@ const PROGRESS = (() => {
   // Save the problems
   function load_problems() {
     return X.request('./user/problemlist', 'POST')
-      .then(({ problems }) => PHO2.problems(problems))
+      .then(({ problems }) => PHO2.problems(
+        Settings.hide_answered() 
+          ? problems.filter(p => !problem_submissions_verdict(p))
+          : problems))
       .then(() => problems_label.t(PHO2.problems().length))
       .then(() => problems_table.table_data(PHO2.problems()))
       .then(() => problems_table.table_sort(problems_table.comparator))
@@ -274,12 +283,12 @@ const PROGRESS = (() => {
     submission_locked()
       ? problems_form
           .form_field_hide('answer')
-          .select('.text.countdown').s({ display: 'block' }).parent()
+          .select('.text.countdown').display('block').parent()
           .select('.text.countdown').select('div').t(Time.millis_to_ms(submissions_countdown())) &&
         problems_modal.select('.action.submit').c('disabled')
       : problems_form
           .form_field_show('answer')
-          .select('.text.countdown').s({ display: 'none' }) &&
+          .select('.text.countdown').display(false) &&
         problems_modal  
           .select('.action.submit').uc('disabled')
   }

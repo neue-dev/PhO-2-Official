@@ -34,7 +34,7 @@
     <!-- Pho2 Utils -->
     <script src="/core/x.js"></script>
     <script src="/core/dom.js"></script>
-    <script src="/pho2/pho2.js"></script>
+    <script src="/common/pho2.js"></script>
     <script src="/core/preload.js"></script>
   </head>
 
@@ -59,8 +59,6 @@
       </div>
     </div>
 
-
-    <script src="/pho2/trademark.js"></script>
     <script>
       const cards = document.querySelector('.ui.cards')
       const login_form = DOM.stateful_form(DOM.select('.login-form'));
@@ -87,5 +85,9 @@
       login_button.listen('click', login)
 
     </script>
+
+    <script src="./common/palette.js"></script>
+    <script src="./common/settings.js"></script>
+    <script src="/common/trademark.js"></script>
   </body>
 </html> 

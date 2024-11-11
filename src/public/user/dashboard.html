@@ -6,25 +6,13 @@
 
     <title>(PhO)&#178;</title>
 
+    <link href="./css/main.css" rel="stylesheet">
+
     <!-- Overrides -->
     <style type="text/css">
-      html, body, .container, .card {
-        padding: 2em;
-        letter-spacing: -0.025em;
-      }
-
-      span {
-        white-space: nowrap;
-      }      
-
-      .header {
-        letter-spacing: -0.06em;
-      }
-
-      .timer {
-        opacity: 0.6;
-        line-height: 1.5;
-        font-size: 2.8rem !important;
+      .card {
+        padding: 0.6em !important;
+        border: 1px solid rgba(var(--black), 0.16) !important;
       }
     </style>
 
@@ -38,7 +26,7 @@
     <!-- Pho2 Utils -->
     <script src="/core/x.js"></script>
     <script src="/core/dom.js"></script>
-    <script src="/pho2/pho2.js"></script>
+    <script src="/common/pho2.js"></script>
   </head>
 
   <body>
@@ -53,20 +41,32 @@
       <!-- timer -->
       <div class="ui timer">
         <div class="ui placeholder">
-          <div class="line"></div>
+          <div class="paragraph">
+            <div class="line"></div>
+          </div>
+        </div>
+        <div class="ui placeholder">
+          <div class="paragraph">
+            <div class="line"></div>
+          </div>
+        </div>
+        <div class="ui placeholder">
+          <div class="paragraph">
+            <div class="line"></div>
+          </div>
         </div>
       </div>
       <br><br><br><br>
 
       <div class="ui cards">
-        <div class="card">
+        <div class="ui card">
           <div class="content">
             <h1 class="ui header">Progress Page</h1>
             <br>
             Submit answers here. Problem and submission history are also visible here.
           </div>
           <div class="extra content">
-            <a href="/progress" target="_blank">
+            <a href="/progress">
               <div class="ui black right floated animated button">
                 <div class="visible content">open</div>
                 <div class="hidden content">
@@ -77,14 +77,14 @@
           </div>
         </div>
         
-        <div class="card">
+        <div class="ui card">
           <div class="content">
             <h1 class="ui header">Problems</h1>
             <br>
             Access the problems file here.
           </div>
           <div class="extra content">
-            <a href="/problems" target="_blank">
+            <a href="/problems">
               <div class="ui black right floated animated button">
                 <div class="visible content">open</div>
                 <div class="hidden content">
@@ -102,7 +102,7 @@
             Access the finals round here.
           </div>
           <div class="extra content">
-            <a href="/finals" target="_blank">
+            <a href="/finals">
               <div class="ui black right floated animated button">
                 <div class="visible content">open</div>
                 <div class="hidden content">
@@ -113,14 +113,14 @@
           </div>
         </div>
   
-        <div class="card">
+        <div class="ui card">
           <div class="content">
             <h1 class="ui header">Leaderboard</h1>
             <br>
             View the status of your team against everyone else.
           </div>
           <div class="extra content">
-            <a href="/leaderboard" target="_blank">
+            <a href="/leaderboard">
               <div class="ui black right floated animated button">
                 <div class="visible content">open</div>
                 <div class="hidden content">
@@ -131,14 +131,14 @@
           </div>
         </div>
   
-        <div class="card">
+        <div class="ui card">
           <div class="content">
             <h1 class="ui header">Forum</h1>
             <br>
             Most of our announcements and updates will happen on our discord server. Join now!
           </div>
           <div class="extra content">
-            <a href="{{CONTEST_FORUM_URL}}" target="_blank">
+            <a href="{{CONTEST_FORUM_URL}}">
               <div class="ui black right floated animated button">
                 <div class="visible content">open</div>
                 <div class="hidden content">
@@ -153,7 +153,7 @@
         <div class="card">
           <div class="content">
             <img class="ui centered medium image" width="200" src="/pho-2-official-icon-dark">
-            <a href="" onclick="PHO2.logout()">
+            <a href="#" onclick="PHO2.logout()">
               <div class="ui animated negative right floated button" tabindex="0">
                 <div class="visible content">logout</div>
                 <div class="hidden content">
@@ -169,7 +169,10 @@
     </div>
 
     <!-- Timer Script -->
+    <script src="/common/timer.js"></script>
+    <script src="/common/palette.js"></script>
+    <script src="/common/settings.js"></script>
+    <script src="/common/trademark.js"></script>
     <script src="/setup.js"></script>
-    <script src="/pho2/timer.js"></script>
   </body>
 </html>

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-04 13:17:15
+ * @ Modified time: 2024-11-11 21:41:08
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -13,6 +13,14 @@ const DOM = (() => {
 
 	// Interface
 	const _ = {};
+
+	// Local storage cache
+	const storage = {}
+
+	// Stores active elements
+	const active = {
+		modal: null,
+	};
 
 	/**
 	 * Generates a decent random uuid.
@@ -131,6 +139,39 @@ const DOM = (() => {
 						: null
 			),
 
+			// Creates a tooltip for the component
+			tooltip: ({ text='', label='', delay=333, duration=1667 } = {}) => (
+
+				// Mouse in
+				element.addEventListener('mousemove', (e) => (
+					
+					// Put tooltip on mouse
+					_.tooltip({ text, label, x: e.clientX, y: e.clientY }),
+
+					// Replace old in timeout
+					element._in_timeout && clearTimeout(element._in_timeout),
+					element._in_timeout = setTimeout(() => (
+
+						// Update tooltip
+						_.tooltip().active(),
+
+						// Replace old out timeout
+						element._out_timeout && clearTimeout(element._out_timeout),
+						element._out_timeout = setTimeout(() => _.tooltip().inactive(), duration)
+					), delay)
+				)),
+
+				// Mouse out
+				element.addEventListener('mouseout', () => (
+					element._in_timeout && clearTimeout(element._in_timeout),
+					element._out_timeout && clearTimeout(element._out_timeout),
+					_.tooltip().inactive()
+				)),
+
+				// Return element
+				element
+			),
+
 			// The parent of the element
 			parent: () => (
 				element.parentElement
@@ -151,7 +192,11 @@ const DOM = (() => {
 			// Fluent get-setter for styles
 			s: (styles) => (
 				styles != null
-					? (Object.keys(styles).forEach(property => element.style[property] = styles[property]), element)
+					? (Object.keys(styles).forEach(property => 
+						styles[property].endsWith && styles[property].endsWith(' !important')
+							? element.style.setProperty(property, styles[property].replace(' !important', ''), 'important')
+							: element.style[property] = styles[property]), 
+						element)
 					: (element.style)
 			),
 
@@ -160,6 +205,14 @@ const DOM = (() => {
 				href != null
 					? (element.href = href, element)
 					: (element.href)
+			),
+			
+			// Toggles an elements focus
+			toggle: () => (
+				document.activeElement === element
+					? element.blur()
+					: element.focus(),
+				element
 			),
 
 			// Renames the tag of a given element
@@ -173,6 +226,13 @@ const DOM = (() => {
 					element.parent().insertBefore(replacement, element),
 					element.parent().removeChild(element)
 				))(fluent(document.createElement(tag)))
+			),
+
+			display: (mode) => (
+				mode 
+					? element.s({ display: mode })
+					: element.s({ display: 'none' }),
+				element
 			),
 
 			// Appends content
@@ -288,6 +348,7 @@ const DOM = (() => {
 	_.th = () => element('th');
 
 	// Form-related
+	_.lbl = () => element('label')
 	_.input = () => element('input')
 	_.button = () => element('button').c('ui', 'button');
 	_.buttons = () => element('div').c('ui', 'buttons');
@@ -428,7 +489,8 @@ const DOM = (() => {
 			// Set up the structure
 			table.append(
 				element('thead').c('thead'),
-				element('tbody').c('tbody')
+				element('tbody').c('tbody').append(element('tr').append(element('td').append(
+					element('div').c('ui', 'active', 'centered', 'inline', 'fast', 'large', 'loader'))))
 			),
 
 			// Add methods
@@ -468,8 +530,14 @@ const DOM = (() => {
 								.c(data.__id)
 								.d(data.__id)
 								.s(data.__visible 
-									? { display: '' }
-									: { display: 'none' }))),
+									? {  }
+									: { display: 'none !important' }))),
+
+					// Handle empty tables
+					table.state('view').filter(data => data.__visible).length || 
+						table.select('tbody').append(
+							element('tr').append(element('td').append(
+								element('label').c('ui', 'black', 'label').t('No entries.')))),
 					table
 				),
 
@@ -539,7 +607,9 @@ const DOM = (() => {
 			((dimmer) => (
 				modal.parent().insertBefore(dimmer, modal),
 				modal.parent().removeChild(modal),
-				dimmer.appendChild(modal)
+				modal.listen('click', (e) => e.stopPropagation()),
+				dimmer.listen('click', () => modal.modal_close()),
+				dimmer.append(modal)
 
 			// The dimmer parent
 			))(
@@ -560,9 +630,19 @@ const DOM = (() => {
 				
 			// Add methods to it
 			decorate(modal, {
-				
+
+				// Toggles open and close of modal
+				modal_toggle: () => (
+					modal.parent().cis('visible', 'active')
+						? modal.modal_close()
+						: modal.modal_open(),
+					modal
+				),
+
 				// Activates the modal (parent must be the dimmer)
 				modal_open: () => (
+					active.modal && active.modal.modal_close(), 
+					active.modal = modal,
 					modal.parent().c('visible', 'active'),
 					modal.c('visible', 'active'),
 					modal
@@ -570,6 +650,7 @@ const DOM = (() => {
 
 				// Hides it (parent must be the dimmer)
 				modal_close: () => (
+					active.modal = null,
 					modal.parent().uc('visible', 'active'),
 					modal.uc('visible', 'active'),
 					modal
@@ -593,14 +674,12 @@ const DOM = (() => {
 				),
 
 				modal_action_show: (action) => (
-					modal.select(`.action.${action}`)
-						.s({ display: 'inline-block' }),
+					modal.select(`.action.${action}`).display('inline-block'),
 					modal
 				),
 
 				modal_action_hide: (action) => (
-					modal.select(`.action.${action}`)
-						.s({ display: 'none' }),
+					modal.select(`.action.${action}`).display(false),
 					modal
 				),
 
@@ -649,12 +728,12 @@ const DOM = (() => {
 			decorate(form, {
 
 				form_field_hide: (name) => (
-					form.select(`.field.${name}`).s({ display: 'none' }),
+					form.select(`.field.${name}`).display(false),
 					form
 				),
 
 				form_field_show: (name) => (
-					form.select(`.field.${name}`).s({ display: 'block' }),
+					form.select(`.field.${name}`).display('block'),
 					form
 				),
 
@@ -918,6 +997,44 @@ const DOM = (() => {
 	)
 
 	/**
+	 * Dserves its own component smh
+	 * 
+	 * @return	A checkbox component. 
+	 */
+	_.checkbox = () => 
+		((id) => (
+			((checkbox) => (
+				
+				// Extend it with methods
+				Object.assign(checkbox, {
+					
+					click: () => (
+						checkbox.select('input').click(),
+						checkbox
+					),
+
+					check: (value) => (
+						checkbox.select('input').checked = value ?? true,
+						checkbox
+					),
+
+					listen: (...args) => (
+						checkbox.select('input').listen(...args),
+						checkbox
+					)
+				})
+
+			// The checkbox element
+			))(
+				element('div').c('checkbox-div').append(
+					element('input').c('ui', 'checkbox').a('type', 'checkbox').d(id),
+					element('label').a('for', id))
+			)
+		
+		// We need the id to associate the label with the checkbox
+		))(random_id())
+
+	/**
 	 * Selects an element from the dom using the selector.
 	 * Decorates the element with fluent helpers.
 	 * 
@@ -947,7 +1064,7 @@ const DOM = (() => {
 			Object.keys(keys).every(key => 
 				e[key].toUpperCase
 					? e[key].toUpperCase() === keys[key].toUpperCase()
-					: e[key])
+					: e[key] === keys[key])
 
 				// If so, evxecute callback and prevent default
 				? (e.preventDefault(), callback(e))
@@ -959,7 +1076,100 @@ const DOM = (() => {
 	)
 
 	/**
-	 * Get-setter for local storage.
+	 * Appends an element to the DOM.
+	 * 
+	 * @param	element		The element to append.
+	 * @return					The api. 
+	 */
+	_.append = (element) => (
+		document.body.appendChild(element),
+		_
+	)
+	
+	/**
+	 * Returns a cursor API for the given element.
+	 * 
+	 * @param	element		The element to give a cursor to.
+	 * @return					A range and selection object packaged together. 
+	 */
+	_.cursor = (element) => (
+		((range, selection, cursor={}) => (
+
+			// Decorate the range object
+			Object.assign(cursor, {
+				
+				// Makes the cursor go to the start of the element
+				start: () => (
+					range.setStart(element.childNodes[0], 0),
+					range.collapse(true),
+					selection.removeAllRanges(),
+					selection.addRange(range),
+					cursor
+				), 
+
+				// Makes the cursor go to the end of the object
+				end: () => (
+					range.setStart(element, element.childNodes.length), 
+					range.collapse(true),
+					selection.removeAllRanges(),
+					selection.addRange(range),
+					cursor
+				)
+			}),
+
+			cursor
+
+		// Create the range and selection objects
+		))(
+			document.createRange(),
+			document.getSelection()
+		)
+	)
+
+	/**
+	 * Get-setter for the dom tooltip.
+	 * 
+	 * @param x				The x-coordinate of the tooltip.
+	 * @param	y				The y-coordinate of the tooltip.
+	 * @param	text	 	The text of the tooltip.
+	 * @param	label		The label of the tooltip.
+	 * @return				The tooltip itself.
+	 */
+	_.tooltip = ({ x=null, y=null, text=null, label=null } = {}) => (
+		x || y || text || label
+			? ((tooltip) => (
+
+				// Update tooltip details
+				tooltip.select('.content').t(text ?? ''),
+				label 
+					? (tooltip.select('.label').display('block').t(label), 
+						tooltip.select(1).display('block')) 
+					: (tooltip.select('.label').display(false), 
+						tooltip.select(1).display(false)),
+				tooltip.s({
+					left: x ? x + 'px' : tooltip.style.left,
+					top: y ? y + 'px' : tooltip.style.top,
+				}),
+
+				// Return tooltip
+				tooltip
+			))(_.select('.tooltip'))
+		: _.select('.tooltip')
+	)
+
+	/**
+	 * Allows an easier way for us to set global css vars, among other things.
+	 * 
+	 * @param styles	The styles to set. 
+	 * @return				The api.
+	 */
+	_.style = (styles) => (
+		Object.keys(styles).map(style => document.documentElement.style.setProperty(style, styles[style])),
+		_
+	)
+
+	/**
+	 * Get-setter for session storage.
 	 * Queries the *store*.
 	 * 
 	 * @param	name		The name of the property to set.
@@ -968,8 +1178,55 @@ const DOM = (() => {
 	 */
 	_.store = (name, value) => (
 		value !== undefined
-			? (localStorage.setItem(name, JSON.stringify(value)), _)
-			: (JSON.parse(localStorage.getItem(name)))
+			? (sessionStorage.setItem(name, JSON.stringify(value)), _)
+			: (JSON.parse(sessionStorage.getItem(name)))
+	)
+
+	/**
+	 * Get-setter for local storage.
+	 * Accounts for script inits.
+	 * If the localStorage is already set but we're initting, we don't override the localStorage.
+	 * This is useful for website user customizations.
+	 * 
+	 * @param	name		The name of the property to set.
+	 * @param	value		The value to set it to (optional).
+	 * @return				The value last set to the property.
+	 */
+	_.setting = (name, value) => (
+		value !== undefined
+			? (storage[name] !== undefined
+				? (storage[name] = value, localStorage.setItem(name, JSON.stringify(value)), value)
+				: localStorage.getItem(name) !== undefined && JSON.parse(localStorage.getItem(name)) !== null
+					? (storage[name] = JSON.parse(localStorage.getItem(name)))
+					: (storage[name] = value, localStorage.setItem(name, JSON.stringify(value)), value))
+			: JSON.parse(localStorage.getItem(name))
+	)
+
+	// Clear session storage
+	sessionStorage.clear()
+
+	// Dom setup on load
+	window.onload = () => (		
+
+		// Create tooltip
+		((tooltip) => (
+
+			// Tooltip methods
+			tooltip.active = () => tooltip.c('active'),
+			tooltip.inactive = () => tooltip.uc('active'),
+
+			// Create the tooltip element
+			_.append(tooltip),
+
+			// Onlick or keypress, remove tooltip
+			document.addEventListener('keydown', () => tooltip.uc('active')),
+			document.addEventListener('click', () => tooltip.uc('active'))
+		
+		// The tooltip element
+		))(
+			_.div().c('tooltip').append(
+				_.div().c('content'), _.div().c('ui', 'divider').s({ visibility: 'hidden' }),
+				_.div().c('ui', 'teal', 'compact', 'label', 'bottom', 'left', 'attached')))
 	)
 	
 	return {
