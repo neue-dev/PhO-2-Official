@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-07 13:15:20
- * @ Modified time: 2024-11-11 07:22:20
+ * @ Modified time: 2024-11-11 11:46:23
  * @ Description:
  * 
  * Handles the command palette interface.
@@ -39,6 +39,9 @@ const Palette = (() => {
 
 	// Helper function, we're just saving it as a property of the element
 	palette_input.input = () => palette_input.textContent.trim()
+
+	// Autocomplete on tab
+	palette_input.listen('keydown', (e) => (e.keyCode === 9 && (e.preventDefault(), _.autocomplete())))
 	
 	// List of commands
 	const palette_table = DOM.stateful_table().s({ border: 'none' })
@@ -53,7 +56,6 @@ const Palette = (() => {
 	const palette = DOM.stateful_modal(palette_element);
 
 	// Focusing and unfocusing 
-	DOM.keybind({ keyCode: 9 }, () => (_.autocomplete()))
 	DOM.keybind({ ctrlKey: true, key: 'p' }, () => (palette.modal_toggle(), palette_input.toggle(), _.display_commands()));
 	DOM.keybind({ key: 'Escape' }, () => (palette.modal_close(), palette_input.blur()));
 
@@ -138,7 +140,7 @@ const Palette = (() => {
 	 * @return	The api. 
 	 */
 	_.autocomplete = () => (
-		palette_input.recommendation.length 
+		palette_input?.recommendation?.length 
 			? (palette_input.textContent = palette_input.recommendation, palette_input.dispatch('input'), palette_cursor.end())
 			: null,
 		_

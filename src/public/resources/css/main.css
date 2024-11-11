@@ -80,6 +80,7 @@ input:focus{
 /* Labels */
 .ui.label {
   letter-spacing: -0.016em !important;
+  pointer-events: none;
 }
 
 /* Tool tip stuff */
