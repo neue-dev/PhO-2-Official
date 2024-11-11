@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-11 15:54:14
+ * @ Modified time: 2024-11-11 17:22:31
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -13,6 +13,11 @@ const DOM = (() => {
 
 	// Interface
 	const _ = {};
+
+	// Stores active elements
+	const active = {
+		modal: null,
+	};
 
 	/**
 	 * Generates a decent random uuid.
@@ -619,6 +624,8 @@ const DOM = (() => {
 
 				// Activates the modal (parent must be the dimmer)
 				modal_open: () => (
+					active.modal && active.modal.modal_close(), 
+					active.modal = modal,
 					modal.parent().c('visible', 'active'),
 					modal.c('visible', 'active'),
 					modal
@@ -626,6 +633,7 @@ const DOM = (() => {
 
 				// Hides it (parent must be the dimmer)
 				modal_close: () => (
+					active.modal = null,
 					modal.parent().uc('visible', 'active'),
 					modal.uc('visible', 'active'),
 					modal
