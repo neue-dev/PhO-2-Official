@@ -82,6 +82,31 @@ input:focus{
   letter-spacing: -0.016em !important;
 }
 
+/* Tool tip stuff */
+.tooltip {
+  position: fixed;
+  opacity: 0;
+  top: 0;
+  left: 0;
+  max-width: 32em;
+
+  transform: translate(0, -125%);
+  padding: 0.5em 1em 0.5em 1em;
+  background-color: white;
+  box-shadow: 2px 2px 5px #aaaaaaaa;
+  border-radius: 0.2em;
+  pointer-events: none;
+  transition: 0s;
+}
+
+.tooltip.active {
+  opacity: 1 !important;
+}
+
+.tooltip.label {
+  transform: translateY(50%);
+}
+
 /* Palette stuff */
 .ui.palette.input {
   background-color: transparent;

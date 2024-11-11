@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-11 07:13:00
+ * @ Modified time: 2024-11-11 11:19:02
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -131,6 +131,39 @@ const DOM = (() => {
 						: null
 			),
 
+			// Creates a tooltip for the component
+			tooltip: ({ text='', label='', delay=333, duration=1667 } = {}) => (
+
+				// Mouse in
+				element.addEventListener('mousemove', (e) => (
+					
+					// Put tooltip on mouse
+					_.tooltip({ text, label, x: e.clientX, y: e.clientY }),
+
+					// Replace old in timeout
+					element._in_timeout && clearTimeout(element._in_timeout),
+					element._in_timeout = setTimeout(() => (
+
+						// Update tooltip
+						_.tooltip().active(),
+
+						// Replace old out timeout
+						element._out_timeout && clearTimeout(element._out_timeout),
+						element._out_timeout = setTimeout(() => _.tooltip().inactive(), duration)
+					), delay)
+				)),
+
+				// Mouse out
+				element.addEventListener('mouseout', () => (
+					element._in_timeout && clearTimeout(element._in_timeout),
+					element._out_timeout && clearTimeout(element._out_timeout),
+					_.tooltip().inactive()
+				)),
+
+				// Return element
+				element
+			),
+
 			// The parent of the element
 			parent: () => (
 				element.parentElement
@@ -181,6 +214,13 @@ const DOM = (() => {
 					element.parent().insertBefore(replacement, element),
 					element.parent().removeChild(element)
 				))(fluent(document.createElement(tag)))
+			),
+
+			display: (mode) => (
+				mode 
+					? element.s({ display: mode })
+					: element.s({ display: 'none' }),
+				element
 			),
 
 			// Appends content
@@ -609,14 +649,12 @@ const DOM = (() => {
 				),
 
 				modal_action_show: (action) => (
-					modal.select(`.action.${action}`)
-						.s({ display: 'inline-block' }),
+					modal.select(`.action.${action}`).display('inline-block'),
 					modal
 				),
 
 				modal_action_hide: (action) => (
-					modal.select(`.action.${action}`)
-						.s({ display: 'none' }),
+					modal.select(`.action.${action}`).display(false),
 					modal
 				),
 
@@ -665,12 +703,12 @@ const DOM = (() => {
 			decorate(form, {
 
 				form_field_hide: (name) => (
-					form.select(`.field.${name}`).s({ display: 'none' }),
+					form.select(`.field.${name}`).display(false),
 					form
 				),
 
 				form_field_show: (name) => (
-					form.select(`.field.${name}`).s({ display: 'block' }),
+					form.select(`.field.${name}`).display('block'),
 					form
 				),
 
@@ -1026,6 +1064,39 @@ const DOM = (() => {
 	)
 
 	/**
+	 * Get-setter for the dom tooltip.
+	 * 
+	 * @param x				The x-coordinate of the tooltip.
+	 * @param	y				The y-coordinate of the tooltip.
+	 * @param	text	 	The text of the tooltip.
+	 * @param	label		The label of the tooltip.
+	 * @return				The tooltip itself.
+	 */
+	_.tooltip = ({ x=null, y=null, text=null, label=null } = {}) => (
+		x || y || text || label
+			? ((tooltip) => (
+
+				// Update tooltip details
+				tooltip.select('.content').t(text ?? ''),
+				label 
+					? (tooltip.select('.label').display('block').t(label), 
+						tooltip.select(1).display('block'), 
+						tooltip.select(2).display('block'))
+					: (tooltip.select('.label').display(false), 
+						tooltip.select(1).display(false),
+						tooltip.select(2).display(false)),
+				tooltip.s({
+					left: x ? x + 'px' : tooltip.style.left,
+					top: y ? y + 'px' : tooltip.style.top,
+				}),
+
+				// Return tooltip
+				tooltip
+			))(_.select('.tooltip'))
+		: _.select('.tooltip')
+	)
+
+	/**
 	 * Get-setter for local storage.
 	 * Queries the *store*.
 	 * 
@@ -1037,6 +1108,28 @@ const DOM = (() => {
 		value !== undefined
 			? (localStorage.setItem(name, JSON.stringify(value)), _)
 			: (JSON.parse(localStorage.getItem(name)))
+	)
+
+	// Dom setup on load
+	window.onload = () => (		
+		((tooltip) => (
+
+			// Tooltip methods
+			tooltip.active = () => tooltip.c('active'),
+			tooltip.inactive = () => tooltip.uc('active'),
+
+			// Create the tooltip element
+			_.append(tooltip),
+
+			// Onlick or keypress, remove tooltip
+			document.addEventListener('keydown', () => tooltip.uc('active')),
+			document.addEventListener('click', () => tooltip.uc('active'))
+		
+		// The tooltip element
+		))(
+			_.div().c('tooltip').append(
+				_.div().c('content'), _.br(), _.br(),
+				_.div().c('ui', 'compact', 'label', 'bottom', 'attached')))
 	)
 	
 	return {
