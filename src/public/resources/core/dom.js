@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-11 13:09:08
+ * @ Modified time: 2024-11-11 15:54:14
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -587,7 +587,7 @@ const DOM = (() => {
 			((dimmer) => (
 				modal.parent().insertBefore(dimmer, modal),
 				modal.parent().removeChild(modal),
-				dimmer.appendChild(modal)
+				dimmer.append(modal)
 
 			// The dimmer parent
 			))(
@@ -1080,11 +1080,9 @@ const DOM = (() => {
 				tooltip.select('.content').t(text ?? ''),
 				label 
 					? (tooltip.select('.label').display('block').t(label), 
-						tooltip.select(1).display('block'), 
-						tooltip.select(2).display('block'))
+						tooltip.select(1).display('block')) 
 					: (tooltip.select('.label').display(false), 
-						tooltip.select(1).display(false),
-						tooltip.select(2).display(false)),
+						tooltip.select(1).display(false)),
 				tooltip.s({
 					left: x ? x + 'px' : tooltip.style.left,
 					top: y ? y + 'px' : tooltip.style.top,
@@ -1128,8 +1126,8 @@ const DOM = (() => {
 		// The tooltip element
 		))(
 			_.div().c('tooltip').append(
-				_.div().c('content'), _.br(), _.br(),
-				_.div().c('ui', 'compact', 'label', 'bottom', 'attached')))
+				_.div().c('content'), _.div().c('ui', 'divider').s({ visibility: 'hidden' }),
+				_.div().c('ui', 'teal', 'compact', 'label', 'bottom', 'left', 'attached')))
 	)
 	
 	return {
