@@ -71,7 +71,7 @@ const LEADERBOARD = (() => {
   });
 
   // Keybinds 
-  DOM.keybind({ ctrlKey: true, keyCode: 'f' }, () => search_bar.focus())
+  DOM.keybind({ ctrlKey: true, key: 'f' }, () => search_bar.focus())
 
   // Comparators
   const leaderboard_table_comparator = (a, b) => 
