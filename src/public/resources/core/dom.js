@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-11 17:49:42
+ * @ Modified time: 2024-11-11 18:02:30
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -13,6 +13,9 @@ const DOM = (() => {
 
 	// Interface
 	const _ = {};
+
+	// Local storage cache
+	const storage = {}
 
 	// Stores active elements
 	const active = {
@@ -1107,7 +1110,18 @@ const DOM = (() => {
 	)
 
 	/**
-	 * Get-setter for local storage.
+	 * Allows an easier way for us to set global css vars, among other things.
+	 * 
+	 * @param styles	The styles to set. 
+	 * @return				The api.
+	 */
+	_.style = (styles) => (
+		Object.keys(styles).map(style => document.documentElement.style.setProperty(style, styles[style])),
+		_
+	)
+
+	/**
+	 * Get-setter for session storage.
 	 * Queries the *store*.
 	 * 
 	 * @param	name		The name of the property to set.
@@ -1118,6 +1132,27 @@ const DOM = (() => {
 		value !== undefined
 			? (sessionStorage.setItem(name, JSON.stringify(value)), _)
 			: (JSON.parse(sessionStorage.getItem(name)))
+	)
+
+	/**
+	 * Get-setter for local storage.
+	 * Accounts for script inits.
+	 * If the localStorage is already set but we're initting, we don't override the localStorage.
+	 * This is useful for website user customizations.
+	 * 
+	 * @param	name		The name of the property to set.
+	 * @param	value		The value to set it to (optional).
+	 * @return				The value of the property or the api.
+	 */
+	_.setting = (name, value) => (
+		value !== undefined
+			? (storage[name] 
+				? (storage[name] = value, localStorage.setItem(name, value))
+				: localStorage.getItem(name, value)
+					? (storage[name] = localStorage.getItem(name, value))
+					: (storage[name] = value, localStorage.setItem(name, value)),
+				_)
+			: localStorage.getItem(name)
 	)
 
 	// Dom setup on load
