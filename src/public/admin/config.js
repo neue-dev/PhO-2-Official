@@ -208,7 +208,7 @@ const CONFIG = (() => {
   DOM.keybind({ ctrlKey: true, key: 'f' }, () => search_bar.focus())
 
   // Add new user or problem
-  DOM.keybind({ ctrlKey: true, key: 'a' }, () => (
+  DOM.keybind({ ctrlKey: true, key: 'u' }, () => (
     tabs.tabs_active_tab() === '.users' && users_new.click(),
     tabs.tabs_active_tab() === '.problems' && problems_new.click()))
 
@@ -341,7 +341,7 @@ const CONFIG = (() => {
   )
 
   // Set up the global buttons
-  users_new.tooltip({ text: 'Register a new user account.', label: 'ctrl + a' })
+  users_new.tooltip({ text: 'Register a new user account.', label: 'ctrl + u' })
   users_new.listen('click', () => (
     users_form
       .form_clear()
@@ -358,7 +358,7 @@ const CONFIG = (() => {
       .modal_open()
   ))
 
-  problems_new.tooltip({ text: 'Register a new elimination problem.', label: 'ctrl + a' })
+  problems_new.tooltip({ text: 'Register a new elimination problem.', label: 'ctrl + u' })
   problems_new.listen('click', () => (
     problems_form
       .form_clear()
