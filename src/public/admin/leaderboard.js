@@ -50,6 +50,7 @@ const LEADERBOARD = (() => {
   const search_bar = DOM.select('.search-bar')
 
   // Filter feature
+  search_bar.tooltip({ text: 'Filter the rows of the active table by the search term.', label: 'ctrl + f' })
   search_bar.listen('input', (e) => {
 
     // Grab the table

@@ -14,7 +14,7 @@ const CONFIG = (() => {
 
   // Extended components
   const tr_hoverable = 
-    C.new(() => tr().c('hoverable-row'));
+    C.new(() => tr().c('hoverable-row').tooltip({ text: 'Click to edit.' }));
   const td_auto = 
     C.new(() => td().s(auto_width));
   const td_auto_right = 
@@ -165,7 +165,8 @@ const CONFIG = (() => {
   // Search bar
   const search_bar = DOM.select('.search-bar')
 
-  // Filter feature
+  // Tooltip and filter feature
+  search_bar.tooltip({ text: 'Filter the rows of the active table by the search term.', label: 'ctrl + f' })
   search_bar.listen('input', (e) => {
 
     // Grab the table
@@ -205,6 +206,13 @@ const CONFIG = (() => {
 
   // Keybinds 
   DOM.keybind({ ctrlKey: true, key: 'f' }, () => search_bar.focus())
+
+  // Add new user or problem
+  DOM.keybind({ ctrlKey: true, key: 'a' }, () => (
+    tabs.tabs_active_tab() === '.users' && users_new.click(),
+    tabs.tabs_active_tab() === '.problems' && problems_new.click()))
+
+  // Close all modals
   DOM.keybind({ key: 'Escape' }, () => 
     (config_modal.modal_close(), problems_modal.modal_close(), users_modal.modal_close()))
 
@@ -333,6 +341,7 @@ const CONFIG = (() => {
   )
 
   // Set up the global buttons
+  users_new.tooltip({ text: 'Register a new user account.', label: 'ctrl + a' })
   users_new.listen('click', () => (
     users_form
       .form_clear()
@@ -349,6 +358,7 @@ const CONFIG = (() => {
       .modal_open()
   ))
 
+  problems_new.tooltip({ text: 'Register a new elimination problem.', label: 'ctrl + a' })
   problems_new.listen('click', () => (
     problems_form
       .form_clear()
