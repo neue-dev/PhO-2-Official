@@ -205,6 +205,13 @@ i.icon {
   background-color: rgba(0, 0, 0, 0.16) !important; 
 }
 
+.settings-label {
+  background-color: rgba(var(--white), 0.87) !important;
+  border: 1px solid rgba(var(--black), 0.25) !important;
+  color: rgba(var(--black), 0.7) !important;
+  font-weight: 400 !important;
+}
+
 /* Palette stuff */
 .ui.palette.input {
   background-color: transparent;

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-11 18:06:23
- * @ Modified time: 2024-11-11 20:49:29
+ * @ Modified time: 2024-11-11 21:15:54
  * @ Description:
  * 
  * Manages site settings.
@@ -14,7 +14,7 @@ const Settings = (() => {
 	const settings = [
 		{ name: 'darkmode', key: 'darkmode', action: () => (_.toggle_darkmode()) },
 		{ name: 'command palette', key: 'command-palette', action: () => (_.toggle_command_palette()) },
-		{ name: 'hide answered problems', key: 'hide-answered', action: () => (_.toggle_hide_answered(), location.reload()) }
+		{ name: 'hide answered problems', key: 'hide-answered', action: () => (_.toggle_hide_answered(), setTimeout(() => location.reload(), 250)) }
 	]
 
 	// Create the settings trigger
@@ -48,7 +48,7 @@ const Settings = (() => {
 
 	settings_table.mapper = (setting) => (
 		DOM.tr().s({ height: '2.8em' }).append(
-			DOM.td().append(DOM.label().c('black').t(setting.name)),
+			DOM.td().append(DOM.label().c('settings-label', 'black').t(setting.name)),
 			DOM.td().c('spacer').s({ minWidth: '2em' }),
 			DOM.td().append(
 				DOM.checkbox()
