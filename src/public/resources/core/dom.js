@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-11 18:02:30
+ * @ Modified time: 2024-11-11 18:22:05
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -1146,13 +1146,13 @@ const DOM = (() => {
 	 */
 	_.setting = (name, value) => (
 		value !== undefined
-			? (storage[name] 
-				? (storage[name] = value, localStorage.setItem(name, value))
-				: localStorage.getItem(name, value)
-					? (storage[name] = localStorage.getItem(name, value))
-					: (storage[name] = value, localStorage.setItem(name, value)),
+			? (storage[name] !== undefined
+				? (storage[name] = value, localStorage.setItem(name, JSON.stringify(value)))
+				: localStorage.getItem(name) !== undefined
+					? (storage[name] = JSON.parse(localStorage.getItem(name)))
+					: (storage[name] = value, localStorage.setItem(name, JSON.stringify(value))),
 				_)
-			: localStorage.getItem(name)
+			: JSON.parse(localStorage.getItem(name))
 	)
 
 	// Dom setup on load
