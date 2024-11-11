@@ -155,6 +155,7 @@ i.icon {
   left: 0;
   max-width: 32em;
 
+  z-index: 5;
   transform: translate(0, -125%);
   padding: 0.5em 1em 0.5em 1em;
   background-color: rgb(var(--white));
@@ -175,6 +176,17 @@ i.icon {
 }
 
 /* Settings stuff */
+.ui.modal.settings-modal>.header {
+  padding: 0;
+  background-color: rgba(0, 0, 0, 0) !important;
+  color: rgb(var(--black)) !important;
+}
+
+.ui.modal.settings-modal>.ui.content {
+  background-color: rgba(0, 0, 0, 0) !important;
+  color: rgb(var(--black)) !important;
+}
+
 .ui.modal.settings-modal {
   background-color: rgba(0, 0, 0, 0) !important;
   border: none !important;
@@ -183,7 +195,6 @@ i.icon {
 }
 
 .ui.modal.settings-modal>* {
-  color: white !important;
   font-family: monospace;
   background-color: rgba(0, 0, 0, 0) !important;
 }
@@ -258,7 +269,7 @@ i.icon {
 }
 
 .ui.modal.palette>* {
-  color: white !important;
+  color: rgb(var(--white)) !important;
   font-family: monospace;
   background-color: rgba(0, 0, 0, 0) !important;
 }
@@ -304,6 +315,52 @@ option {
 
 label {
   color: rgba(var(--black), 0.87) !important;
+}
+
+.checkbox-div {
+  display: inline-block !important;
+}
+
+input[type=checkbox] {
+	height: 0;
+	width: 0;
+	visibility: hidden;
+}
+
+input[type=checkbox]+label {
+	cursor: pointer;
+  text-indent: -9999px;
+	width: 40px;
+	height: 20px;
+	background: rgba(var(--black), 0.87) !important;
+	display: inline-block;
+	border-radius: 10px;
+	position: relative;
+}
+
+input[type=checkbox]+label:after {
+	content: '';
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 16px;
+	height: 16px;
+	background: rgba(var(--white), 1) !important;
+	border-radius: 16px;
+	transition: 0.3s;
+}
+
+input:checked+label {
+	background: rgb(var(--green)) !important;
+}
+
+input:checked+label:after {
+	left: calc(100% - 2px);
+	transform: translateX(-100%);
+}
+
+input[type=checkbox]+label:active:after {
+	width: 32px;
 }
 
 .disabled:hover {
@@ -380,7 +437,7 @@ a.item.active>.ui.label {
   background-color: rgb(var(--blue)) !important;
 }
 
-/* Dark mode toggler */
+/* Settings trigger */
 .settings {
   position: fixed;
   bottom: -153px; 
@@ -391,7 +448,6 @@ a.item.active>.ui.label {
   padding: 50px;
   
   font-size: 15px;
-  opacity: 0.4;
   color: rgb(var(--black));
   transition: 0.3s !important;
 }

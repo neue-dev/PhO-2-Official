@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-11 18:22:05
+ * @ Modified time: 2024-11-11 19:47:52
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -348,6 +348,7 @@ const DOM = (() => {
 	_.th = () => element('th');
 
 	// Form-related
+	_.lbl = () => element('label')
 	_.input = () => element('input')
 	_.button = () => element('button').c('ui', 'button');
 	_.buttons = () => element('div').c('ui', 'buttons');
@@ -987,6 +988,44 @@ const DOM = (() => {
 	)
 
 	/**
+	 * Dserves its own component smh
+	 * 
+	 * @return	A checkbox component. 
+	 */
+	_.checkbox = () => 
+		((id) => (
+			((checkbox) => (
+				
+				// Extend it with methods
+				Object.assign(checkbox, {
+					
+					click: () => (
+						checkbox.select('input').click(),
+						checkbox
+					),
+
+					check: (value) => (
+						checkbox.select('input').checked = value ?? true,
+						checkbox
+					),
+
+					listen: (...args) => (
+						checkbox.select('input').listen(...args),
+						checkbox
+					)
+				})
+
+			// The checkbox element
+			))(
+				element('div').c('checkbox-div').append(
+					element('input').c('ui', 'checkbox').a('type', 'checkbox').d(id),
+					element('label').a('for', id))
+			)
+		
+		// We need the id to associate the label with the checkbox
+		))(random_id())
+
+	/**
 	 * Selects an element from the dom using the selector.
 	 * Decorates the element with fluent helpers.
 	 * 
@@ -1155,8 +1194,13 @@ const DOM = (() => {
 			: JSON.parse(localStorage.getItem(name))
 	)
 
+	// Clear session storage
+	sessionStorage.clear()
+
 	// Dom setup on load
 	window.onload = () => (		
+
+		// Create tooltip
 		((tooltip) => (
 
 			// Tooltip methods
