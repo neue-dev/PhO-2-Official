@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-11 11:19:02
+ * @ Modified time: 2024-11-11 13:09:08
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -1106,8 +1106,8 @@ const DOM = (() => {
 	 */
 	_.store = (name, value) => (
 		value !== undefined
-			? (localStorage.setItem(name, JSON.stringify(value)), _)
-			: (JSON.parse(localStorage.getItem(name)))
+			? (sessionStorage.setItem(name, JSON.stringify(value)), _)
+			: (JSON.parse(sessionStorage.getItem(name)))
 	)
 
 	// Dom setup on load
