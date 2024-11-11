@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-11 11:19:02
+ * @ Modified time: 2024-11-11 21:41:08
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -13,6 +13,14 @@ const DOM = (() => {
 
 	// Interface
 	const _ = {};
+
+	// Local storage cache
+	const storage = {}
+
+	// Stores active elements
+	const active = {
+		modal: null,
+	};
 
 	/**
 	 * Generates a decent random uuid.
@@ -184,7 +192,11 @@ const DOM = (() => {
 			// Fluent get-setter for styles
 			s: (styles) => (
 				styles != null
-					? (Object.keys(styles).forEach(property => element.style[property] = styles[property]), element)
+					? (Object.keys(styles).forEach(property => 
+						styles[property].endsWith && styles[property].endsWith(' !important')
+							? element.style.setProperty(property, styles[property].replace(' !important', ''), 'important')
+							: element.style[property] = styles[property]), 
+						element)
 					: (element.style)
 			),
 
@@ -336,6 +348,7 @@ const DOM = (() => {
 	_.th = () => element('th');
 
 	// Form-related
+	_.lbl = () => element('label')
 	_.input = () => element('input')
 	_.button = () => element('button').c('ui', 'button');
 	_.buttons = () => element('div').c('ui', 'buttons');
@@ -476,7 +489,8 @@ const DOM = (() => {
 			// Set up the structure
 			table.append(
 				element('thead').c('thead'),
-				element('tbody').c('tbody')
+				element('tbody').c('tbody').append(element('tr').append(element('td').append(
+					element('div').c('ui', 'active', 'centered', 'inline', 'fast', 'large', 'loader'))))
 			),
 
 			// Add methods
@@ -516,8 +530,14 @@ const DOM = (() => {
 								.c(data.__id)
 								.d(data.__id)
 								.s(data.__visible 
-									? { display: '' }
-									: { display: 'none' }))),
+									? {  }
+									: { display: 'none !important' }))),
+
+					// Handle empty tables
+					table.state('view').filter(data => data.__visible).length || 
+						table.select('tbody').append(
+							element('tr').append(element('td').append(
+								element('label').c('ui', 'black', 'label').t('No entries.')))),
 					table
 				),
 
@@ -587,7 +607,9 @@ const DOM = (() => {
 			((dimmer) => (
 				modal.parent().insertBefore(dimmer, modal),
 				modal.parent().removeChild(modal),
-				dimmer.appendChild(modal)
+				modal.listen('click', (e) => e.stopPropagation()),
+				dimmer.listen('click', () => modal.modal_close()),
+				dimmer.append(modal)
 
 			// The dimmer parent
 			))(
@@ -619,6 +641,8 @@ const DOM = (() => {
 
 				// Activates the modal (parent must be the dimmer)
 				modal_open: () => (
+					active.modal && active.modal.modal_close(), 
+					active.modal = modal,
 					modal.parent().c('visible', 'active'),
 					modal.c('visible', 'active'),
 					modal
@@ -626,6 +650,7 @@ const DOM = (() => {
 
 				// Hides it (parent must be the dimmer)
 				modal_close: () => (
+					active.modal = null,
 					modal.parent().uc('visible', 'active'),
 					modal.uc('visible', 'active'),
 					modal
@@ -972,6 +997,44 @@ const DOM = (() => {
 	)
 
 	/**
+	 * Dserves its own component smh
+	 * 
+	 * @return	A checkbox component. 
+	 */
+	_.checkbox = () => 
+		((id) => (
+			((checkbox) => (
+				
+				// Extend it with methods
+				Object.assign(checkbox, {
+					
+					click: () => (
+						checkbox.select('input').click(),
+						checkbox
+					),
+
+					check: (value) => (
+						checkbox.select('input').checked = value ?? true,
+						checkbox
+					),
+
+					listen: (...args) => (
+						checkbox.select('input').listen(...args),
+						checkbox
+					)
+				})
+
+			// The checkbox element
+			))(
+				element('div').c('checkbox-div').append(
+					element('input').c('ui', 'checkbox').a('type', 'checkbox').d(id),
+					element('label').a('for', id))
+			)
+		
+		// We need the id to associate the label with the checkbox
+		))(random_id())
+
+	/**
 	 * Selects an element from the dom using the selector.
 	 * Decorates the element with fluent helpers.
 	 * 
@@ -1080,11 +1143,9 @@ const DOM = (() => {
 				tooltip.select('.content').t(text ?? ''),
 				label 
 					? (tooltip.select('.label').display('block').t(label), 
-						tooltip.select(1).display('block'), 
-						tooltip.select(2).display('block'))
+						tooltip.select(1).display('block')) 
 					: (tooltip.select('.label').display(false), 
-						tooltip.select(1).display(false),
-						tooltip.select(2).display(false)),
+						tooltip.select(1).display(false)),
 				tooltip.s({
 					left: x ? x + 'px' : tooltip.style.left,
 					top: y ? y + 'px' : tooltip.style.top,
@@ -1097,7 +1158,18 @@ const DOM = (() => {
 	)
 
 	/**
-	 * Get-setter for local storage.
+	 * Allows an easier way for us to set global css vars, among other things.
+	 * 
+	 * @param styles	The styles to set. 
+	 * @return				The api.
+	 */
+	_.style = (styles) => (
+		Object.keys(styles).map(style => document.documentElement.style.setProperty(style, styles[style])),
+		_
+	)
+
+	/**
+	 * Get-setter for session storage.
 	 * Queries the *store*.
 	 * 
 	 * @param	name		The name of the property to set.
@@ -1106,12 +1178,37 @@ const DOM = (() => {
 	 */
 	_.store = (name, value) => (
 		value !== undefined
-			? (localStorage.setItem(name, JSON.stringify(value)), _)
-			: (JSON.parse(localStorage.getItem(name)))
+			? (sessionStorage.setItem(name, JSON.stringify(value)), _)
+			: (JSON.parse(sessionStorage.getItem(name)))
 	)
+
+	/**
+	 * Get-setter for local storage.
+	 * Accounts for script inits.
+	 * If the localStorage is already set but we're initting, we don't override the localStorage.
+	 * This is useful for website user customizations.
+	 * 
+	 * @param	name		The name of the property to set.
+	 * @param	value		The value to set it to (optional).
+	 * @return				The value last set to the property.
+	 */
+	_.setting = (name, value) => (
+		value !== undefined
+			? (storage[name] !== undefined
+				? (storage[name] = value, localStorage.setItem(name, JSON.stringify(value)), value)
+				: localStorage.getItem(name) !== undefined && JSON.parse(localStorage.getItem(name)) !== null
+					? (storage[name] = JSON.parse(localStorage.getItem(name)))
+					: (storage[name] = value, localStorage.setItem(name, JSON.stringify(value)), value))
+			: JSON.parse(localStorage.getItem(name))
+	)
+
+	// Clear session storage
+	sessionStorage.clear()
 
 	// Dom setup on load
 	window.onload = () => (		
+
+		// Create tooltip
 		((tooltip) => (
 
 			// Tooltip methods
@@ -1128,8 +1225,8 @@ const DOM = (() => {
 		// The tooltip element
 		))(
 			_.div().c('tooltip').append(
-				_.div().c('content'), _.br(), _.br(),
-				_.div().c('ui', 'compact', 'label', 'bottom', 'attached')))
+				_.div().c('content'), _.div().c('ui', 'divider').s({ visibility: 'hidden' }),
+				_.div().c('ui', 'teal', 'compact', 'label', 'bottom', 'left', 'attached')))
 	)
 	
 	return {

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 08:26:47
- * @ Modified time: 2024-11-07 13:13:58
+ * @ Modified time: 2024-11-11 18:25:21
  * @ Description:
  * 
  * The main thread on the server.
@@ -32,6 +32,10 @@ const SERVER = (() => {
 
   // Middleware
   const MIDDLEWARE = [
+
+    // ! remove debug param
+    // ! set max age to one hour, not 1.5 mins (?)
+    // express.static(SERVER_PUBLIC_URL, { etag: false }),
     express.static(SERVER_PUBLIC_URL, { maxAge: 9000000 }),
     express.json(),
     cookieparser(),
@@ -62,7 +66,7 @@ const SERVER = (() => {
 
     // Pho2 js files
     '/common/pho2.js',
-    '/common/darkmode.js',
+    '/common/settings.js',
     '/common/timer.js',
     '/common/formatter.js',
     '/common/trademark.js',

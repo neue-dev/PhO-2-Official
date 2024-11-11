@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-07 13:15:20
- * @ Modified time: 2024-11-11 11:46:23
+ * @ Modified time: 2024-11-11 19:39:38
  * @ Description:
  * 
  * Handles the command palette interface.
@@ -13,23 +13,23 @@ const Palette = (() => {
 	const _ = {};
 
 	// Some constants
-	const WHITE = 'rgb(255, 255, 255)'
-	const BLUE = 'rgb(65, 80, 200)'
-	const GREEN = 'rgb(102, 255, 102)'
+	const BLUE = 'rgb(var(--blue))'
+	const GREEN = 'rgba(var(--green), 0.69) !important'
 
-	// The commands
+	// The commands, active
 	const commands = [];
+	let enabled = true;
 
 	// Create the palette dom component
 	const palette_element = 
 		DOM.div()
 			.c('ui', 'modal', 'palette')
-	
+	DOM.append(palette_element);
+
 	// The input element
 	const palette_input = 
 		DOM.div()
 			.c('ui', 'input', 'palette')
-			.s({ color: 'white' })
 			.a('contenteditable', true)
 			.a('spellcheck', false)
 
@@ -43,20 +43,25 @@ const Palette = (() => {
 	// Autocomplete on tab
 	palette_input.listen('keydown', (e) => (e.keyCode === 9 && (e.preventDefault(), _.autocomplete())))
 	
-	// List of commands
-	const palette_table = DOM.stateful_table().s({ border: 'none' })
-	
-	// Create the palette element structure
-	palette_element.append(palette_input, palette_shadow, DOM.div().c('ui', 'divider'), DOM.br(), palette_table)
-
-	// Append to the dom
-	DOM.append(palette_element);
-
-	// The palette object
+	// List of commands and the palette object
+	const palette_table = DOM.stateful_table().c('palette-table')
 	const palette = DOM.stateful_modal(palette_element);
 
+	// Hide the default structure of the modal LMAO
+	palette.select('.ui.content').display(false)
+	palette.select('.ui.header').display(false)
+	palette.select('.actions').display(false)
+
+	// Create the palette element structure
+	palette_element.append(
+		palette_input, 
+		palette_shadow, 
+		DOM.div().c('ui', 'divider'), DOM.br(), 
+		palette_table
+	)
+
 	// Focusing and unfocusing 
-	DOM.keybind({ ctrlKey: true, key: 'p' }, () => (palette.modal_toggle(), palette_input.toggle(), _.display_commands()));
+	DOM.keybind({ ctrlKey: true, key: 'p' }, () => enabled && (palette.modal_toggle(), palette_input.toggle(), _.display_commands()));
 	DOM.keybind({ key: 'Escape' }, () => (palette.modal_close(), palette_input.blur()));
 
 	// Other key event listeners
@@ -69,7 +74,12 @@ const Palette = (() => {
 		
 		// Change the recommendation shadow
 		palette_input.input().length 
-			? palette_shadow.t(palette_input.recommendation) 
+			? palette_shadow.t(palette_input.recommendation.replace(
+					palette_input.input(), 
+					DOM.span()
+						.s({ visibility: 'hidden' })
+						.t(palette_input.input())
+						.t()))
 			: palette_shadow.t('')))
 
 	/**
@@ -104,15 +114,15 @@ const Palette = (() => {
 							)).join('/')),
 
 				// Actual command row information
-				row.s({ height: '2.4em' }).append(
+				row.s({ height: '2.8em' }).append(
 					DOM.td().append(identifier),
-					DOM.td().c('spacer').s({ width: '1em' }),
-					DOM.td().t(command.description).s({ opacity: 0.33 }))
+					DOM.td().c('spacer').s({ minWidth: '2em' }),
+					DOM.td().c('palette-description').t(command.description))
 			))
 
 			// Create the row and the identifier
-			(DOM.tr().c('hoverable-row'), 
-			DOM.div().c('ui', 'basic', 'compact', 'label').s({ backgroundColor: WHITE, opacity: 0.7, fontWeight: 400 }))
+			(DOM.tr().c('palette-row', 'hoverable-row'), 
+			DOM.div().c('ui', 'basic', 'label', 'palette-label'))
 		)
 	)
 
@@ -141,7 +151,9 @@ const Palette = (() => {
 	 */
 	_.autocomplete = () => (
 		palette_input?.recommendation?.length 
-			? (palette_input.textContent = palette_input.recommendation, palette_input.dispatch('input'), palette_cursor.end())
+			? (palette_input.textContent = palette_input.recommendation, 
+				palette_input.dispatch('input'), 
+				palette_cursor.end())
 			: null,
 		_
 	)
@@ -204,6 +216,26 @@ const Palette = (() => {
 	 */
 	_.display_commands = () => (
 		palette_table.table_map(palette_table.mapper),
+		_
+	)
+
+	/**
+	 * Toggles the availability of the command palette.
+	 * 
+	 * @return	The api. 
+	 */
+	_.enable = (value) => (
+		enabled = value,
+		_
+	)
+
+	/**
+	 * Toggles the availability of the command palette.
+	 * 
+	 * @return	The api. 
+	 */
+	_.toggle = () => (
+		enabled = !enabled,
 		_
 	)
 

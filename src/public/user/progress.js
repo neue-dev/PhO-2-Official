@@ -49,7 +49,7 @@ const PROGRESS = (() => {
   });
 
   // Keybinds 
-  DOM.keybind({ ctrlKey: true, keyCode: 'f' }, () => search_bar.focus())
+  DOM.keybind({ ctrlKey: true, key: 'f' }, () => search_bar.focus())
   DOM.keybind({ key: 'Escape' }, () => 
     (problems_modal.modal_close(), submissions_modal.modal_close()))
 
@@ -255,7 +255,10 @@ const PROGRESS = (() => {
   // Save the problems
   function load_problems() {
     return X.request('./user/problemlist', 'POST')
-      .then(({ problems }) => PHO2.problems(problems))
+      .then(({ problems }) => PHO2.problems(
+        Settings.hide_answered() 
+          ? problems.filter(p => !problem_submissions_verdict(p))
+          : problems))
       .then(() => problems_label.t(PHO2.problems().length))
       .then(() => problems_table.table_data(PHO2.problems()))
       .then(() => problems_table.table_sort(problems_table.comparator))
