@@ -370,6 +370,13 @@ input[type=checkbox]+label:active:after {
 }
 
 /* Modals */
+.ui.modal>.header,
+.ui.modal>.actions {
+  border-top: 1px solid rgba(var(--black), 0.08) !important;
+  border-bottom: 1px solid rgba(var(--black), 0.08) !important;
+  box-shadow: none !important;
+}
+
 .ui.dimmer.modal-bg {
   background-color: rgba(var(--black), 0.16) !important;
   -webkit-backdrop-filter: blur(10px) !important;

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-11 20:14:26
+ * @ Modified time: 2024-11-11 20:21:56
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -600,6 +600,8 @@ const DOM = (() => {
 			((dimmer) => (
 				modal.parent().insertBefore(dimmer, modal),
 				modal.parent().removeChild(modal),
+				modal.listen('click', (e) => e.stopPropagation()),
+				dimmer.listen('click', () => modal.modal_close()),
 				dimmer.append(modal)
 
 			// The dimmer parent
