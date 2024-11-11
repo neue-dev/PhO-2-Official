@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-11 21:22:08
+ * @ Modified time: 2024-11-11 21:41:08
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -489,7 +489,8 @@ const DOM = (() => {
 			// Set up the structure
 			table.append(
 				element('thead').c('thead'),
-				element('tbody').c('tbody')
+				element('tbody').c('tbody').append(element('tr').append(element('td').append(
+					element('div').c('ui', 'active', 'centered', 'inline', 'fast', 'large', 'loader'))))
 			),
 
 			// Add methods

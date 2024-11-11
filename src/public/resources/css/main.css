@@ -91,17 +91,6 @@ i.icon {
   background-color: rgb(var(--white)) !important;
 }
 
-.ui.placeholder,
-.ui.placeholder>* 
-.ui.placeholder>.paragraph
-.ui.placeholder>.paragraph>.line {
-  width: 560px !important;
-  max-width: 100% !important;
-  background-color: rgba(var(--black), 0.1) !important;
-  margin: 0 !important;
-  margin-bottom: 0em !important;
-}
-
 .black>.icon,
 .black>i.icon,
 .black>div>i.icon,
@@ -114,6 +103,24 @@ i.icon {
   background-color: rgba(var(--black), 0.1) !important;
   color: rgba(var(--black), 0.87) !important;
 }
+
+/* Placeholders and loaders */
+.ui.loader {
+  margin: 1em !important;
+  transition: 0.3s !important;
+}
+
+.ui.placeholder,
+.ui.placeholder>* 
+.ui.placeholder>.paragraph
+.ui.placeholder>.paragraph>.line {
+  width: 560px !important;
+  max-width: 100% !important;
+  background-color: rgba(var(--black), 0.1) !important;
+  margin: 0 !important;
+  margin-bottom: 0em !important;
+}
+
 
 /* Scrollbar things */
 ::-webkit-scrollbar {
