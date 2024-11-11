@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-11 17:22:31
+ * @ Modified time: 2024-11-11 17:49:42
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -189,7 +189,11 @@ const DOM = (() => {
 			// Fluent get-setter for styles
 			s: (styles) => (
 				styles != null
-					? (Object.keys(styles).forEach(property => element.style[property] = styles[property]), element)
+					? (Object.keys(styles).forEach(property => 
+						styles[property].endsWith && styles[property].endsWith(' !important')
+							? element.style.setProperty(property, styles[property].replace(' !important', ''), 'important')
+							: element.style[property] = styles[property]), 
+						element)
 					: (element.style)
 			),
 
@@ -521,8 +525,8 @@ const DOM = (() => {
 								.c(data.__id)
 								.d(data.__id)
 								.s(data.__visible 
-									? { display: '' }
-									: { display: 'none' }))),
+									? {  }
+									: { display: 'none !important' }))),
 					table
 				),
 
