@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-11 20:21:56
+ * @ Modified time: 2024-11-11 21:22:08
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -531,6 +531,12 @@ const DOM = (() => {
 								.s(data.__visible 
 									? {  }
 									: { display: 'none !important' }))),
+
+					// Handle empty tables
+					table.state('view').filter(data => data.__visible).length || 
+						table.select('tbody').append(
+							element('tr').append(element('td').append(
+								element('label').c('ui', 'black', 'label').t('No entries.')))),
 					table
 				),
 
@@ -1189,7 +1195,7 @@ const DOM = (() => {
 		value !== undefined
 			? (storage[name] !== undefined
 				? (storage[name] = value, localStorage.setItem(name, JSON.stringify(value)), value)
-				: localStorage.getItem(name) !== undefined
+				: localStorage.getItem(name) !== undefined && JSON.parse(localStorage.getItem(name)) !== null
 					? (storage[name] = JSON.parse(localStorage.getItem(name)))
 					: (storage[name] = value, localStorage.setItem(name, JSON.stringify(value)), value))
 			: JSON.parse(localStorage.getItem(name))
