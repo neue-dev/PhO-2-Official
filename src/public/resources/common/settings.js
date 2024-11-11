@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-11 18:06:23
- * @ Modified time: 2024-11-11 20:14:15
+ * @ Modified time: 2024-11-11 20:49:29
  * @ Description:
  * 
  * Manages site settings.
@@ -12,8 +12,9 @@ const Settings = (() => {
 	// Interface
 	const _ = {};
 	const settings = [
-		{ name: 'darkmode', key: 'darkmode', action: () => _.toggle_darkmode() },
-		{ name: 'command palette', key: 'palette', action: () => _.toggle_palette() }
+		{ name: 'darkmode', key: 'darkmode', action: () => (_.toggle_darkmode()) },
+		{ name: 'command palette', key: 'command-palette', action: () => (_.toggle_command_palette()) },
+		{ name: 'hide answered problems', key: 'hide-answered', action: () => (_.toggle_hide_answered(), location.reload()) }
 	]
 
 	// Create the settings trigger
@@ -62,58 +63,29 @@ const Settings = (() => {
 	// Setting triggers
 	settings_trigger.tooltip({ text: 'Customize site behaviour here.', label: 'ctrl + .'})
 	settings_trigger.listen('click', () => settings_modal.modal_open())
+	
 	DOM.keybind({ ctrlKey: true, key: '.' }, () => settings_modal.modal_toggle())
 	DOM.keybind({ key: 'Escape' }, () => settings_modal.modal_close())
 
-	/**
-	 * Toggles darkmode.
-	 * 
-	 * @param value		Whether or not to use darkmode. 
-	 * @return				The api.
-	 */
-	_.set_darkmode = (value) => (
-		DOM.setting('darkmode', value),
-		value 
+	// Get-setters
+	_.command_palette = (value) => (Palette.enable(DOM.setting('command-palette', value)), DOM.setting('command-palette')) 
+	_.hide_answered = (value) => (DOM.setting('hide-answered', value))
+	_.darkmode = (value) => (DOM.setting('darkmode', value),
+		DOM.setting('darkmode')
 			? DOM.style({ '--black': '255, 255, 255', '--white': '27, 28, 29' })
 			: DOM.style({ '--black': '16, 16, 16', '--white': '255, 255, 255' }),
-		_
+		DOM.setting('darkmode')
 	)
 
-	/**
-	 * Enables / disables the command palette.
-	 * 
-	 * @param value		Whether or not to use the command palette. 
-	 * @return				The api.
-	 */
-	_.set_palette = (value) => (
-		DOM.setting('palette', value),
-		Palette.enable(value),
-		_
-	)
-
-	/**
-	 * Toggles darkmode.
-	 * 
-	 * @return	The api. 
-	 */
-	_.toggle_darkmode = () => (
-		_.set_darkmode(!DOM.setting('darkmode')),
-		_
-	)
-
-	/**
-	 * Toggles palette availability.
-	 * 
-	 * @return	The api. 
-	 */
-	_.toggle_palette = () => (
-		_.set_palette(!DOM.setting('palette')),
-		_
-	)
+	// Togglers
+	_.toggle_darkmode = () => (_.darkmode(!DOM.setting('darkmode')), _)
+	_.toggle_command_palette = () => (_.command_palette(!DOM.setting('command-palette')), _)
+	_.toggle_hide_answered = () => (_.hide_answered(!DOM.setting('hide-answered')), _)
 
 	// Init the settings
-	_.set_darkmode(DOM.setting('darkmode', true))
-	_.set_palette(DOM.setting('palette', true))
+	_.darkmode(DOM.setting('darkmode', true))
+	_.command_palette(DOM.setting('palette', true))
+	_.hide_answered(DOM.setting('answered', true))
 
 	return {
 		..._,
