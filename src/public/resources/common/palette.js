@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-07 13:15:20
- * @ Modified time: 2024-11-11 19:39:38
+ * @ Modified time: 2024-11-19 20:42:46
  * @ Description:
  * 
  * Handles the command palette interface.
@@ -167,7 +167,7 @@ const Palette = (() => {
 	 */
 	_.run_command = (name) => (
 		((matches) => (
-			matches.length ? matches[0].action() : console.error('Command not found')
+			matches.length ? (matches[0].action(), palette.modal_close()) : console.error('Command not found')
 		))(commands.filter(command => command.names.includes(name))),
 		_
 	)

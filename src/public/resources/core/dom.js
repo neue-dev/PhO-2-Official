@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-19 20:03:17
+ * @ Modified time: 2024-11-19 21:36:38
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -26,6 +26,7 @@ const DOM = (() => {
 	// Stores active elements
 	const active = {
 		modal: null,
+		panes: [],
 	};
 
 	/**
@@ -727,30 +728,38 @@ const DOM = (() => {
 				// The element containing the header
 				element('div')
 					.c('pane-header')
+					
+					// The close button
+					.append(
+						element('i').c('window', 'close', 'outline', 'icon', 'pane-close-button')
+							.listen('mousedown', () => pane.pane_hide()))
+
+					// Drag the pane when clicking on header
 					.listen('mousedown', (e) => (
-						((interval) => (
 
-							// Make the pane dragging
-							pane.c('dragging').s({ pointerEvents: 'none !important' })
-								.select('.pane-content').s({ pointerEvents: 'none !important' }).parent()
-								.select('.pane-cover').s({ pointerEvents: 'auto', opacity: 1 }),
+						// Make the pane dragging
+						pane.pane_dragging(),
 
-							// Create a mouseup listener
-							document.addEventListener('mouseup', function clear() {
-								document.removeEventListener('mouseup', clear)
-								clearInterval(interval)
+						// Rearrange the panes
+						active.panes = active.panes.filter(p => p !== pane),
+						active.panes.push(pane),
+						active.panes.map((pane, i) => pane.s({ zIndex: i + 10 })),
 
-								// Revert the style
-								pane.uc('dragging').s({ pointerEvents: 'auto !important' })
-									.select('.pane-content').s({ pointerEvents: 'auto !important' }).parent()
-									.select('.pane-cover').s({ pointerEvents: 'none', opacity: 0 })
-							})
+						// Create a mouseup listener
+						document.addEventListener('mouseup', function clear() {
+
+							// Revert the style
+							pane.pane_not_dragging()
+							
+							// Reset the event listeners
+							document.removeEventListener('mouseup', clear)
+						}),
 						
 						// Create interval to update position of pane based on mouse
-						))(setInterval(() => (
-							pane.s({
-								top: mouse.y - e.target.offsetHeight / 2 + 'px',
-								left: mouse.x - e.target.offsetWidth / 2 + 'px'
+						pane.state('interval', setInterval(() => (
+							pane.cis('dragging') && pane.s({
+								top: mouse.y + (e.target.parentElement.offsetHeight - e.target.offsetHeight) / 2 + 'px',
+								left: mouse.x + 'px'
 							})
 						), 1000 / 16))
 					)),
@@ -772,6 +781,50 @@ const DOM = (() => {
 					pane.select('.pane-content').append(...elements),
 					pane
 				),
+
+				// Shows the pane 
+				pane_show: () => (
+					active.panes.push(pane),
+					pane.s({ display: 'block' }),
+					pane
+				),
+
+				// Updates the pane to its dragging state
+				pane_dragging: () => (
+					pane.c('dragging').s({ pointerEvents: 'none !important' })
+						.select('.pane-content').s({ pointerEvents: 'none !important' }).parent()
+						.select('.pane-cover').s({ pointerEvents: 'auto', opacity: 1 }),
+					pane
+				),
+
+				// Updates the pane to its non-dragging state
+				pane_not_dragging: () => (
+
+					// Unset the dragging class
+					pane.uc('dragging'),
+					pane.s({ pointerEvents: 'auto !important' })
+						.select('.pane-content').s({ pointerEvents: 'auto !important' }).parent()
+						.select('.pane-cover').s({ pointerEvents: 'none', opacity: 0 }),
+
+					// Clear interval if it still exists
+					clearInterval(pane.state('interval')),
+					
+					// We save a snapshot
+					pane				
+				),
+
+				// Hides the pane but doesn't close it
+				pane_hide: () => (
+					active.panes = active.panes.filter(p => p !== pane),
+					pane.s({ display: 'none' }),
+					pane.pane_not_dragging(),
+
+					// Set timeout to fix position
+					((top, left) => setTimeout(() => (
+						pane.s({ top, left })
+					), 1000 / 8))(pane.style.top, pane.style.left),
+					pane
+				)
 			})
 
 		// Create the pane component
@@ -1313,6 +1366,12 @@ const DOM = (() => {
 		mouse.x = e.clientX,
 		mouse.y = e.clientY
 	)
+
+	// Automatically unfocus during escape
+	_.keybind({ key: 'Escape' }, () => (
+		active.modal && active.modal.modal_close(),
+		active.panes.map(pane => pane.pane_not_dragging())
+	))
 	
 	return {
 		..._,
