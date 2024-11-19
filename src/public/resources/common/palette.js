@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-07 13:15:20
- * @ Modified time: 2024-11-19 20:42:46
+ * @ Modified time: 2024-11-19 21:47:43
  * @ Description:
  * 
  * Handles the command palette interface.
@@ -61,8 +61,9 @@ const Palette = (() => {
 	)
 
 	// Focusing and unfocusing 
-	DOM.keybind({ ctrlKey: true, key: 'p' }, () => enabled && (palette.modal_toggle(), palette_input.toggle(), _.display_commands()));
-	DOM.keybind({ key: 'Escape' }, () => (palette.modal_close(), palette_input.blur()));
+	DOM.keybind({ ctrlKey: true, key: 'p' }, () => _.open());
+	DOM.keybind({ key: 'Escape' }, () => _.close());
+	window.addEventListener('beforeprint', () => _.open())
 
 	// Other key event listeners
 	palette_input.listen('input', (e) => (
@@ -134,14 +135,14 @@ const Palette = (() => {
 	 * Opens the command palette. 
 	 */
 	_.open = () => (
-		null
+		enabled && (palette.modal_toggle(), palette_input.toggle(), _.display_commands())
 	)
 
 	/**
 	 * Closes the command palette.
 	 */
 	_.close = () => (
-		null
+		(palette.modal_close(), palette_input.blur())
 	)
 
 	/**
