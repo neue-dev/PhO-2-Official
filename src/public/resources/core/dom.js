@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-29 15:07:13
- * @ Modified time: 2024-11-11 21:41:08
+ * @ Modified time: 2024-11-19 20:03:17
  * @ Description:
  * 
  * Utilities for dealing with DOM-related stuff.
@@ -13,6 +13,12 @@ const DOM = (() => {
 
 	// Interface
 	const _ = {};
+
+	// Mouse props
+	const mouse = { 
+		x: 0, 
+		y: 0 
+	};
 
 	// Local storage cache
 	const storage = {}
@@ -338,6 +344,7 @@ const DOM = (() => {
 	_.link = () => element('a');
 	_.pre = () => element('pre');
 	_.br = () => element('br');
+	_.iframe = () => element('iframe');
 
 	// Table-related
 	_.table = () => element('table').c('ui', 'table');
@@ -701,6 +708,78 @@ const DOM = (() => {
 				modal 
 					? stateful(modal, id)
 					: stateful(element('div').c('modal'), id)
+			))(random_id())
+		)
+	)
+
+	/**
+	 * Creates a draggable pane with its own content.
+	 * A mini window with extra functionality
+	 * @param {*} win 
+	 * @returns 
+	 */
+	_.stateful_pane = (pane) => (
+		((pane) => (
+
+			// Construct the pane
+			pane.append(
+
+				// The element containing the header
+				element('div')
+					.c('pane-header')
+					.listen('mousedown', (e) => (
+						((interval) => (
+
+							// Make the pane dragging
+							pane.c('dragging').s({ pointerEvents: 'none !important' })
+								.select('.pane-content').s({ pointerEvents: 'none !important' }).parent()
+								.select('.pane-cover').s({ pointerEvents: 'auto', opacity: 1 }),
+
+							// Create a mouseup listener
+							document.addEventListener('mouseup', function clear() {
+								document.removeEventListener('mouseup', clear)
+								clearInterval(interval)
+
+								// Revert the style
+								pane.uc('dragging').s({ pointerEvents: 'auto !important' })
+									.select('.pane-content').s({ pointerEvents: 'auto !important' }).parent()
+									.select('.pane-cover').s({ pointerEvents: 'none', opacity: 0 })
+							})
+						
+						// Create interval to update position of pane based on mouse
+						))(setInterval(() => (
+							pane.s({
+								top: mouse.y - e.target.offsetHeight / 2 + 'px',
+								left: mouse.x - e.target.offsetWidth / 2 + 'px'
+							})
+						), 1000 / 16))
+					)),
+				
+				// The element containing the content
+				element('div')
+					.c('pane-content'),
+
+				// The cover to use when moving the pane
+				element('div')
+					.c('pane-cover')
+			),
+
+			// Extends the pane
+			Object.assign(pane, {
+				
+				// Append stuff to the pane body
+				pane_append: (...elements) => (
+					pane.select('.pane-content').append(...elements),
+					pane
+				),
+			})
+
+		// Create the pane component
+		))(
+			((id) => (
+				pane
+					? stateful(pane, id)
+					: stateful(element('div').c('pane'), id)
 			))(random_id())
 		)
 	)
@@ -1227,6 +1306,12 @@ const DOM = (() => {
 			_.div().c('tooltip').append(
 				_.div().c('content'), _.div().c('ui', 'divider').s({ visibility: 'hidden' }),
 				_.div().c('ui', 'teal', 'compact', 'label', 'bottom', 'left', 'attached')))
+	)
+
+	// Dom mouse handling
+	window.onmousemove = (e) => (
+		mouse.x = e.clientX,
+		mouse.y = e.clientY
 	)
 	
 	return {

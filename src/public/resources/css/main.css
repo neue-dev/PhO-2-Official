@@ -53,6 +53,46 @@ input:focus{
   z-index: -1;
 }
 
+/* Pane styling */
+.pane {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 25vw;
+  height: auto;
+  z-index: 10;
+
+  background-color: rgba(var(--white), 0.16);
+  border: 1px solid rgba(var(--black), 0.16);
+  overflow: hidden;
+}
+
+.pane-header {
+  background-color: rgba(var(--black), 1);
+  width: 100%;
+  height: 2em;
+  cursor: grab;
+}
+
+.pane-cover {
+  position: absolute;
+  top: 2em;
+  left: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+
+  background-color: rgba(var(--black), 0.16);
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+  transition: 0.1s !important;
+}
+
+.pane.dragging,
+.pane.dragging>.pane-header {
+  cursor: grabbing;
+}
+
 /* Semantic overrides */
 .ui.header {
   letter-spacing: -0.06em;
@@ -60,7 +100,7 @@ input:focus{
 }
 
 .ui.tab {
-  border-color: rgba(var(--black), 0.08) !important;
+  border-color: rgba(var(--black), 0.16) !important;
 }
 
 .ui.tab,
@@ -386,8 +426,8 @@ input[type=checkbox]+label:active:after {
 /* Modals */
 .ui.modal>.header,
 .ui.modal>.actions {
-  border-top: 1px solid rgba(var(--black), 0.08) !important;
-  border-bottom: 1px solid rgba(var(--black), 0.08) !important;
+  border-top: 1px solid rgba(var(--black), 0.16) !important;
+  border-bottom: 1px solid rgba(var(--black), 0.16) !important;
   box-shadow: none !important;
 }
 
