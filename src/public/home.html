@@ -43,16 +43,18 @@
     <!-- <img class="bg-photo" src="/pho-2-official-bg"> -->
     <div class="ui cards" style="visibility: hidden;">
       <div class="card hide-on-mobile" style="visibility: hidden;"></div>
-      <div class="card">
+      <div class="card login-card">
         <div class="ui login content">
           <span class=" ui header huge text">
             login
           </span>
           <br>
-          Only registered participants can login.
-          <br><br><br><br>
+          <p style="opacity: 0.5;">
+            Only registered participants can login.
+          </p>
+          <br><br>
 
-          <div>
+          <div class="ui form">
             <div class="ui form login-form"></div><br><br>
             <button class="ui black button login-button">Login</button>
           </div>
@@ -66,8 +68,7 @@
 
       // Preloader
       Preload
-        .queue("https://i.imgur.com/nU2Y45z.jpeg", { c: 'fixed-image pho2-bg' })
-        .queue("https://i.pinimg.com/564x/38/90/fb/3890fb0fe66d46366aa0642f4072375a.jpg", { c: 'fixed-image pho2-icon' })
+        .queue("https://i.imgur.com/Ad5u6m4_d.webp?maxwidth=760&fidelity=grand", { c: 'fixed-image pho2-icon' })
         .then(() => cards.style.visibility = 'visible')
 
       // Form field

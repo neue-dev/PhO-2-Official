@@ -354,6 +354,7 @@ i.icon {
 /* Toasts */
 .toast-container {
   background-color: transparent !important;
+  pointer-events: none;
 }
 
 .toast {

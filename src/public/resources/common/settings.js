@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-11 18:06:23
- * @ Modified time: 2024-11-11 21:56:02
+ * @ Modified time: 2025-01-13 01:25:08
  * @ Description:
  * 
  * Manages site settings.
@@ -69,7 +69,7 @@ const Settings = (() => {
 	_.hide_answered = (value) => (DOM.setting('hide-answered', value))
 	_.darkmode = (value) => (DOM.setting('darkmode', value),
 		DOM.setting('darkmode')
-			? DOM.style({ '--black': '255, 255, 255', '--white': '27, 28, 29' })
+			? DOM.style({ '--black': '255, 255, 255', '--white': '21, 22, 23' })
 			: DOM.style({ '--black': '16, 16, 16', '--white': '255, 255, 255' }),
 		DOM.setting('darkmode')
 	)

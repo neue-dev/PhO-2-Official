@@ -33,7 +33,7 @@
 }
 
 body {
-  background-color: #000000 !important;
+  background-color: rgba(calc(var(--white) * 2), 1.0) !important;
   position: fixed;
   top: 0;
   left: 0;
@@ -57,8 +57,8 @@ body {
 
 .fixed-image.pho2-icon {
   left: 25vw;
-  top: 50vh;
-  width: 27vw;
+  top: 55vh;
+  width: 35vw;
   transform: translate(-50%, -50%);
 }
 
@@ -73,8 +73,13 @@ body {
   width: calc(50vw - 10rem) !important;
 }
 
+.card.login-card {
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+
 .ui.cards > .card > .login.content {
   padding: 4em !important;
+  background-color: rgba(0, 0, 0, 0) !important;
 }
 
 .landing-title {
@@ -105,8 +110,20 @@ div.card.hide-on-mobile {
   left: 0;
 }
 
-.input-field {
-  margin-top: 2vh;
+input, input:focus, input:active, select {
+  background-color: rgba(var(--black), 1) !important;
+  color: rgba(var(--white), 0.87) !important;
+  -webkit-text-fill-color: rgba(var(--white), 0.87) !important;
+  -webkit-box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
+}
+
+.ui.form {
+  opacity: 0.91;
+}
+
+.ui.form.login-form > .field > .input {
+  margin-bottom: 2vh;
 }
 
 .username-input {
