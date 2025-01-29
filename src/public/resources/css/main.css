@@ -267,6 +267,10 @@ i.icon {
   background-color: rgba(0, 0, 0, 0) !important;
 }
 
+.ui.modal.settings-modal .table .tbody tr td .checkbox-div input {
+  display: none;
+}
+
 .ui.dimmer.modal-bg:has(.settings-modal) {
   background-color: rgba(0, 0, 0, 0.16) !important; 
 }

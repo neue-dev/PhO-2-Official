@@ -20,5 +20,18 @@
   .ui.table {
     max-width: calc(100vw - 2vw) !important;
   }
+
+  .settings-modal .ui.header.text {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translate(-50%, -75%);
+  }
+
+  .settings-modal .table {
+    position: absolute;
+    top: 75%; left: 50%;
+    padding: 0; margin: 0;
+    transform: translate(-50%, 0);
+  }
 }
 
