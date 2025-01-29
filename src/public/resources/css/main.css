@@ -1,4 +1,5 @@
 /* The main css file for general stylings */
+@import url('https://fonts.cdnfonts.com/css/lato');
 
 :root {
   --white: 27, 28, 29;
@@ -6,6 +7,7 @@
   --blue:  33, 133, 208;
   --green: 55, 255, 128;
   --red: 219, 40, 40;
+  --main-font: "Lato";
 }
 
 * {
