@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 08:58:03
- * @ Modified time: 2024-11-01 10:56:28
+ * @ Modified time: 2025-01-29 23:50:32
  * @ Description:
  * 
  * String formatters and what not.
@@ -103,7 +103,7 @@ const Formatter = (() => {
 		
 		// Grab mantissa and exponent
 		((mantissa, exponent, sign) => (
-
+				
 			// Fix exponent, in case it wasn't explicitly defined
 			exponent = exponent ? parseInt(exponent) : 0,
 			exponent = isNaN(exponent) ? 0 : exponent,
@@ -113,34 +113,40 @@ const Formatter = (() => {
 
 			// Get rid of extra 0s
 			mantissa = mantissa.replace(/^[0]*/, ''),
+						
+			// It was 0
+			mantissa == '' 
 
-			// Check whether or not we're < 1 or > 1 
-			mantissa.startsWith('.')
-				
-				// < 1
-				? mantissa.replaceAll('0', '') === '.'
-					? (mantissa = 0, exponent = 0)
-					: ((nonzeros) => (
-							exponent += nonzeros.length - mantissa.length,
-							mantissa = nonzeros.charAt(0) + '.' + nonzeros.slice(1)
-						))(mantissa.replace('.', '').replace(/^[0]*/, ''))
-				
-				// > 1
-				: ((index) => (
-						index === -1
-							? (exponent += mantissa.length - 1,
-								mantissa = mantissa.charAt(0) + '.' + mantissa.slice(1))
-							: (exponent += index - 1,
-								mantissa = mantissa.charAt(0) + '.' + mantissa.replace('.', '').slice(1))
-					))(mantissa.indexOf('.')),
+					// Yes
+					? (mantissa = '0', exponent = '0')
+					
+					// Check whether or not we're < 1 or > 1 
+					: mantissa.startsWith('.')
+						
+						// < 1
+						? mantissa.replaceAll('0', '') === '.'
+							? (mantissa = '0', exponent = '0')
+							: ((nonzeros) => (
+									exponent += nonzeros.length - mantissa.length,
+									mantissa = nonzeros.charAt(0) + '.' + nonzeros.slice(1)
+								))(mantissa.replace('.', '').replace(/^[0]*/, ''))
+						
+						// > 1
+						: ((index) => (
+								index === -1
+									? (exponent += mantissa.length - 1,
+										mantissa = mantissa.charAt(0) + '.' + mantissa.slice(1))
+									: (exponent += index - 1,
+										mantissa = mantissa.charAt(0) + '.' + mantissa.replace('.', '').slice(1))
+							))(mantissa.indexOf('.')),
 
-				// Include sign
-				sign < 0 && (mantissa = '-' + mantissa),
-				mantissa.endsWith('.') && (mantissa = mantissa.replace('.', '')),
+						// Include sign
+						sign < 0 && (mantissa = '-' + mantissa),
+						mantissa.endsWith('.') && (mantissa = mantissa.replace('.', '')),
 
-				// Convert two strings
-				mantissa = mantissa + '',
-				exponent = exponent + '',
+						// Convert two strings
+						mantissa = mantissa + '',
+						exponent = exponent + '',
 
 			// Return it
 			({ mantissa, exponent })
