@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 08:26:47
- * @ Modified time: 2024-11-11 18:25:21
+ * @ Modified time: 2025-01-29 14:19:42
  * @ Description:
  * 
  * The main thread on the server.
@@ -17,9 +17,10 @@ import { admin_router } from './server/routers/admin-router.js';
 import { user_router } from './server/routers/user-router.js';
 
 import { Config } from './server/models/config.js';
-import { send_file, write_file, redirect, SERVER_PUBLIC_URL } from './server/core/io.js'
+import { write_file, redirect, SERVER_PUBLIC_URL } from './server/core/io.js'
 import { authorized_redirect, authorized_user_redirect } from './server/pho2/auth.js';
 import { Env } from './server/core/env.js';
+import { STATIC_VERSION, STATIC_VERSION_EXCLUDES } from './server/core/info.js'
 
 const SERVER = (() => {
 
@@ -32,11 +33,6 @@ const SERVER = (() => {
 
   // Middleware
   const MIDDLEWARE = [
-
-    // ! remove debug param
-    // ! set max age to one hour, not 1.5 mins (?)
-    // express.static(SERVER_PUBLIC_URL, { etag: false }),
-    express.static(SERVER_PUBLIC_URL, { maxAge: 9000000 }),
     express.json(),
     cookieparser(),
   ]
@@ -47,39 +43,6 @@ const SERVER = (() => {
     [ '/admin', admin_router ],
     [ '/auth', auth_router ],
     [ '/user', user_router ]
-  ]
-
-  // Shortcuts to resources
-  const RESOURCES = [
-    
-    // CSS files
-    '/css/responsive.css',
-    '/css/main.css',
-    '/css/home.css',
-
-    // Core js files
-    '/core/dom.js',
-    '/core/component.js',
-    '/core/x.js',
-    '/core/time.js',
-    '/core/preload.js',
-
-    // Pho2 js files
-    '/common/pho2.js',
-    '/common/settings.js',
-    '/common/timer.js',
-    '/common/formatter.js',
-    '/common/trademark.js',
-  ]
-
-  // Pho2 Images
-  const IMAGES = [
-    '/pho-2-official-bg',
-    '/pho-2-official-title',
-    '/pho-2-official-subtitle',
-    '/pho-2-official-icon',
-    '/pho-2-official-icon-dark',
-    '/pho-2-official-logo',
   ]
 
   // Helper functions
@@ -130,6 +93,23 @@ const SERVER = (() => {
       console.log(`Server opened on port ${SERVER_PORT}.`)
     });
 
+    // Handling static files
+    app.use('/resources/', async (req, res, next) => {
+      
+      // Grab the version of the asset requested
+      const { v: version } = req.query;
+
+      // Invalid request
+      // Every asset request must specify a version
+      // This is more here for my sanity's sake
+      if(!version)
+        if(!STATIC_VERSION_EXCLUDES.some((exclude) => req.path.startsWith(exclude)))
+          console.log(`Warning: missing version parameter for ${req.path}.`)
+
+      // Serve asset
+      express.static(SERVER_PUBLIC_URL, { maxAge: 604800000 })(req, res, next);
+    })
+
     // Init middleware
     for(const middleware of MIDDLEWARE) 
       app.use(middleware)
@@ -144,81 +124,72 @@ const SERVER = (() => {
     // Dashboard
     app.get('/dashboard', authorized_user_redirect((req, res, user) => (
       user.isAdmin
-        ? write_file(res, './public/admin/dashboard.html', { CONTEST_FORUM_URL: Env.get('CONTEST_FORUM_URL') })
-        : write_file(res, './public/user/dashboard.html', { CONTEST_FORUM_URL: Env.get('CONTEST_FORUM_URL') })
+        ? write_file(res, './public/admin/dashboard.html', { STATIC_VERSION, CONTEST_FORUM_URL: Env.get('CONTEST_FORUM_URL') })
+        : write_file(res, './public/user/dashboard.html', { STATIC_VERSION, CONTEST_FORUM_URL: Env.get('CONTEST_FORUM_URL') })
     )))
 
     // Config and progress pages
     app.get([ '/config', '/progress' ], authorized_user_redirect((req, res, user) => (
       user.isAdmin
-        ? send_file(res, './public/admin/config.html')
-        : send_file(res, './public/user/progress.html')
+        ? write_file(res, './public/admin/config.html', { STATIC_VERSION })
+        : write_file(res, './public/user/progress.html', { STATIC_VERSION })
     )));
 
     // Problems
     app.get('/problems', authorized_user_redirect((req, res, user) => (
       during_elims() || user.isAdmin
-        ? write_file(res, './public/problems.html', { CONTEST_PROBLEMS_URL: Env.get('CONTEST_PROBLEMS_URL') })
-        : send_file(res, './public/error/unavailable-problems.html')
+        ? write_file(res, './public/problems.html', { STATIC_VERSION, CONTEST_PROBLEMS_URL: Env.get('CONTEST_PROBLEMS_URL') })
+        : write_file(res, './public/error/unavailable-problems.html', { STATIC_VERSION })
     )));
 
     // Finals
     app.get('/finals', authorized_user_redirect((req, res, user) => (
       during_finals() || user.isAdmin
-        ? write_file(res, './public/finals.html', { CONTEST_FINALS_URL: Env.get('CONTEST_FINALS_URL') })
-        : send_file(res, './public/error/unavailable-finals.html')
+        ? write_file(res, './public/finals.html', { STATIC_VERSION, CONTEST_FINALS_URL: Env.get('CONTEST_FINALS_URL') })
+        : write_file(res, './public/error/unavailable-finals.html', { STATIC_VERSION })
     )));
 
     // Forum
     app.get('/forum', authorized_user_redirect((req, res, user) => (
       user.isAdmin
-        ? send_file(res, './public/admin/forum.html')
-        : send_file(res, './public/user/forum.html')
+        ? write_file(res, './public/admin/forum.html', { STATIC_VERSION })
+        : write_file(res, './public/user/forum.html', { STATIC_VERSION })
     )));
 
     // Leaderboard
     app.get('/leaderboard', authorized_user_redirect((req, res, user) => (
       user.isAdmin
-        ? send_file(res, './public/admin/leaderboard.html')
-        : send_file(res, './public/user/leaderboard.html')
+        ? write_file(res, './public/admin/leaderboard.html', { STATIC_VERSION })
+        : write_file(res, './public/user/leaderboard.html', { STATIC_VERSION })
     )));
 
     // Config and progress resources
     app.get([ '/config.js', '/progress.js' ], authorized_user_redirect((req, res, user) => (
       user.isAdmin
-        ? send_file(res, './public/admin/config.js')
-        : send_file(res, './public/user/progress.js')
+        ? write_file(res, './public/admin/config.js', { STATIC_VERSION })
+        : write_file(res, './public/user/progress.js', { STATIC_VERSION })
     )))
 
     // Setup resources
     app.get('/setup.js', authorized_user_redirect((req, res, user) => (
       user.isAdmin
-        ? send_file(res, './public/admin/setup.js')
-        : send_file(res, './public/user/setup.js')
+        ? write_file(res, './public/admin/setup.js', { STATIC_VERSION })
+        : write_file(res, './public/user/setup.js', { STATIC_VERSION })
     )))
 
     // Leaderboard resources
     app.get('/leaderboard.js', authorized_user_redirect((req, res, user) => (
       user.isAdmin
-        ? send_file(res, './public/admin/leaderboard.js')
-        : send_file(res, './public/user/leaderboard.js')
+        ? write_file(res, './public/admin/leaderboard.js', { STATIC_VERSION })
+        : write_file(res, './public/user/leaderboard.js', { STATIC_VERSION })
     )))
 
     // Forum resources
     app.get('/forum.js', authorized_user_redirect((req, res, user) => (
       user.isAdmin
-        ? send_file(res, './public/admin/forum.js')
-        : send_file(res, './public/user/forum.js')
+        ? write_file(res, './public/admin/forum.js', { STATIC_VERSION })
+        : write_file(res, './public/user/forum.js', { STATIC_VERSION })
     )))
-    
-    // Common resources
-    for(const resource of RESOURCES)
-      app.get(resource, (req, res) => send_file(res, `./public/resources${resource}`))
-
-    // We have a different policy for images for the sake of convenience
-    // Also because they tend to be more resource intensive, so we might outsource them eventually
-    for(const image of IMAGES)
-      app.get(image, (req, res) => send_file(res, `/public/resources/images${image}.png`))
   }
 
   // Init the db and server

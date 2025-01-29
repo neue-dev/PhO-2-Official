@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:33:05
- * @ Modified time: 2024-11-04 09:00:26
+ * @ Modified time: 2025-01-29 14:15:20
  * @ Description:
  * 
  * Handles server IO responsibilities.
@@ -21,7 +21,7 @@ const __dirname = dirname(path.join(__filename, '../..'));
 
 // Constants
 export const SERVER_PUBLIC_URL = __dirname + '/public/resources'
-export const SERVER_HOME_URL = '/public/home.html'
+export const SERVER_HOME_URL = './public/home.html'
 
 
 // ! todo update these too

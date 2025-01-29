@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-11-01 03:20:42
- * @ Modified time: 2024-11-03 09:43:18
+ * @ Modified time: 2025-01-29 14:13:40
  * @ Description:
  * 
  * Deals with auth-related tasks.
@@ -9,10 +9,11 @@
 
 import jwt from 'jsonwebtoken';
 
-import { send_file, fail, succeed, SERVER_HOME_URL } from '../core/io.js';
+import { send_file, write_file, fail, succeed, SERVER_HOME_URL } from '../core/io.js';
 import { User } from '../models/user.js';
 
 import { Env } from '../core/env.js';
+import { STATIC_VERSION } from '../core/info.js'
 
 /**
  * Generates a new token for the session
@@ -59,7 +60,7 @@ const authorized_decorator = (func, fail) => (
 
 // A decorator for authorized checks
 // Performs redirects
-export const authorized_redirect = (func) => authorized_decorator(func, (res) => send_file(res, SERVER_HOME_URL))
+export const authorized_redirect = (func) => authorized_decorator(func, (res) => write_file(res, SERVER_HOME_URL, { STATIC_VERSION }))
 
 // A decorator for authorized checks
 // Fails the function with an error status
