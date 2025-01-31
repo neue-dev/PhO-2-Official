@@ -168,7 +168,7 @@ const PROGRESS = (() => {
 
   // Comparators
   const problems_table_comparator = (a, b) => 
-    (a.code.number + a.code.alpha).localeCompare(b.code.number + b.code.alpha)
+    (parseInt(a.code.number) - parseInt(b.code.number) || (a.code.alpha).localeCompare(b.code.alpha))
   const submissions_table_comparator = (a, b) => b.timestamp - a.timestamp
 
   // Problem table mapper

@@ -276,7 +276,7 @@ const CONFIG = (() => {
   // Comparators
   const config_table_comparator = (a, b) => 0
   const problems_table_comparator = (a, b) => 
-    (a.code.number + a.code.alpha).localeCompare(b.code.number + b.code.alpha)
+    (parseInt(a.code.number) - parseInt(b.code.number) || (a.code.alpha).localeCompare(b.code.alpha))
   const users_table_comparator = (a, b) => a.username.localeCompare(b.username)
     
   // Config table mapper
