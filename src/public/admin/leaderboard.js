@@ -49,6 +49,15 @@ const LEADERBOARD = (() => {
   // Search bar
   const search_bar = DOM.select('.search-bar')
 
+  // Download submission log
+  const download_log_button = DOM.select('.download-log-button')
+
+  // Download sublog
+  download_log_button.listen('click', 
+    () => (
+      X.download('./admin/submissionlog', (new Date()).toDateString().split(' ').slice(1).join('-') + '-submissions.csv', 
+        ({ submissions }) => submissions.map((submission, i) => `${i},` + Object.values(submission).join(',')).join('\n'))))
+
   // Filter feature
   search_bar.tooltip({ text: 'Filter the rows of the active table by the search term.', label: 'ctrl + f' })
   search_bar.listen('input', (e) => {
