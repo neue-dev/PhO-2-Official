@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 1970-01-01 08:00:00
- * @ Modified time: 2024-11-10 07:03:08
+ * @ Modified time: 2025-01-31 17:51:33
  * @ Description:
  * 
  * Stuff that runs on every admin page.
@@ -20,5 +20,5 @@
 		.register_command('out|logout', { action: () => PHO2.logout(), description: 'Logs out.' })
 		.register_command('slog|sublog|submissionlog', { action: () => (
 			X.download('./admin/submissionlog', 'submissions.csv', 
-				({ submissions }) => submissions.map(submission => Object.values(submission).join(',')).join('\n'))), description: 'Downloads a CSV file of the submissions.' })
+				({ submissions }) => submissions.map((submission, i) => `${i},` + Object.values(submission).join(',')).join('\n'))), description: 'Downloads a CSV file of the submissions.' })
 })()

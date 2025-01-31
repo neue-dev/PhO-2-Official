@@ -136,10 +136,11 @@ admin_router.post('/submissionlog', admin(io((req, res, user) =>
 
     // Remap problem code
     .field('p_codestring', function(code) { return code.number + '' + code.alpha }, [ 'problem_code' ])
+    .field('s_answerstring', function(answer) { return answer.mantissa + 'e' + answer.exponent }, [ 'answer' ])
     
     // Exclude fields then rename them
-    .project({ _id: false, user_id: false, problem_id: false, problem_code: false, __v: false })
-    .rename({ user_username: 'username', problem_name: 'problem', p_codestring: 'code', verdict: 'verdict', timestamp: 'timestamp' })
+    .project({ _id: false, user_id: false, problem_id: false, problem_code: false, answer: false, __v: false })
+    .rename({ user_username: 'username', p_codestring: 'code', s_answerstring: 'answer', verdict: 'verdict', timestamp: 'timestamp' })
 
     // Yes
     .then(submissions => res.json({ submissions }))
