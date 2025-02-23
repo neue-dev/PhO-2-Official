@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-10-28 08:26:47
- * @ Modified time: 2025-01-29 14:19:42
+ * @ Modified time: 2025-02-24 01:01:09
  * @ Description:
  * 
  * The main thread on the server.
@@ -49,6 +49,9 @@ const SERVER = (() => {
   const during_elims = () => ((now) => (now > Env.get('CONTEST_ELIMS_START') && now < Env.get('CONTEST_ELIMS_END')))(Date.now())
   const during_finals = () => ((now) => (now > Env.get('CONTEST_FINALS_START') && now < Env.get('CONTEST_FINALS_END')))(Date.now())
 
+  // Production mode (default if MODE is undefined)
+  const is_production = () => !Env.get('MODE') || [ 'PROD', 'PRODUCTION' ].includes(Env.get('MODE'))
+
   /**
    * Initializes the database.
    * We're using mongodb in this case.
@@ -91,6 +94,7 @@ const SERVER = (() => {
     const app = express();
     const server = app.listen(SERVER_PORT, () => { 
       console.log(`Server opened on port ${SERVER_PORT}.`)
+      console.log(`Running the application in ${is_production() ? 'PROD' : 'DEV'} mode.`)
     });
 
     // Handling static files
@@ -106,8 +110,13 @@ const SERVER = (() => {
         if(!STATIC_VERSION_EXCLUDES.some((exclude) => req.path.startsWith(exclude)))
           console.log(`Warning: missing version parameter for ${req.path}.`)
 
-      // Serve asset
-      express.static(SERVER_PUBLIC_URL, { maxAge: 604800000 })(req, res, next);
+      // Serve asset, default mode is to set expiry for 1 week
+      if(is_production())
+        express.static(SERVER_PUBLIC_URL, { maxAge: 604800000 })(req, res, next);
+
+      // Dev mode, do no caching
+      else 
+        express.static(SERVER_PUBLIC_URL, { etag: false })(req, res, next);
     })
 
     // Init middleware
